@@ -1,0 +1,30 @@
+# Excel Files & Databases
+*.xls
+*.xlsm
+*.xlsx
+*.accdb
+*.mdb
+
+# Temporary files & backups
+.*.bkp
+.*.dtmp
+~$*.docx
+~$*.xlsx
+*.tmp
+
+# System & Editor files
+Thumbs.db
+Desktop.ini
+.DS_Store
+.vscode/
+.idea/
+
+# Local archives and PDFs
+archac26/
+*.pdf
+
+# Fonts
+الخطوط/
+
+# Temporary text documents
+New Text Document*.txt
