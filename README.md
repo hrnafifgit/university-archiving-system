@@ -3,9 +3,9 @@
 
 <div align="center">
 
-![Project Status](https://img.shields.io/badge/الحالة-قيد_التأسيس_والتطوير-blue?style=for-the-badge)
-![University](https://img.shields.io/badge/الجهة-جامعة_إب_|_كلية_الهندسة_وتكنولوجيا_المعلومات-green?style=for-the-badge)
-![Project Type](https://img.shields.io/badge/نوع_المشروع-مشروع_تخرج_بكالوريوس-orange?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-In_Development-007acc?style=for-the-badge&logo=git)
+![Institution](https://img.shields.io/badge/Institution-Ibb_University-2ea44f?style=for-the-badge)
+![Type](https://img.shields.io/badge/Project-Graduation_Project-f0883e?style=for-the-badge)
 
 <p align="center">
   <b>منصة ويب سحابية متكاملة للأرشفة الرقمية وإدارة بيانات وثائق الكادر الجامعي (الأكاديمي والإداري)، والتحول الشامل من الأنظمة المكتبية التقليدية إلى قاعدة بيانات علائقية متقدمة (3NF).</b>
