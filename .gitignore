@@ -28,3 +28,22 @@ archac26/
 
 # Temporary text documents
 New Text Document*.txt
+
+# Laravel & Backend
+**/vendor/
+**/node_modules/
+**/.env
+**/.env.*
+!**/.env.example
+**/storage/logs/*.log
+**/storage/framework/sessions/*
+**/storage/framework/views/*
+**/storage/framework/cache/*
+!**/storage/framework/sessions/.gitignore
+!**/storage/framework/views/.gitignore
+!**/storage/framework/cache/.gitignore
+**/public/storage
+**/public/hot
+**/public/build
+*.sqlite-journal
+

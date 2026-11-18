@@ -1,0 +1,757 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.2.5 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" version="24.2.5" type="device">
+  <diagram id="chen_erd_enhanced_recommended" name="مخطط تشين المطور بالتوصيات الهندسية (Enhanced Chen ERD)">
+    <mxGraphModel dx="4400" dy="2400" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="4400" pageHeight="3000" background="#F8FAFC" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="banner" value="جامعة إب - المخطط المفاهيمي المطور للكيانات والعلاقات (Enhanced Chen ERD) بالتوصيات الهندسية المعتمدة&#10;Ibb University - Enhanced Chen ERD with Administrative Roles, Career Progression, Contextual Archive &amp; Users" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E293B;fontColor=#FFFFFF;strokeColor=#0F172A;strokeWidth=2;shadow=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=17;fontFamily=Arial;" parent="1" vertex="1">
+          <mxGeometry x="750" y="35" width="2300" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_lvl1" value="المستوى 1: الكيان التنظيمي الأعلى (كلية / مركز / دائرة)&#10;[organizational_entities]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#F59E0B;strokeWidth=2.5;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#78350F;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="380" y="410" width="240" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_lvl1_0" value="&lt;u&gt;رقم الكيان (ID)&lt;/u&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#7C3AED;strokeWidth=2.5;fontStyle=5;fontSize=11;fontFamily=Arial;fontColor=#4C1D95;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="258" y="338" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_lvl1_attr_lvl1_0" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_lvl1" target="attr_lvl1_0" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_lvl1_1" value="اسم الكيان" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="210" y="426" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_lvl1_attr_lvl1_1" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_lvl1" target="attr_lvl1_1" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_lvl1_2" value="نوع الكيان (كلية/مركز)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="210" y="508" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_lvl1_attr_lvl1_2" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_lvl1" target="attr_lvl1_2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_lvl1_3" value="طبيعة الكيان" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="438" y="318" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_lvl1_attr_lvl1_3" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_lvl1" target="attr_lvl1_3" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_lvl1_4" value="الرمز المختصر" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="598" y="338" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_lvl1_attr_lvl1_4" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_lvl1" target="attr_lvl1_4" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_org_dept" value="يحتوي / يضم" style="rhombus;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=2;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#0369A1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="430" y="640" width="140" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_lvl1_rel_org_dept" value="1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="ent_lvl1" target="rel_org_dept" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_rel_org_dept_lvl2" value="N" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="rel_org_dept" target="ent_lvl2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_lvl2" value="المستوى 2: القسم أو الوحدة التابعة (قسم علمي / وحدة إدارية)&#10;[departments_units]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#F59E0B;strokeWidth=2.5;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#78350F;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="380" y="880" width="240" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_lvl2_0" value="&lt;u&gt;رقم القسم (ID)&lt;/u&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#7C3AED;strokeWidth=2.5;fontStyle=5;fontSize=11;fontFamily=Arial;fontColor=#4C1D95;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="258" y="828" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_lvl2_attr_lvl2_0" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_lvl2" target="attr_lvl2_0" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_lvl2_1" value="اسم القسم/الوحدة" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="210" y="916" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_lvl2_attr_lvl2_1" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_lvl2" target="attr_lvl2_1" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_lvl2_2" value="نوع الوحدة" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="268" y="988" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_lvl2_attr_lvl2_2" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_lvl2" target="attr_lvl2_2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_lvl2_3" value="الرمز الكودي" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="438" y="1008" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_lvl2_attr_lvl2_3" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_lvl2" target="attr_lvl2_3" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_lvl2_4" value="تاريخ الإنشاء" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="608" y="988" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_lvl2_attr_lvl2_4" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_lvl2" target="attr_lvl2_4" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_dept_staff" value="يعمل فيه / يتبع له" style="rhombus;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=2;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#0369A1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="780" y="882" width="160" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_lvl2_rel_dept_staff" value="1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="ent_lvl2" target="rel_dept_staff" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_rel_dept_staff_staff_base" value="N" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="rel_dept_staff" target="ent_staff_base" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_staff_base" value="المستوى 3: كادر الجامعة (الكيان الأب الموحد)&#10;البيانات الأساسية المشتركة لكافة المنتسبين&#10;[staff_base]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#F59E0B;strokeWidth=2.5;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#78350F;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="1140" y="875" width="320" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_staff_0" value="&lt;u&gt;المعرف الرقمي (ID)&lt;/u&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#7C3AED;strokeWidth=2.5;fontStyle=5;fontSize=11;fontFamily=Arial;fontColor=#4C1D95;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1098" y="768" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_staff_base_attr_staff_0" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_staff_base" target="attr_staff_0" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_staff_1" value="&lt;u&gt;الرقم الوظيفي&lt;/u&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#7C3AED;strokeWidth=2.5;fontStyle=5;fontSize=11;fontFamily=Arial;fontColor=#4C1D95;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1335" y="691" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_staff_base_attr_staff_1" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_staff_base" target="attr_staff_1" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_staff_2" value="&lt;u&gt;الرقم الوطني&lt;/u&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#7C3AED;strokeWidth=2.5;fontStyle=5;fontSize=11;fontFamily=Arial;fontColor=#4C1D95;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1378" y="768" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_staff_base_attr_staff_2" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_staff_base" target="attr_staff_2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_staff_3" value="الاسم الرباعي" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="998" y="838" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_staff_base_attr_staff_3" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_staff_base" target="attr_staff_3" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_staff_4" value="النوع الاجتماعي" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="998" y="928" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_staff_base_attr_staff_4" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_staff_base" target="attr_staff_4" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_staff_5" value="تاريخ الميلاد" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1018" y="1008" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_staff_base_attr_staff_5" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_staff_base" target="attr_staff_5" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_staff_6" value="رقم الهاتف" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1140" y="1126" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_staff_base_attr_staff_6" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_staff_base" target="attr_staff_6" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_staff_7" value="نوع الكادر" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1238" y="1058" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_staff_base_attr_staff_7" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_staff_base" target="attr_staff_7" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_staff_8" value="الموقف الوظيفي" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1408" y="1058" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_staff_base_attr_staff_8" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_staff_base" target="attr_staff_8" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_staff_9" value="تاريخ التعيين بالجامعة" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1478" y="998" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_staff_base_attr_staff_9" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_staff_base" target="attr_staff_9" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_staff_10" value="البريد الإلكتروني" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1543" y="944" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_staff_base_attr_staff_10" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_staff_base" target="attr_staff_10" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="isa_staff" value="تخصيص&#10;(IS - A)&#10;Disjoint" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FEF08A;strokeColor=#CA8A04;strokeWidth=2.5;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#854D0E;" parent="1" vertex="1">
+          <mxGeometry x="1660" y="870" width="110" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_staff_isa" value="" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2.5;endArrow=none;" parent="1" source="ent_staff_base" target="isa_staff" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub_academic" value="المستوى 4 (أ): الكادر الأكاديمي&#10;[academic_details]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#F59E0B;strokeWidth=2.5;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#78350F;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="1980" y="563" width="240" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_acad_0" value="التخصص العام" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1878" y="518" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_sub_academic_attr_acad_0" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="sub_academic" target="attr_acad_0" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_acad_1" value="التخصص الدقيق" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1978" y="478" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_sub_academic_attr_acad_1" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="sub_academic" target="attr_acad_1" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_acad_2" value="الوضع الأكاديمي" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2118" y="478" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_sub_academic_attr_acad_2" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="sub_academic" target="attr_acad_2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_acad_3" value="تاريخ آخر ترقية" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2218" y="518" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_sub_academic_attr_acad_3" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="sub_academic" target="attr_acad_3" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_acad_4" value="العبء التدريسي" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2255" y="618" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_sub_academic_attr_acad_4" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="sub_academic" target="attr_acad_4" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_isa_sub_acad" value="1:1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="isa_staff" target="sub_academic" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub_admin" value="المستوى 4 (ب): الكادر الإداري&#10;[administrative_details]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#F59E0B;strokeWidth=2.5;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#78350F;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="1980" y="883" width="240" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_adm_0" value="المسمى الوظيفي" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2038" y="803" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_sub_admin_attr_adm_0" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="sub_admin" target="attr_adm_0" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_adm_1" value="طبيعة العمل (مكتبي/ميداني)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1870" y="808" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_sub_admin_attr_adm_1" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="sub_admin" target="attr_adm_1" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_adm_2" value="تاريخ التثبيت الإداري" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1830" y="960" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_sub_admin_attr_adm_2" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="sub_admin" target="attr_adm_2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_adm_3" value="تقييم الأداء" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2038" y="993" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_sub_admin_attr_adm_3" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="sub_admin" target="attr_adm_3" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_isa_sub_adm" value="1:1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="isa_staff" target="sub_admin" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub_contract" value="المستوى 4 (ج): المتعاقدون بالساعات&#10;[contract_details]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#F59E0B;strokeWidth=2.5;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#78350F;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="1980" y="1183" width="240" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_cntr_0" value="نوع العقد (ساعات/فصلي)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1800" y="1170" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_sub_contract_attr_cntr_0" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="sub_contract" target="attr_cntr_0" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_cntr_1" value="عدد الساعات المعتمدة" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1830" y="1265" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_sub_contract_attr_cntr_1" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="sub_contract" target="attr_cntr_1" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_cntr_2" value="القيمة المالية للساعة" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2003" y="1300" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_sub_contract_attr_cntr_2" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="sub_contract" target="attr_cntr_2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_cntr_3" value="تاريخ بداية ونهاية العقد" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2270" y="1230" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_sub_contract_attr_cntr_3" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="sub_contract" target="attr_cntr_3" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_isa_sub_cntr" value="1:1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="isa_staff" target="sub_contract" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_acad_rank" value="يحمل رتبة" style="rhombus;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=2;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#0369A1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2380" y="562" width="140" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_sub_acad_rel_acad_rank" value="N" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="sub_academic" target="rel_acad_rank" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_rel_acad_rank_ent_ranks" value="1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="rel_acad_rank" target="ent_ranks" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_ranks" value="الرتب العلمية&#10;[academic_ranks]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#F59E0B;strokeWidth=2.5;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#78350F;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="2680" y="563" width="180" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_rank_0" value="&lt;u&gt;رقم الرتبة&lt;/u&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#7C3AED;strokeWidth=2.5;fontStyle=5;fontSize=11;fontFamily=Arial;fontColor=#4C1D95;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2708" y="488" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_ranks_attr_rank_0" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_ranks" target="attr_rank_0" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_rank_1" value="مسمى الرتبة (أستاذ/معيد)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2890" y="493" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_ranks_attr_rank_1" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_ranks" target="attr_rank_1" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_rank_2" value="ترتيب الأقدمية" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2830" y="671" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_ranks_attr_rank_2" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_ranks" target="attr_rank_2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_admin_grade" value="يشغل درجة" style="rhombus;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=2;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#0369A1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2380" y="882" width="140" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_sub_adm_rel_admin_grade" value="N" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="sub_admin" target="rel_admin_grade" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_rel_admin_grade_ent_grades" value="1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="rel_admin_grade" target="ent_grades" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_grades" value="الدرجات الوظيفية&#10;[job_grades]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#F59E0B;strokeWidth=2.5;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#78350F;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="2680" y="883" width="180" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_grade_0" value="&lt;u&gt;رقم الدرجة&lt;/u&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#7C3AED;strokeWidth=2.5;fontStyle=5;fontSize=11;fontFamily=Arial;fontColor=#4C1D95;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2708" y="808" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_grades_attr_grade_0" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_grades" target="attr_grade_0" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_grade_1" value="اسم الدرجة (10، 12..)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2860" y="812" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_grades_attr_grade_1" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_grades" target="attr_grade_1" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_grade_2" value="المستوى التنفيذي" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2860" y="982" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_grades_attr_grade_2" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_grades" target="attr_grade_2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_salary_scale" value="جدول سلالم الرواتب والبدلات&#10;(ربط آلي مع الدرجات والرتب)&#10;[salary_scale]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#F59E0B;strokeWidth=2.5;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#78350F;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="3115" y="718" width="230" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_sal_0" value="&lt;u&gt;رقم سلم الراتب&lt;/u&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#7C3AED;strokeWidth=2.5;fontStyle=5;fontSize=11;fontFamily=Arial;fontColor=#4C1D95;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="3168" y="643" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_salary_scale_attr_sal_0" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_salary_scale" target="attr_sal_0" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_sal_1" value="الراتب الأساسي المعتمد" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="3380" y="620" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_salary_scale_attr_sal_1" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_salary_scale" target="attr_sal_1" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_sal_2" value="بدل التفرغ والسكن" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="3410" y="802" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_salary_scale_attr_sal_2" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_salary_scale" target="attr_sal_2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_sal_3" value="إجمالي الاستحقاق المالي" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="3168" y="833" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_salary_scale_attr_sal_3" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_salary_scale" target="attr_sal_3" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_rank_sal" value="يحدد الراتب" style="rhombus;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=2;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#0369A1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2990" y="620" width="120" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_ranks_rel_sal" value="N" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="ent_ranks" target="rel_rank_sal" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_rel_sal_salary" value="1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="rel_rank_sal" target="ent_salary_scale" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_grade_sal" value="يحدد الراتب" style="rhombus;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=2;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#0369A1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2990" y="850" width="120" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_grades_rel_sal" value="N" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="ent_grades" target="rel_grade_sal" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_rel_sal_salary_grd" value="1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="rel_grade_sal" target="ent_salary_scale" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_assignments" value="⭐ [توصية 1] المناصب والتكليفات الإدارية&#10;(عميد / رئيس قسم / مدير مركز)&#10;[administrative_assignments]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D1FAE5;strokeColor=#059669;strokeWidth=3;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#065F46;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="1540" y="360" width="270" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_assign_0" value="&lt;u&gt;رقم قرار التكليف&lt;/u&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#7C3AED;strokeWidth=2.5;fontStyle=5;fontSize=11;fontFamily=Arial;fontColor=#4C1D95;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1470" y="280" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_assignments_attr_assign_0" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_assignments" target="attr_assign_0" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_assign_1" value="مسمى المنصب الإداري" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1620" y="270" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_assignments_attr_assign_1" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_assignments" target="attr_assign_1" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_assign_2" value="تاريخ بدء التكليف" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1765" y="275" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_assignments_attr_assign_2" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_assignments" target="attr_assign_2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_assign_3" value="تاريخ انتهاء التكليف" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1830" y="340" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_assignments_attr_assign_3" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_assignments" target="attr_assign_3" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_assign_4" value="بدل المنصب القيادي" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1460" y="440" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_assignments_attr_assign_4" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_assignments" target="attr_assign_4" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_assign_5" value="حالة التكليف (ساري/منتهي)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1590" y="460" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_assignments_attr_assign_5" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_assignments" target="attr_assign_5" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_acad_assign" value="يُكلّف بـ" style="rhombus;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;strokeWidth=2.5;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#15803D;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1850" y="430" width="120" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_sub_acad_rel_assign" value="1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="sub_academic" target="rel_acad_assign" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_rel_assign_ent" value="N" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="rel_acad_assign" target="ent_assignments" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_assign_unit" value="في وحدة / كلية" style="rhombus;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;strokeWidth=2.5;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#15803D;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1140" y="260" width="130" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_assign_rel_unit" value="N" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="ent_assignments" target="rel_assign_unit" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_rel_unit_lvl2" value="1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="rel_assign_unit" target="ent_lvl2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_promotions" value="⭐ [توصية 2] سجل الترقيات الأكاديمية التاريخي&#10;(توثيق المسار المهني والأبحاث المحكمة)&#10;[academic_promotions]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D1FAE5;strokeColor=#059669;strokeWidth=3;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#065F46;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="2370" y="340" width="280" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_promo_0" value="&lt;u&gt;رقم الترقية&lt;/u&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#7C3AED;strokeWidth=2.5;fontStyle=5;fontSize=11;fontFamily=Arial;fontColor=#4C1D95;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2310" y="265" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_promotions_attr_promo_0" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_promotions" target="attr_promo_0" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_promo_1" value="تاريخ نفاذ الترقية" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2450" y="260" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_promotions_attr_promo_1" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_promotions" target="attr_promo_1" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_promo_2" value="عنوان البحث والإنتاج العلمي" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2595" y="265" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_promotions_attr_promo_2" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_promotions" target="attr_promo_2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_promo_3" value="تقييم اللجنة العلمية" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2670" y="335" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_promotions_attr_promo_3" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_promotions" target="attr_promo_3" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_promo_4" value="رقم القرار الإداري للترقية" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2480" y="440" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_promotions_attr_promo_4" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_promotions" target="attr_promo_4" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_acad_promo" value="يُرقى بـ / يتدرج" style="rhombus;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;strokeWidth=2.5;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#15803D;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2190" y="420" width="130" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_sub_acad_rel_promo" value="1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="sub_academic" target="rel_acad_promo" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_rel_promo_ent" value="N" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="rel_acad_promo" target="ent_promotions" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_promo_to_rank" value="إلى رتبة" style="rhombus;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;strokeWidth=2.5;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#15803D;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="2680" y="440" width="110" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_promo_rel_rank" value="N" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="ent_promotions" target="rel_promo_to_rank" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_rel_rank_target" value="1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="rel_promo_to_rank" target="ent_ranks" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_users" value="⭐ [توصية 3] حسابات المستخدمين والصلاحيات&#10;(إدارة الأمان والوصول للأرشفة)&#10;[system_users]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D1FAE5;strokeColor=#059669;strokeWidth=3;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#065F46;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="680" y="1070" width="260" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_user_0" value="&lt;u&gt;معرف المستخدم (ID)&lt;/u&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#7C3AED;strokeWidth=2.5;fontStyle=5;fontSize=11;fontFamily=Arial;fontColor=#4C1D95;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="550" y="1030" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_users_attr_user_0" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_users" target="attr_user_0" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_user_1" value="اسم المستخدم (Login)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="530" y="1110" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_users_attr_user_1" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_users" target="attr_user_1" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_user_2" value="كلمة المرور المشفرة" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="560" y="1190" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_users_attr_user_2" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_users" target="attr_user_2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_user_3" value="الدور (مدير/أرشيف/شؤون)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="700" y="1180" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_users_attr_user_3" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_users" target="attr_user_3" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_user_4" value="حالة الحساب (نشط/معطل)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="840" y="1180" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_users_attr_user_4" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_users" target="attr_user_4" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_user_5" value="تاريخ آخر تسجيل دخول" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="940" y="1100" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_users_attr_user_5" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_users" target="attr_user_5" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_staff_user" value="يمتلك حساب" style="rhombus;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;strokeWidth=2.5;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#15803D;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="950" y="1010" width="120" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_staff_rel_user" value="1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="ent_staff_base" target="rel_staff_user" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_rel_user_ent" value="1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="rel_staff_user" target="ent_users" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_staff_quals" value="يمتلك / حائز على" style="rhombus;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=2;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#0369A1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1220" y="620" width="160" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_staff_rel_quals" value="1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="ent_staff_base" target="rel_staff_quals" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_rel_quals_ent" value="N" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="rel_staff_quals" target="ent_quals" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_quals" value="المستوى 5: المؤهلات والشهادات العلمية&#10;(بكالوريوس / ماجستير / دكتوراه)&#10;[qualifications]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#F59E0B;strokeWidth=2.5;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#78350F;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="1170" y="390" width="260" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_qual_0" value="&lt;u&gt;رقم المؤهل&lt;/u&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#7C3AED;strokeWidth=2.5;fontStyle=5;fontSize=11;fontFamily=Arial;fontColor=#4C1D95;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1238" y="313" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_quals_attr_qual_0" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_quals" target="attr_qual_0" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_qual_1" value="نوع الدرجة (بك/مج/دك)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1030" y="346" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_quals_attr_qual_1" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_quals" target="attr_qual_1" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_qual_2" value="التخصص العلمي" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1002" y="434" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_quals_attr_qual_2" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_quals" target="attr_qual_2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_qual_3" value="الجامعة المانحة" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1118" y="493" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_quals_attr_qual_3" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_quals" target="attr_qual_3" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_qual_4" value="سنة التخرج والمنح" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1358" y="493" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_quals_attr_qual_4" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_quals" target="attr_qual_4" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_qual_5" value="دولة التخرج" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1470" y="426" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_quals_attr_qual_5" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_quals" target="attr_qual_5" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_qual_6" value="عنوان أطروحة الرسالة" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1408" y="348" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_quals_attr_qual_6" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_quals" target="attr_qual_6" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_staff_dec" value="يصدر بشأنه" style="rhombus;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=2;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#0369A1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="990" y="1200" width="150" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_staff_rel_dec" value="1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="ent_staff_base" target="rel_staff_dec" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_rel_dec_ent" value="N" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="rel_staff_dec" target="ent_decisions" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_decisions" value="المستوى 5: سجل القرارات الإدارية&#10;(تعيين / إيفاد / تفرغ / ترقية)&#10;[administrative_decisions]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#F59E0B;strokeWidth=2.5;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#78350F;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="750" y="1370" width="260" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_dec_0" value="&lt;u&gt;رقم القرار الرسمي&lt;/u&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#7C3AED;strokeWidth=2.5;fontStyle=5;fontSize=11;fontFamily=Arial;fontColor=#4C1D95;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="640" y="1286" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_decisions_attr_dec_0" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_decisions" target="attr_dec_0" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_dec_1" value="نوع القرار (تعيين/ترقية)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="818" y="1293" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_decisions_attr_dec_1" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_decisions" target="attr_dec_1" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_dec_2" value="تاريخ صدور القرار" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1058" y="1339" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_decisions_attr_dec_2" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_decisions" target="attr_dec_2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_dec_3" value="تاريخ سريان ونفاذ القرار" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="640" y="1470" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_decisions_attr_dec_3" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_decisions" target="attr_dec_3" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_dec_4" value="حالة القرار (ساري/منتهي)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="818" y="1483" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_decisions_attr_dec_4" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_decisions" target="attr_dec_4" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_dec_5" value="ملاحظات وحيثيات" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1035" y="1446" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_decisions_attr_dec_5" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_decisions" target="attr_dec_5" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_staff_arch" value="يؤرشف له" style="rhombus;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=2;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#0369A1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1370" y="1200" width="150" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_staff_rel_arch" value="1" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="ent_staff_base" target="rel_staff_arch" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_rel_arch_ent" value="N" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=14;fontColor=#B91C1C;labelBackgroundColor=#FFFFFF;" parent="1" source="rel_staff_arch" target="ent_archives" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_archives" value="المستوى 5: الأرشيف الرقمي الشجري السياقي&#10;(ملفات PDF مصنفة شجرياً ومرتبطة بالأحداث)&#10;[digital_archives]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#F59E0B;strokeWidth=2.5;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#78350F;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="1330" y="1390" width="280" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_arch_0" value="&lt;u&gt;معرف الوثيقة (UUID)&lt;/u&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#7C3AED;strokeWidth=2.5;fontStyle=5;fontSize=11;fontFamily=Arial;fontColor=#4C1D95;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1170" y="1386" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_archives_attr_arch_0" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_archives" target="attr_arch_0" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_arch_1" value="اسم وعنوان الوثيقة" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1493" y="1292" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_archives_attr_arch_1" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_archives" target="attr_arch_1" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_arch_2" value="تصنيف الشجرة (مؤهل/قرار)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1630" y="1350" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_archives_attr_arch_2" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_archives" target="attr_arch_2" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_arch_3" value="مسار ملف الـ PDF بالسيرفر" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1190" y="1480" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_archives_attr_arch_3" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_archives" target="attr_arch_3" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_arch_4" value="حجم الملف وعدد الصفحات" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1398" y="1503" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_archives_attr_arch_4" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_archives" target="attr_arch_4" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="attr_arch_5" value="تاريخ وتوقيت الأرشفة" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=11;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1620" y="1488" width="125" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="line_ent_archives_attr_arch_5" value="" style="edgeStyle=none;html=1;strokeColor=#475569;strokeWidth=1.5;endArrow=none;" parent="1" source="ent_archives" target="attr_arch_5" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_arch_qual" value="توثيق مؤهل" style="rhombus;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;strokeWidth=2.5;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#15803D;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1420" y="560" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_arch_rel_qual" value="N" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#16A34A;strokeWidth=2;endArrow=none;dashed=1;fontStyle=1;fontSize=12;fontColor=#15803D;labelBackgroundColor=#FFFFFF;" parent="1" source="ent_archives" target="rel_arch_qual" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_rel_qual_target" value="1" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#16A34A;strokeWidth=2;endArrow=none;dashed=1;fontStyle=1;fontSize=12;fontColor=#15803D;labelBackgroundColor=#FFFFFF;" parent="1" source="rel_arch_qual" target="ent_quals" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_arch_dec" value="توثيق قرار" style="rhombus;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;strokeWidth=2.5;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#15803D;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="1100" y="1385" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_arch_rel_dec" value="N" style="edgeStyle=none;html=1;strokeColor=#16A34A;strokeWidth=2;endArrow=none;dashed=1;fontStyle=1;fontSize=12;fontColor=#15803D;labelBackgroundColor=#FFFFFF;" parent="1" source="ent_archives" target="rel_arch_dec" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge_rel_dec_target" value="1" style="edgeStyle=none;html=1;strokeColor=#16A34A;strokeWidth=2;endArrow=none;dashed=1;fontStyle=1;fontSize=12;fontColor=#15803D;labelBackgroundColor=#FFFFFF;" parent="1" source="rel_arch_dec" target="ent_decisions" edge="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend_box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;strokeWidth=2;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="3600" y="240" width="480" height="820" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend_title" value="مفتاح المخطط المطور والتوصيات الهندسية" style="text;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=16;fontFamily=Arial;fontColor=#0F172A;" parent="1" vertex="1">
+          <mxGeometry x="3640" y="260" width="400" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_ent_sample" value="الكيان الأساسي&#10;(Entity)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#F59E0B;strokeWidth=2.5;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#78350F;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="3630" y="310" width="95" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_ent_desc" value="الكيان الأساسي:&#10;يمثل عنصراً مستقلاً في هيكل الجامعة&#10;(كلية، قسم، كادر، مؤهل، قرار)." style="text;html=1;align=right;verticalAlign=middle;fontSize=11;fontFamily=Arial;fontColor=#334155;" parent="1" vertex="1">
+          <mxGeometry x="3740" y="310" width="320" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_rec_sample" value="⭐ كيان موصى به&#10;(حل الغموض)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D1FAE5;strokeColor=#059669;strokeWidth=3;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#065F46;align=center;verticalAlign=middle;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="3630" y="375" width="95" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_rec_desc" value="الكيانات الهندسية المضافة لحسم الغموض:&#10;1. التكليفات الإدارية للأكاديميين (Disjoint).&#10;2. سجل الترقيات الأكاديمية التاريخي.&#10;3. حسابات المستخدمين وصلاحيات الأمان." style="text;html=1;align=right;verticalAlign=middle;fontSize=11;fontFamily=Arial;fontColor=#065F46;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="3740" y="375" width="320" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_key_sample" value="&lt;u&gt;المفتاح الأساسي&lt;/u&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#7C3AED;strokeWidth=2.5;fontStyle=5;fontSize=10;fontFamily=Arial;fontColor=#4C1D95;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="3630" y="450" width="95" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_key_desc" value="المفتاح الأساسي (Key Attribute):&#10;خاصية فريدة تميز السجل دون تكرار (تحته خط)." style="text;html=1;align=right;verticalAlign=middle;fontSize=11;fontFamily=Arial;fontColor=#334155;" parent="1" vertex="1">
+          <mxGeometry x="3740" y="450" width="320" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_attr_sample" value="خاصية / صفة" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#8B5CF6;strokeWidth=1.5;fontStyle=0;fontSize=10;fontFamily=Arial;fontColor=#581C87;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="3630" y="515" width="95" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_attr_desc" value="الخاصية (Attribute):&#10;بيان أو معلومة تصف الكيان التابع لها." style="text;html=1;align=right;verticalAlign=middle;fontSize=11;fontFamily=Arial;fontColor=#334155;" parent="1" vertex="1">
+          <mxGeometry x="3740" y="515" width="320" height="42" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_rel_sample" value="العلاقة" style="rhombus;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=2;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#0369A1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="3635" y="580" width="85" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_rel_desc" value="العلاقة (Relationship):&#10;الرابط المنطقي بين الكيانات بنسب (1:1، 1:N)." style="text;html=1;align=right;verticalAlign=middle;fontSize=11;fontFamily=Arial;fontColor=#334155;" parent="1" vertex="1">
+          <mxGeometry x="3740" y="580" width="320" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_rec_rel_sample" value="علاقة موصى بها" style="rhombus;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;strokeWidth=2.5;fontStyle=1;fontSize=12;fontFamily=Arial;fontColor=#15803D;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="3635" y="650" width="85" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_rec_rel_desc" value="العلاقات الموصى بها:&#10;تربط التكليفات والترقيات والتوثيق السياقي للملفات." style="text;html=1;align=right;verticalAlign=middle;fontSize=11;fontFamily=Arial;fontColor=#15803D;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="3740" y="650" width="320" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_isa_sample" value="IS - A" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FEF08A;strokeColor=#CA8A04;strokeWidth=2.5;fontStyle=1;fontSize=13;fontFamily=Arial;fontColor=#854D0E;" parent="1" vertex="1">
+          <mxGeometry x="3645" y="720" width="65" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_isa_desc" value="التخصيص والوراثة (Generalization / IS-A):&#10;اشتقاق فئات فرعية (أكاديمي/إداري/متعاقد)&#10;بنمط Disjoint لمنع الحقول الفارغة." style="text;html=1;align=right;verticalAlign=middle;fontSize=11;fontFamily=Arial;fontColor=#334155;" parent="1" vertex="1">
+          <mxGeometry x="3740" y="720" width="320" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_line_start" value="" style="ellipse;fillColor=#0F172A;strokeColor=none;" parent="1" vertex="1">
+          <mxGeometry x="3635" y="810" width="6" height="6" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_line_sample" value="1           N" style="edgeStyle=none;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=none;fontStyle=1;fontSize=11;fontColor=#B91C1C;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="3640" y="813" as="sourcePoint"/>
+            <mxPoint x="3715" y="813" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_line_desc" value="خطوط الربط ونسب التعددية (Cardinality):&#10;تحدد قواعد العمل (1 إلى متعدد، 1 إلى 1)." style="text;html=1;align=right;verticalAlign=middle;fontSize=11;fontFamily=Arial;fontColor=#334155;" parent="1" vertex="1">
+          <mxGeometry x="3740" y="795" width="320" height="45" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

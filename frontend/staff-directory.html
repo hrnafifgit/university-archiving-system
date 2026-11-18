@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل كادر الجامعة | نظام الأرشفة الجامعي - جامعة إب</title>
+    <!-- Cairo Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Cairo', 'sans-serif'] },
+                    colors: {
+                        univ: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>body { font-family: 'Cairo', sans-serif; }</style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex h-screen overflow-hidden">
+
+    <!-- القائمة الجانبية (Sidebar) -->
+    <aside class="w-64 bg-slate-900 text-white flex flex-col justify-between shadow-xl flex-shrink-0 z-20">
+        <div>
+            <div class="h-20 flex items-center px-6 border-b border-slate-800 bg-slate-950/40">
+                <div class="w-10 h-10 rounded-xl bg-univ-600 flex items-center justify-center font-bold text-white shadow-lg shadow-univ-600/30">
+                    <i data-lucide="archive" class="w-5 h-5"></i>
+                </div>
+                <div class="mr-3">
+                    <h1 class="font-bold text-base tracking-wide text-white">نظام الأرشفة</h1>
+                    <p class="text-xs text-univ-400 font-medium">جامعة إب 🇾🇪</p>
+                </div>
+            </div>
+
+            <nav class="p-4 space-y-1.5 text-sm font-medium">
+                <a href="index.html" class="flex items-center px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5 ml-3"></i>
+                    <span>لوحة التحكم الرئيسية</span>
+                </a>
+                <a href="staff-directory.html" class="flex items-center px-4 py-3 rounded-xl bg-univ-600 text-white shadow-md shadow-univ-600/20 font-bold">
+                    <i data-lucide="users" class="w-5 h-5 ml-3"></i>
+                    <span>دليل كادر الجامعة</span>
+                </a>
+                <a href="add-staff.html" class="flex items-center px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <i data-lucide="user-plus" class="w-5 h-5 ml-3"></i>
+                    <span>إضافة كادر جديد</span>
+                </a>
+                <a href="staff-profile.html" class="flex items-center px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <i data-lucide="folder-git-2" class="w-5 h-5 ml-3"></i>
+                    <span>الأرشيف وعارض PDF</span>
+                </a>
+                <a href="reports.html" class="flex items-center px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <i data-lucide="file-text" class="w-5 h-5 ml-3"></i>
+                    <span>مركز التقارير وبيان الحالة</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="p-4 border-t border-slate-800 bg-slate-950/30 flex items-center">
+            <img class="w-10 h-10 rounded-full border-2 border-univ-500" src="https://ui-avatars.com/api/?name=أحمد+المركزي&background=047857&color=fff" alt="User">
+            <div class="mr-3 overflow-hidden">
+                <p class="text-sm font-bold truncate">أ. أحمد الشميري</p>
+                <p class="text-xs text-slate-400 truncate">مسؤول شؤون هيئة التدريس</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- المحتوى الرئيسي (Main Content) -->
+    <main class="flex-1 flex flex-col overflow-y-auto">
+        <!-- الشريط العلوي -->
+        <header class="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-10">
+            <div>
+                <h2 class="text-xl font-bold text-slate-800">دليل وسجلات منتسبي الجامعة</h2>
+                <p class="text-xs text-slate-400 mt-0.5">البحث والفلترة المتقدمة لكافة الأكاديميين والإداريين والمتعاقدين</p>
+            </div>
+
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <button onclick="exportToCSV()" class="flex items-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition">
+                    <i data-lucide="download" class="w-4 h-4 ml-1.5 text-slate-500"></i>
+                    <span>تصدير Excel/CSV</span>
+                </button>
+                <a href="add-staff.html" class="flex items-center bg-univ-600 hover:bg-univ-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md shadow-univ-600/20 transition">
+                    <i data-lucide="plus-circle" class="w-4 h-4 ml-1.5"></i>
+                    <span>إضافة كادر جديد</span>
+                </a>
+            </div>
+        </header>
+
+        <div class="p-8 space-y-6">
+
+            <!-- شريط الفلاتر والبحث المتقدم (بديل فلاتر الإكسل القديمة) -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- البحث النصي العام -->
+                    <div class="md:col-span-2 relative">
+                        <label class="block text-xs font-bold text-slate-500 mb-1">البحث بالاسم أو الرقم الوظيفي أو الوطني</label>
+                        <div class="relative">
+                            <input id="searchInput" type="text" onkeyup="filterTable()" placeholder="ابحث بالاسم الرباعي، الرقم الوظيفي..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pr-10 pl-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-univ-500">
+                            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5"></i>
+                        </div>
+                    </div>
+
+                    <!-- تصفية حسب الكلية / الجهة العليا (Level 1) -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">الجهة العليا (كلية / مركز)</label>
+                        <select id="collegeFilter" onchange="filterTable()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-univ-500">
+                            <option value="">كافة الكليات والمراكز</option>
+                            <option value="كلية الهندسة">كلية الهندسة وتكنولوجيا المعلومات</option>
+                            <option value="كلية الطب">كلية الطب والعلوم الصحية</option>
+                            <option value="كلية التربية">كلية التربية</option>
+                            <option value="مركز التقنية">مركز التحول الرقمي وتقنية المعلومات</option>
+                            <option value="دائرة البحث العلمي">دائرة البحث العلمي</option>
+                        </select>
+                    </div>
+
+                    <!-- تصفية حسب نوع الكادر (Subtypes) -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">تصنيف الكادر (Subtype)</label>
+                        <select id="typeFilter" onchange="filterTable()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-univ-500">
+                            <option value="">كافة الفئات</option>
+                            <option value="أكاديمي">كادر أكاديمي</option>
+                            <option value="إداري">كادر إداري</option>
+                            <option value="متعاقد">متعاقد بالساعات</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- جدول البيانات التفاعلي -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table id="staffTable" class="w-full text-right text-sm">
+                        <thead class="bg-slate-50 text-slate-500 text-xs font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="py-4 px-6">الرقم الوظيفي</th>
+                                <th class="py-4 px-6">الاسم الكامل</th>
+                                <th class="py-4 px-6">نوع الكادر</th>
+                                <th class="py-4 px-6">الجهة والكلية</th>
+                                <th class="py-4 px-6">الرتبة / الدرجة</th>
+                                <th class="py-4 px-6">حالة الوثائق</th>
+                                <th class="py-4 px-6 text-center">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <!-- سجل 1 -->
+                            <tr class="hover:bg-slate-50/70 transition">
+                                <td class="py-4 px-6 font-mono font-bold text-univ-700">40812</td>
+                                <td class="py-4 px-6 font-bold text-slate-800">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 rounded-full bg-univ-100 text-univ-800 flex items-center justify-center font-bold text-xs ml-2.5">
+                                            د.هـ
+                                        </div>
+                                        <div>
+                                            <span>د. هارون العفيف</span>
+                                            <span class="block text-xs text-slate-400 font-normal">الرقم الوطني: 0102003456</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="bg-emerald-50 text-univ-700 text-xs px-2.5 py-1 rounded-full font-bold">أكاديمي</span>
+                                </td>
+                                <td class="py-4 px-6 text-slate-600">كلية الهندسة (علوم الحاسوب)</td>
+                                <td class="py-4 px-6 font-semibold text-slate-700">أستاذ مشارك</td>
+                                <td class="py-4 px-6">
+                                    <span class="inline-flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
+                                        <i data-lucide="file-check" class="w-3.5 h-3.5 ml-1"></i>
+                                        12 وثيقة مؤرشفة
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6 text-center">
+                                    <div class="flex items-center justify-center space-x-1.5 space-x-reverse">
+                                        <a href="staff-profile.html" title="فتح الملف الشامل والأرشيف" class="p-1.5 rounded-lg bg-slate-100 hover:bg-univ-50 text-slate-600 hover:text-univ-700 transition">
+                                            <i data-lucide="eye" class="w-4 h-4"></i>
+                                        </a>
+                                        <a href="reports.html" title="طباعة بيان الحالة" class="p-1.5 rounded-lg bg-slate-100 hover:bg-blue-50 text-slate-600 hover:text-blue-700 transition">
+                                            <i data-lucide="printer" class="w-4 h-4"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- سجل 2 -->
+                            <tr class="hover:bg-slate-50/70 transition">
+                                <td class="py-4 px-6 font-mono font-bold text-univ-700">30122</td>
+                                <td class="py-4 px-6 font-bold text-slate-800">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-800 flex items-center justify-center font-bold text-xs ml-2.5">
+                                            د.م
+                                        </div>
+                                        <div>
+                                            <span>د. مريم عبد القوي الحكيمي</span>
+                                            <span class="block text-xs text-slate-400 font-normal">الرقم الوطني: 0102008761</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="bg-emerald-50 text-univ-700 text-xs px-2.5 py-1 rounded-full font-bold">أكاديمي</span>
+                                </td>
+                                <td class="py-4 px-6 text-slate-600">كلية الطب (طب وجراحة)</td>
+                                <td class="py-4 px-6 font-semibold text-slate-700">أستاذ دكتور</td>
+                                <td class="py-4 px-6">
+                                    <span class="inline-flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
+                                        <i data-lucide="file-check" class="w-3.5 h-3.5 ml-1"></i>
+                                        18 وثيقة مؤرشفة
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6 text-center">
+                                    <div class="flex items-center justify-center space-x-1.5 space-x-reverse">
+                                        <a href="staff-profile.html" class="p-1.5 rounded-lg bg-slate-100 hover:bg-univ-50 text-slate-600 hover:text-univ-700 transition">
+                                            <i data-lucide="eye" class="w-4 h-4"></i>
+                                        </a>
+                                        <a href="reports.html" class="p-1.5 rounded-lg bg-slate-100 hover:bg-blue-50 text-slate-600 hover:text-blue-700 transition">
+                                            <i data-lucide="printer" class="w-4 h-4"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- سجل 3 -->
+                            <tr class="hover:bg-slate-50/70 transition">
+                                <td class="py-4 px-6 font-mono font-bold text-univ-700">50410</td>
+                                <td class="py-4 px-6 font-bold text-slate-800">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-800 flex items-center justify-center font-bold text-xs ml-2.5">
+                                            أ.س
+                                        </div>
+                                        <div>
+                                            <span>أ. سامي محمد المنصوب</span>
+                                            <span class="block text-xs text-slate-400 font-normal">الرقم الوطني: 0103009941</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="bg-indigo-50 text-indigo-700 text-xs px-2.5 py-1 rounded-full font-bold">إداري</span>
+                                </td>
+                                <td class="py-4 px-6 text-slate-600">مركز التقنية (إدارة النظم)</td>
+                                <td class="py-4 px-6 font-semibold text-slate-700">الدرجة الثالثة (مدير نظم)</td>
+                                <td class="py-4 px-6">
+                                    <span class="inline-flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
+                                        <i data-lucide="file-check" class="w-3.5 h-3.5 ml-1"></i>
+                                        8 وثائق مؤرشفة
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6 text-center">
+                                    <div class="flex items-center justify-center space-x-1.5 space-x-reverse">
+                                        <a href="staff-profile.html" class="p-1.5 rounded-lg bg-slate-100 hover:bg-univ-50 text-slate-600 hover:text-univ-700 transition">
+                                            <i data-lucide="eye" class="w-4 h-4"></i>
+                                        </a>
+                                        <a href="reports.html" class="p-1.5 rounded-lg bg-slate-100 hover:bg-blue-50 text-slate-600 hover:text-blue-700 transition">
+                                            <i data-lucide="printer" class="w-4 h-4"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- سجل 4 -->
+                            <tr class="hover:bg-slate-50/70 transition">
+                                <td class="py-4 px-6 font-mono font-bold text-univ-700">60199</td>
+                                <td class="py-4 px-6 font-bold text-slate-800">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-xs ml-2.5">
+                                            م.ع
+                                        </div>
+                                        <div>
+                                            <span>م. عصام فؤاد القادري</span>
+                                            <span class="block text-xs text-slate-400 font-normal">الرقم الوطني: 0104005522</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="bg-amber-50 text-amber-700 text-xs px-2.5 py-1 rounded-full font-bold">متعاقد</span>
+                                </td>
+                                <td class="py-4 px-6 text-slate-600">كلية الهندسة (هندسة معمارية)</td>
+                                <td class="py-4 px-6 font-semibold text-slate-700">ساعات (8 س/أسبوعياً)</td>
+                                <td class="py-4 px-6">
+                                    <span class="inline-flex items-center text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">
+                                        <i data-lucide="alert-circle" class="w-3.5 h-3.5 ml-1"></i>
+                                        تنقص شهادة المؤهل
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6 text-center">
+                                    <div class="flex items-center justify-center space-x-1.5 space-x-reverse">
+                                        <a href="staff-profile.html" class="p-1.5 rounded-lg bg-slate-100 hover:bg-univ-50 text-slate-600 hover:text-univ-700 transition">
+                                            <i data-lucide="eye" class="w-4 h-4"></i>
+                                        </a>
+                                        <a href="reports.html" class="p-1.5 rounded-lg bg-slate-100 hover:bg-blue-50 text-slate-600 hover:text-blue-700 transition">
+                                            <i data-lucide="printer" class="w-4 h-4"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- الترقيم والتصفح -->
+                <div class="p-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between text-xs text-slate-500">
+                    <p>عرض 4 من أصل 1,842 كادر مسجل</p>
+                    <div class="flex items-center space-x-1 space-x-reverse font-bold">
+                        <button class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">السابق</button>
+                        <button class="px-3 py-1.5 bg-univ-600 text-white rounded-lg">1</button>
+                        <button class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">2</button>
+                        <button class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">3</button>
+                        <button class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">التالي</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        function filterTable() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const college = document.getElementById('collegeFilter').value;
+            const type = document.getElementById('typeFilter').value;
+
+            const rows = document.querySelectorAll('#staffTable tbody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                const matchesQuery = !query || text.includes(query);
+                const matchesCollege = !college || text.includes(college);
+                const matchesType = !type || text.includes(type);
+
+                if (matchesQuery && matchesCollege && matchesType) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function exportToCSV() {
+            alert('تم تصدير كشف الكادر الحالي بصيغة Excel / CSV بنجاح!');
+        }
+    </script>
+</body>
+</html>

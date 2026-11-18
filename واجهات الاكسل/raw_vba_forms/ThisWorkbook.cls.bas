@@ -1,0 +1,33 @@
+Attribute VB_Name = "ThisWorkbook"
+Attribute VB_Base = "0{00020819-0000-0000-C000-000000000046}"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = True
+Attribute VB_TemplateDerived = False
+Attribute VB_Customizable = True
+Private Sub Workbook_Open()
+
+'Application.DisplayFullScreen = True
+'ActiveWindow.DisplayHeadings = False
+'Application.DisplayFormulaBar = False
+
+ On Error Resume Next
+Application.Visible = False
+UserForm0.Show
+
+On Error Resume Next
+'Call Sheets("star").SetupSheetEnvironment
+
+
+End Sub
+Private Sub Workbook_BeforeClose(Cancel As Boolean)
+Application.DisplayFullScreen = False
+ActiveWindow.DisplayHeadings = True
+Application.DisplayFormulaBar = True
+End Sub
+
+
+
+
+   

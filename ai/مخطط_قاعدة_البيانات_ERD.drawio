@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mxfile host="app.diagrams.net" modified="2026-10-12T00:00:00.000Z" agent="Antigravity IDE" version="24.0.0" type="device">
+  <diagram id="hierarchical_staff_erd_ar" name="مخطط قاعدة بيانات الكادر الهرمي خماسي المستويات - جامعة إب">
+    <mxGraphModel dx="2600" dy="2000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3000" pageHeight="2200" background="#F8FAFC">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="banner_title" value="جامعة إب - مخطط قاعدة البيانات العلائقي الهرمي (5 مستويات) لنظام إدارة وأرشفة كادر الجامعة&#10;Ibb University - Hierarchical Staff Management &amp; Digital Archiving System (5-Level Relational Model)" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#1E293B;fontColor=#FFFFFF;strokeColor=#0F172A;strokeWidth=2;shadow=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="300" y="30" width="1800" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="tbl_org_entities" value="المستوى 1: الكيانات والجهات العليا (organizational_entities)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#0F172A;fontColor=#ffffff;strokeColor=#0F172A;strokeWidth=2;rounded=1;arcSize=10;fontSize=12;fontFamily=Arial;" vertex="1" parent="1">
+  <mxGeometry x="60" y="140" width="340" height="216" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_org_entities_r0" value="🔑  رقم الكيان [مفتاح أساسي]  :  BIGSERIAL" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#B91C1C;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_org_entities">
+  <mxGeometry y="34" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_org_entities_r1" value="▫️  اسم الكيان (كلية / مركز / دائرة)  :  VARCHAR(150)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_org_entities">
+  <mxGeometry y="60" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_org_entities_r2" value="▫️  نوع الكيان (كلية / مركز / دائرة / عمادة)  :  ENUM" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_org_entities">
+  <mxGeometry y="86" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_org_entities_r3" value="▫️  طبيعة الكيان (أكاديمي / إداري / خدمي)  :  ENUM" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_org_entities">
+  <mxGeometry y="112" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_org_entities_r4" value="▫️  الرمز المختصر للكيان  :  VARCHAR(20)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_org_entities">
+  <mxGeometry y="138" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_org_entities_r5" value="▫️  بيانات التواصل والموقع  :  TEXT" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_org_entities">
+  <mxGeometry y="164" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_org_entities_r6" value="▫️  تاريخ الإنشاء في النظام  :  TIMESTAMP" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_org_entities">
+  <mxGeometry y="190" width="340" height="26" as="geometry"/>
+</mxCell>
+        <mxCell id="tbl_dept_units" value="المستوى 2: الأقسام والوحدات التابعة (departments_units)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#0F766E;fontColor=#ffffff;strokeColor=#0F766E;strokeWidth=2;rounded=1;arcSize=10;fontSize=12;fontFamily=Arial;" vertex="1" parent="1">
+  <mxGeometry x="60" y="420" width="340" height="216" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_dept_units_r0" value="🔑  رقم القسم أو الوحدة [مفتاح أساسي]  :  BIGSERIAL" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#B91C1C;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_dept_units">
+  <mxGeometry y="34" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_dept_units_r1" value="🔗  رقم الكيان التابع له [مفتاح أجنبي]  :  BIGINT" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1D4ED8;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_dept_units">
+  <mxGeometry y="60" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_dept_units_r2" value="▫️  اسم القسم أو الوحدة  :  VARCHAR(150)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_dept_units">
+  <mxGeometry y="86" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_dept_units_r3" value="▫️  نوع الوحدة (علمي / إداري / فرعي)  :  ENUM" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_dept_units">
+  <mxGeometry y="112" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_dept_units_r4" value="▫️  الرمز المختصر للقسم  :  VARCHAR(20)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_dept_units">
+  <mxGeometry y="138" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_dept_units_r5" value="▫️  بيانات رئيس القسم / المدير  :  VARCHAR(100)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_dept_units">
+  <mxGeometry y="164" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_dept_units_r6" value="▫️  تاريخ الإنشاء  :  TIMESTAMP" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_dept_units">
+  <mxGeometry y="190" width="340" height="26" as="geometry"/>
+</mxCell>
+        <mxCell id="tbl_staff_base" value="المستوى 3: الكادر الموحد لمنتسبي الجامعة (staff_base)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#1E3A8A;fontColor=#ffffff;strokeColor=#1E3A8A;strokeWidth=2;rounded=1;arcSize=10;fontSize=12;fontFamily=Arial;" vertex="1" parent="1">
+  <mxGeometry x="480" y="140" width="380" height="450" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_staff_base_r0" value="🔑  المعرف الرقمي للموظف [مفتاح أساسي]  :  BIGSERIAL" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#B91C1C;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_staff_base">
+  <mxGeometry y="34" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_staff_base_r1" value="▫️  الاسم الرباعي الكامل  :  VARCHAR(150)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_staff_base">
+  <mxGeometry y="60" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_staff_base_r2" value="▫️  الرقم الوظيفي العام للجامعة  :  VARCHAR(30) UNIQUE" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_staff_base">
+  <mxGeometry y="86" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_staff_base_r3" value="▫️  الرقم الوطني / رقم البطاقة  :  VARCHAR(30) UNIQUE" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_staff_base">
+  <mxGeometry y="112" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_staff_base_r4" value="▫️  النوع الاجتماعي (ذكر / أنثى)  :  VARCHAR(10)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_staff_base">
+  <mxGeometry y="138" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_staff_base_r5" value="▫️  تاريخ ومحل الميلاد  :  DATE + VARCHAR" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_staff_base">
+  <mxGeometry y="164" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_staff_base_r6" value="▫️  رقم الهاتف المحمول  :  VARCHAR(20)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_staff_base">
+  <mxGeometry y="190" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_staff_base_r7" value="▫️  البريد الإلكتروني الرسمي  :  VARCHAR(100)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_staff_base">
+  <mxGeometry y="216" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_staff_base_r8" value="🔗  رقم القسم/الوحدة التابع لها [FK]  :  BIGINT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1D4ED8;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_staff_base">
+  <mxGeometry y="242" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_staff_base_r9" value="▫️  نوع الكادر (أكاديمي/إداري/متعاقد)  :  ENUM (Staff Type)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_staff_base">
+  <mxGeometry y="268" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_staff_base_r10" value="▫️  الموقف الوظيفي (مثبت / تعاقد / بدل)  :  VARCHAR(50)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_staff_base">
+  <mxGeometry y="294" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_staff_base_r11" value="▫️  تاريخ أول تعيين بالدولة  :  DATE" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_staff_base">
+  <mxGeometry y="320" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_staff_base_r12" value="▫️  تاريخ التعيين بالجامعة  :  DATE" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_staff_base">
+  <mxGeometry y="346" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_staff_base_r13" value="▫️  حالة الخدمة (مستمر / منقطع / متقاعد)  :  VARCHAR(30)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_staff_base">
+  <mxGeometry y="372" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_staff_base_r14" value="▫️  تاريخ إنشاء السجل وآخر تحديث  :  TIMESTAMP" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_staff_base">
+  <mxGeometry y="398" width="380" height="26" as="geometry"/>
+</mxCell>
+        <mxCell id="tbl_academic_details" value="المستوى 4 (أ): تفاصيل الكادر الأكاديمي (academic_details)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#2563EB;fontColor=#ffffff;strokeColor=#2563EB;strokeWidth=2;rounded=1;arcSize=10;fontSize=12;fontFamily=Arial;" vertex="1" parent="1">
+  <mxGeometry x="940" y="140" width="360" height="242" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_academic_details_r0" value="🔑🔗  رقم الكادر الأكاديمي [PK &amp; FK 1:1]  :  BIGINT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#B91C1C;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_academic_details">
+  <mxGeometry y="34" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_academic_details_r1" value="🔗  رقم الرتبة العلمية الحالية [FK]  :  INT" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1D4ED8;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_academic_details">
+  <mxGeometry y="60" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_academic_details_r2" value="▫️  التخصص العلمي العام  :  VARCHAR(100)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_academic_details">
+  <mxGeometry y="86" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_academic_details_r3" value="▫️  التخصص العلمي الدقيق  :  VARCHAR(150)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_academic_details">
+  <mxGeometry y="112" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_academic_details_r4" value="▫️  الوضع الأكاديمي (على رأس العمل/موفد/تفرغ)  :  VARCHAR(50)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_academic_details">
+  <mxGeometry y="138" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_academic_details_r5" value="▫️  تاريخ الحصول على آخر ترقية علمية  :  DATE" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_academic_details">
+  <mxGeometry y="164" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_academic_details_r6" value="▫️  العبء التدريسي المعتمد (ساعات)  :  INT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_academic_details">
+  <mxGeometry y="190" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_academic_details_r7" value="▫️  أبحاث ومنشورات الترقية  :  TEXT" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_academic_details">
+  <mxGeometry y="216" width="360" height="26" as="geometry"/>
+</mxCell>
+        <mxCell id="tbl_admin_details" value="المستوى 4 (ب): تفاصيل الكادر الإداري (administrative_details)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#0284C7;fontColor=#ffffff;strokeColor=#0284C7;strokeWidth=2;rounded=1;arcSize=10;fontSize=12;fontFamily=Arial;" vertex="1" parent="1">
+  <mxGeometry x="940" y="440" width="360" height="216" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_admin_details_r0" value="🔑🔗  رقم الكادر الإداري [PK &amp; FK 1:1]  :  BIGINT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#B91C1C;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_admin_details">
+  <mxGeometry y="34" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_admin_details_r1" value="🔗  رقم الدرجة الوظيفية الإدارية [FK]  :  INT" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1D4ED8;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_admin_details">
+  <mxGeometry y="60" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_admin_details_r2" value="▫️  المسمى الوظيفي (مدير/سكرتير/عامل)  :  VARCHAR(100)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_admin_details">
+  <mxGeometry y="86" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_admin_details_r3" value="▫️  طبيعة العمل (مكتبي / ميداني / خدمات)  :  VARCHAR(50)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_admin_details">
+  <mxGeometry y="112" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_admin_details_r4" value="▫️  تاريخ التثبيت في الدرجة الوظيفية  :  DATE" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_admin_details">
+  <mxGeometry y="138" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_admin_details_r5" value="▫️  الجهة الإدارية التابع لها  :  VARCHAR(100)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_admin_details">
+  <mxGeometry y="164" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_admin_details_r6" value="▫️  ملاحظات وتقييم الأداء  :  TEXT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_admin_details">
+  <mxGeometry y="190" width="360" height="26" as="geometry"/>
+</mxCell>
+        <mxCell id="tbl_contract_details" value="المستوى 4 (ج): تفاصيل المتعاقدين والساعات (contract_details)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#4F46E5;fontColor=#ffffff;strokeColor=#4F46E5;strokeWidth=2;rounded=1;arcSize=10;fontSize=12;fontFamily=Arial;" vertex="1" parent="1">
+  <mxGeometry x="940" y="710" width="360" height="216" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_contract_details_r0" value="🔑🔗  رقم الكادر المتعاقد [PK &amp; FK 1:1]  :  BIGINT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#B91C1C;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_contract_details">
+  <mxGeometry y="34" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_contract_details_r1" value="▫️  نوع العقد (ساعات / فصلي / سنوي)  :  VARCHAR(50)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_contract_details">
+  <mxGeometry y="60" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_contract_details_r2" value="▫️  عدد الساعات المعتمدة أسبوعياً  :  INT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_contract_details">
+  <mxGeometry y="86" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_contract_details_r3" value="▫️  القيمة المالية للساعة (ريال)  :  DECIMAL(10,2)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_contract_details">
+  <mxGeometry y="112" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_contract_details_r4" value="▫️  تاريخ بداية العقد  :  DATE" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_contract_details">
+  <mxGeometry y="138" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_contract_details_r5" value="▫️  تاريخ نهاية العقد  :  DATE" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_contract_details">
+  <mxGeometry y="164" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_contract_details_r6" value="▫️  رقم قرار الموافقة على التعاقد  :  VARCHAR(50)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_contract_details">
+  <mxGeometry y="190" width="360" height="26" as="geometry"/>
+</mxCell>
+        <mxCell id="tbl_ranks" value="جدول مرجعي: الرتب العلمية (academic_ranks)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#334155;fontColor=#ffffff;strokeColor=#334155;strokeWidth=2;rounded=1;arcSize=10;fontSize=12;fontFamily=Arial;" vertex="1" parent="1">
+  <mxGeometry x="60" y="700" width="340" height="138" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_ranks_r0" value="🔑  رقم الرتبة [مفتاح أساسي]  :  INT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#B91C1C;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_ranks">
+  <mxGeometry y="34" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_ranks_r1" value="▫️  مسمى الرتبة (أستاذ/مشارك/مساعد/معيد)  :  VARCHAR(50)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_ranks">
+  <mxGeometry y="60" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_ranks_r2" value="▫️  ترتيب الأقدمية العلمية  :  INT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_ranks">
+  <mxGeometry y="86" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_ranks_r3" value="🔗  رقم سلم الراتب المرتبط [FK]  :  INT" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1D4ED8;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_ranks">
+  <mxGeometry y="112" width="340" height="26" as="geometry"/>
+</mxCell>
+        <mxCell id="tbl_job_grades" value="جدول مرجعي: الدرجات الوظيفية (job_grades)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#475569;fontColor=#ffffff;strokeColor=#475569;strokeWidth=2;rounded=1;arcSize=10;fontSize=12;fontFamily=Arial;" vertex="1" parent="1">
+  <mxGeometry x="60" y="880" width="340" height="138" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_job_grades_r0" value="🔑  رقم الدرجة [مفتاح أساسي]  :  INT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#B91C1C;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_job_grades">
+  <mxGeometry y="34" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_job_grades_r1" value="▫️  اسم الدرجة (الأولى، العاشرة، 12..)  :  VARCHAR(50)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_job_grades">
+  <mxGeometry y="60" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_job_grades_r2" value="▫️  المستوى الوظيفي (تخصصي/تنفيذي/خدمات)  :  VARCHAR(50)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_job_grades">
+  <mxGeometry y="86" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_job_grades_r3" value="🔗  رقم سلم الراتب المرتبط [FK]  :  INT" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1D4ED8;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_job_grades">
+  <mxGeometry y="112" width="340" height="26" as="geometry"/>
+</mxCell>
+        <mxCell id="tbl_salary_scale" value="جدول سلالم الرواتب والبدلات (salary_scale)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#B45309;fontColor=#ffffff;strokeColor=#B45309;strokeWidth=2;rounded=1;arcSize=10;fontSize=12;fontFamily=Arial;" vertex="1" parent="1">
+  <mxGeometry x="60" y="1060" width="340" height="190" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_salary_scale_r0" value="🔑  رقم سلم الراتب [مفتاح أساسي]  :  INT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#B91C1C;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_salary_scale">
+  <mxGeometry y="34" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_salary_scale_r1" value="▫️  المسمى المالي للدرجة/الرتبة  :  VARCHAR(100)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_salary_scale">
+  <mxGeometry y="60" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_salary_scale_r2" value="▫️  الراتب الأساسي المعتمد قانوناً  :  DECIMAL(12,2)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_salary_scale">
+  <mxGeometry y="86" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_salary_scale_r3" value="▫️  بدل التفرغ / بدل السكن  :  DECIMAL(12,2)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_salary_scale">
+  <mxGeometry y="112" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_salary_scale_r4" value="▫️  بدل الانتقال والعلاوة الدورية  :  DECIMAL(12,2)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_salary_scale">
+  <mxGeometry y="138" width="340" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_salary_scale_r5" value="▫️  إجمالي الاستحقاق المالي  :  DECIMAL(12,2)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_salary_scale">
+  <mxGeometry y="164" width="340" height="26" as="geometry"/>
+</mxCell>
+        <mxCell id="tbl_payroll" value="مطابقة كشف الراتب المالي (payroll_records)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#D97706;fontColor=#ffffff;strokeColor=#D97706;strokeWidth=2;rounded=1;arcSize=10;fontSize=12;fontFamily=Arial;" vertex="1" parent="1">
+  <mxGeometry x="480" y="650" width="380" height="268" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_payroll_r0" value="🔑  رقم سجل الراتب [مفتاح أساسي]  :  BIGSERIAL" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#B91C1C;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_payroll">
+  <mxGeometry y="34" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_payroll_r1" value="🔗  رقم الموظف [FK 1:1 - staff_base]  :  BIGINT UNIQUE" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1D4ED8;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_payroll">
+  <mxGeometry y="60" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_payroll_r2" value="▫️  الرقم الوظيفي بكشف الراتب  :  VARCHAR(30)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_payroll">
+  <mxGeometry y="86" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_payroll_r3" value="▫️  الحالة بكشف الراتب (مستمر / منقطع)  :  VARCHAR(30)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_payroll">
+  <mxGeometry y="112" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_payroll_r4" value="▫️  الدرجة الوظيفية بكشف الراتب  :  VARCHAR(50)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_payroll">
+  <mxGeometry y="138" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_payroll_r5" value="▫️  صافي الراتب المصروف فعلياً  :  DECIMAL(12,2)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_payroll">
+  <mxGeometry y="164" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_payroll_r6" value="▫️  تاريخ كشف الراتب المعتمد  :  VARCHAR(30)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_payroll">
+  <mxGeometry y="190" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_payroll_r7" value="▫️  مؤشر وجود اختلال أو فارق (نعم/لا)  :  BOOLEAN" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_payroll">
+  <mxGeometry y="216" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_payroll_r8" value="▫️  تفاصيل الاختلال المالي والإداري  :  TEXT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_payroll">
+  <mxGeometry y="242" width="380" height="26" as="geometry"/>
+</mxCell>
+        <mxCell id="tbl_qualifications" value="المستوى 5: المؤهلات والشهادات العلمية (qualifications)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#047857;fontColor=#ffffff;strokeColor=#047857;strokeWidth=2;rounded=1;arcSize=10;fontSize=12;fontFamily=Arial;" vertex="1" parent="1">
+  <mxGeometry x="1380" y="140" width="360" height="294" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_qualifications_r0" value="🔑  رقم المؤهل العلمي [مفتاح أساسي]  :  BIGSERIAL" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#B91C1C;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_qualifications">
+  <mxGeometry y="34" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_qualifications_r1" value="🔗  رقم الموظف صاحب المؤهل [FK 1:N]  :  BIGINT" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1D4ED8;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_qualifications">
+  <mxGeometry y="60" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_qualifications_r2" value="▫️  نوع الدرجة (بكالوريوس/ماجستير/دكتوراه)  :  VARCHAR(50)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_qualifications">
+  <mxGeometry y="86" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_qualifications_r3" value="▫️  التخصص العلمي للمؤهل  :  VARCHAR(150)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_qualifications">
+  <mxGeometry y="112" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_qualifications_r4" value="▫️  التقدير العام (ممتاز/جيد جداً..)  :  VARCHAR(50)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_qualifications">
+  <mxGeometry y="138" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_qualifications_r5" value="▫️  سنة وتاريخ التخرج والمنح  :  INT + DATE" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_qualifications">
+  <mxGeometry y="164" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_qualifications_r6" value="▫️  اسم الجامعة المانحة للشهادة  :  VARCHAR(150)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_qualifications">
+  <mxGeometry y="190" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_qualifications_r7" value="▫️  دولة التخرج  :  VARCHAR(100)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_qualifications">
+  <mxGeometry y="216" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_qualifications_r8" value="▫️  عنوان رسالة الماجستير / الدكتوراه  :  TEXT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_qualifications">
+  <mxGeometry y="242" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_qualifications_r9" value="🔗  رقم وثيقة الشهادة بالأرشيف [FK]  :  BIGINT" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1D4ED8;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_qualifications">
+  <mxGeometry y="268" width="360" height="26" as="geometry"/>
+</mxCell>
+        <mxCell id="tbl_decisions" value="المستوى 5: سجل القرارات الإدارية (administrative_decisions)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#7E22CE;fontColor=#ffffff;strokeColor=#7E22CE;strokeWidth=2;rounded=1;arcSize=10;fontSize=12;fontFamily=Arial;" vertex="1" parent="1">
+  <mxGeometry x="1380" y="490" width="360" height="268" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_decisions_r0" value="🔑  رقم سجل القرار [مفتاح أساسي]  :  BIGSERIAL" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#B91C1C;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_decisions">
+  <mxGeometry y="34" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_decisions_r1" value="🔗  رقم الموظف المعني بالقرار [FK 1:N]  :  BIGINT" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1D4ED8;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_decisions">
+  <mxGeometry y="60" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_decisions_r2" value="▫️  رقم القرار الإداري الصادر  :  VARCHAR(50)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_decisions">
+  <mxGeometry y="86" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_decisions_r3" value="▫️  نوع القرار (تعيين/تثبيت/إيفاد/ترقية)  :  VARCHAR(50)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_decisions">
+  <mxGeometry y="112" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_decisions_r4" value="▫️  تاريخ صدور ونفاذ القرار  :  DATE" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_decisions">
+  <mxGeometry y="138" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_decisions_r5" value="▫️  تاريخ انتهاء سريان القرار  :  DATE" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_decisions">
+  <mxGeometry y="164" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_decisions_r6" value="▫️  حالة القرار (ساري / منتهي / ملغي)  :  VARCHAR(30)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_decisions">
+  <mxGeometry y="190" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_decisions_r7" value="🔗  رقم وثيقة القرار بالأرشيف PDF [FK]  :  BIGINT" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1D4ED8;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_decisions">
+  <mxGeometry y="216" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_decisions_r8" value="▫️  ملاحظات وحيثيات القرار  :  TEXT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_decisions">
+  <mxGeometry y="242" width="360" height="26" as="geometry"/>
+</mxCell>
+        <mxCell id="tbl_archives" value="المستوى 5: الأرشيف الرقمي الشجري للوثائق (digital_archives)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#BE123C;fontColor=#ffffff;strokeColor=#BE123C;strokeWidth=2;rounded=1;arcSize=10;fontSize=12;fontFamily=Arial;" vertex="1" parent="1">
+  <mxGeometry x="1380" y="810" width="360" height="320" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_archives_r0" value="🔑  المعرف الرقمي للوثيقة [مفتاح أساسي]  :  BIGSERIAL" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#B91C1C;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_archives">
+  <mxGeometry y="34" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_archives_r1" value="🔗  رقم الموظف المالك للملف [FK 1:N]  :  BIGINT" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1D4ED8;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_archives">
+  <mxGeometry y="60" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_archives_r2" value="▫️  المجلد الشجري (مؤهلات/قرارات/ثبوتيات)  :  ENUM (Category)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_archives">
+  <mxGeometry y="86" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_archives_r3" value="▫️  اسم وعنوان الوثيقة المؤرشفة  :  VARCHAR(150)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_archives">
+  <mxGeometry y="112" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_archives_r4" value="▫️  اسم الملف الفيزيائي بالسيرفر (UUID.pdf)  :  VARCHAR(255)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_archives">
+  <mxGeometry y="138" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_archives_r5" value="▫️  مسار التخزين بالسيرفر / السحابة  :  TEXT" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_archives">
+  <mxGeometry y="164" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_archives_r6" value="▫️  حجم الملف بالبايت وعدد الصفحات  :  BIGINT + INT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_archives">
+  <mxGeometry y="190" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_archives_r7" value="▫️  نوع الملف (application/pdf)  :  VARCHAR(50)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_archives">
+  <mxGeometry y="216" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_archives_r8" value="🔗  رقم المستخدم الذي رفع الوثيقة [FK]  :  INT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1D4ED8;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_archives">
+  <mxGeometry y="242" width="360" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_archives_r9" value="▫️  تاريخ وتوقيت رفع الوثيقة  :  TIMESTAMP" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_archives">
+  <mxGeometry y="268" width="360" height="26" as="geometry"/>
+</mxCell>
+        <mxCell id="tbl_users" value="المستخدمون وإدارة الصلاحيات (users)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=34;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#0369A1;fontColor=#ffffff;strokeColor=#0369A1;strokeWidth=2;rounded=1;arcSize=10;fontSize=12;fontFamily=Arial;" vertex="1" parent="1">
+  <mxGeometry x="480" y="970" width="380" height="216" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_users_r0" value="🔑  رقم المستخدم [مفتاح أساسي]  :  INT" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#B91C1C;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_users">
+  <mxGeometry y="34" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_users_r1" value="▫️  اسم المستخدم لتسجيل الدخول  :  VARCHAR(50) UNIQUE" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_users">
+  <mxGeometry y="60" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_users_r2" value="▫️  كلمة المرور المشفرة (bcrypt)  :  VARCHAR(255)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_users">
+  <mxGeometry y="86" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_users_r3" value="▫️  الاسم الكامل للمستخدم  :  VARCHAR(100)" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_users">
+  <mxGeometry y="112" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_users_r4" value="▫️  الدور الوظيفي (مدير عام/عميد/مختص)  :  VARCHAR(50)" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_users">
+  <mxGeometry y="138" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_users_r5" value="🔗  رقم الكيان المخصص له الصلاحية [FK]  :  BIGINT" style="text;strokeColor=none;fillColor=#F8FAFC;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1D4ED8;fontStyle=1;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_users">
+  <mxGeometry y="164" width="380" height="26" as="geometry"/>
+</mxCell>
+<mxCell id="tbl_users_r6" value="▫️  حالة الحساب وتاريخ آخر دخول  :  BOOLEAN + TIMESTAMP" style="text;strokeColor=none;fillColor=#FFFFFF;align=right;verticalAlign=middle;spacingLeft=6;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#1E293B;fontStyle=0;fontSize=11;fontFamily=Arial;" vertex="1" parent="tbl_users">
+  <mxGeometry y="190" width="380" height="26" as="geometry"/>
+</mxCell>
+        <mxCell id="rel_org_dept" value="1 إلى متعدد (المستوى 1 يضم عدة وحدات)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;fontSize=11;fontColor=#1E293B;fontFamily=Arial;strokeColor=#2563EB;strokeWidth=2;startArrow=ERone;endArrow=ERmany;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="tbl_org_entities" target="tbl_dept_units">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+        <mxCell id="rel_dept_staff" value="1 إلى متعدد (المستوى 2 يضم كادر الوحدة)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;fontSize=11;fontColor=#1E293B;fontFamily=Arial;strokeColor=#2563EB;strokeWidth=2;startArrow=ERone;endArrow=ERmany;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="tbl_dept_units" target="tbl_staff_base">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+        <mxCell id="rel_staff_academic" value="تخصيص 1 إلى 1 (Subtype: إذا كان أكاديمياً)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;fontSize=11;fontColor=#1E293B;fontFamily=Arial;strokeColor=#2563EB;strokeWidth=2;startArrow=ERone;endArrow=ERmany;exitX=1;exitY=0.2;entryX=0;entryY=0.5;" edge="1" parent="1" source="tbl_staff_base" target="tbl_academic_details">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+        <mxCell id="rel_staff_admin" value="تخصيص 1 إلى 1 (Subtype: إذا كان إدارياً)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;fontSize=11;fontColor=#1E293B;fontFamily=Arial;strokeColor=#0284C7;strokeWidth=2;startArrow=ERone;endArrow=ERmany;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="tbl_staff_base" target="tbl_admin_details">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+        <mxCell id="rel_staff_contract" value="تخصيص 1 إلى 1 (Subtype: إذا كان متعاقداً)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;fontSize=11;fontColor=#1E293B;fontFamily=Arial;strokeColor=#4F46E5;strokeWidth=2;startArrow=ERone;endArrow=ERmany;exitX=1;exitY=0.8;entryX=0;entryY=0.5;" edge="1" parent="1" source="tbl_staff_base" target="tbl_contract_details">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+        <mxCell id="rel_rank_academic" value="1 إلى متعدد (الرتبة العلمية للأكاديمي)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;fontSize=11;fontColor=#1E293B;fontFamily=Arial;strokeColor=#334155;strokeWidth=2;startArrow=ERone;endArrow=ERmany;exitX=1;exitY=0.5;entryX=0;entryY=0.2;" edge="1" parent="1" source="tbl_ranks" target="tbl_academic_details">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+        <mxCell id="rel_jobgrade_admin" value="1 إلى متعدد (الدرجة الوظيفية للإداري)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;fontSize=11;fontColor=#1E293B;fontFamily=Arial;strokeColor=#475569;strokeWidth=2;startArrow=ERone;endArrow=ERmany;exitX=1;exitY=0.5;entryX=0;entryY=0.3;" edge="1" parent="1" source="tbl_job_grades" target="tbl_admin_details">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+        <mxCell id="rel_salary_rank" value="ربط الرتبة بسلم الراتب الأساسي" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;fontSize=11;fontColor=#1E293B;fontFamily=Arial;strokeColor=#B45309;strokeWidth=2;startArrow=ERone;endArrow=ERmany;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="tbl_salary_scale" target="tbl_ranks">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+        <mxCell id="rel_salary_grade" value="ربط الدرجة بسلم الراتب الأساسي" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;fontSize=11;fontColor=#1E293B;fontFamily=Arial;strokeColor=#B45309;strokeWidth=2;startArrow=ERone;endArrow=ERmany;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="tbl_salary_scale" target="tbl_job_grades">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+        <mxCell id="rel_staff_payroll" value="1 إلى 1 (مطابقة كشف الراتب)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;fontSize=11;fontColor=#1E293B;fontFamily=Arial;strokeColor=#D97706;strokeWidth=2;startArrow=ERone;endArrow=ERmany;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="tbl_staff_base" target="tbl_payroll">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+        <mxCell id="rel_staff_quals" value="1 إلى متعدد (سجل المؤهلات التراكمية)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;fontSize=11;fontColor=#1E293B;fontFamily=Arial;strokeColor=#047857;strokeWidth=2;startArrow=ERone;endArrow=ERmany;exitX=1;exitY=0.3;entryX=0;entryY=0.3;" edge="1" parent="1" source="tbl_staff_base" target="tbl_qualifications">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+        <mxCell id="rel_staff_decisions" value="1 إلى متعدد (سجل القرارات التاريخية)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;fontSize=11;fontColor=#1E293B;fontFamily=Arial;strokeColor=#7E22CE;strokeWidth=2;startArrow=ERone;endArrow=ERmany;exitX=1;exitY=0.6;entryX=0;entryY=0.3;" edge="1" parent="1" source="tbl_staff_base" target="tbl_decisions">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+        <mxCell id="rel_staff_archives" value="1 إلى متعدد (شجرة وثائق الأرشيف PDF)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;fontSize=11;fontColor=#1E293B;fontFamily=Arial;strokeColor=#BE123C;strokeWidth=2;startArrow=ERone;endArrow=ERmany;exitX=1;exitY=0.9;entryX=0;entryY=0.3;" edge="1" parent="1" source="tbl_staff_base" target="tbl_archives">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+        <mxCell id="rel_quals_archives" value="ربط المؤهل بوثيقة الشهادة PDF" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;fontSize=11;fontColor=#1E293B;fontFamily=Arial;strokeColor=#047857;strokeWidth=2;startArrow=ERone;endArrow=ERmany;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="tbl_qualifications" target="tbl_archives">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+        <mxCell id="rel_decisions_archives" value="ربط القرار بوثيقة القرار PDF" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=0;fontSize=11;fontColor=#1E293B;fontFamily=Arial;strokeColor=#7E22CE;strokeWidth=2;startArrow=ERone;endArrow=ERmany;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="tbl_decisions" target="tbl_archives">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
