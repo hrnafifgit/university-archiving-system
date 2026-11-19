@@ -19,7 +19,7 @@
 
 ## 📂 هيكلية المشروع
 ```text
-├── uas_backend/            # منصة الويب المتكاملة (Laravel 12.x Backend & Blade Views)
+├── Demo_Version/           # منصة الويب المتكاملة (Laravel 12.x Backend & Blade Views)
 │   ├── app/Models/         # النماذج العلائقية (StaffBase, AcademicDetail, DigitalArchive...)
 │   ├── app/Http/Controllers/ # المتحكمات (StaffController, DashboardController)
 │   ├── database/migrations/ # هجرات الجداول الـ 12 وفق مخطط 3NF
@@ -38,7 +38,7 @@
 
 ```bash
 # 1. الدخول لمجلد الموقع
-cd uas_backend
+cd Demo_Version
 
 # 2. تثبيت الحزم (إن لم تكن مثبتة)
 composer install
