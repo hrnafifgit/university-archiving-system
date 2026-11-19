@@ -47,3 +47,13 @@ New Text Document*.txt
 **/public/build
 *.sqlite-journal
 
+# Local Project Specific (Excluded from GitHub repository)
+/ai/
+/frontend/
+/ui_mockups/
+/التعليمات.txt
+/المخطط الجديد.drawio
+/متابعة الاعمال .docx
+/واجهات الاكسل/
+/agent.md
+
