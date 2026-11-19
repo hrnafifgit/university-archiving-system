@@ -130,6 +130,20 @@ class StaffController extends Controller
                 'أخصائي تقني وفني',
                 'موظف مكتبي',
             ],
+            'positions' => [
+                'عميد كلية / مركز',
+                'نائب العميد للشؤون الأكاديمية',
+                'نائب العميد لشؤون الطلبة',
+                'نائب العميد للدراسات العليا',
+                'رئيس قسم',
+                'مسجل عام / مسجل كلية',
+                'أمين كلية',
+                'مدير عام إدارة',
+                'أخصائي شؤون أكاديمية',
+                'أخصائي مالي وإداري',
+                'أخصائي تقني وفني',
+                'موظف مكتبي',
+            ],
             'contractTypes' => [
                 'ساعات فصلي',
                 'ساعات سنوي',
@@ -422,5 +436,56 @@ class StaffController extends Controller
 
         return redirect()->route('staff.index')
                          ->with('success', 'تم حذف سجل الكادر ومستنداته بنجاح!');
+    }
+
+    /**
+     * إضافة كلية أو مركز جديد من داخل الفورم (AJAX)
+     */
+    public function storeEntity(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:organizational_entities,name',
+            'entity_type' => 'required|in:كلية,مركز,معهد,إدارة عامة',
+            'nature' => 'nullable|string|max:100',
+            'code' => 'nullable|string|max:50',
+        ]);
+
+        $entity = OrganizationalEntity::create([
+            'name' => $validated['name'],
+            'entity_type' => $validated['entity_type'],
+            'nature' => $validated['nature'] ?? 'أكاديمي',
+            'code' => $validated['code'] ?? Str::upper(Str::random(4)),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تمت إضافة الكلية/المركز بنجاح!',
+            'entity' => $entity,
+        ]);
+    }
+
+    /**
+     * إضافة قسم أكاديمي جديد من داخل الفورم (AJAX)
+     */
+    public function storeDepartment(Request $request)
+    {
+        $validated = $request->validate([
+            'entity_id' => 'required|exists:organizational_entities,id',
+            'name' => 'required|string|max:255',
+            'unit_type' => 'nullable|string|max:100',
+        ]);
+
+        $department = DepartmentUnit::create([
+            'entity_id' => $validated['entity_id'],
+            'name' => $validated['name'],
+            'unit_type' => $validated['unit_type'] ?? 'قسم أكاديمي',
+            'code' => Str::upper(Str::random(4)),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تمت إضافة القسم بنجاح!',
+            'department' => $department,
+        ]);
     }
 }

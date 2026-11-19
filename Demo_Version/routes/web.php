@@ -24,6 +24,10 @@ Route::middleware('auth')->group(function () {
     // 2. شاشة الإحصائيات والمؤشرات الجامعية الشاملة (شاشة منفصلة متكاملة)
     Route::get('/statistics', [DashboardController::class, 'statistics'])->name('statistics');
 
+    // مسارات AJAX لإضافة كلية وقسم فوريين من داخل النموذج
+    Route::post('/api/entities', [StaffController::class, 'storeEntity'])->name('api.entities.store');
+    Route::post('/api/departments', [StaffController::class, 'storeDepartment'])->name('api.departments.store');
+
     // 3. إدارة ودليل واستعلام الكادر (CRUD & Smart Filters)
     Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
     Route::get('/staff/create', [StaffController::class, 'create'])->name('staff.create');

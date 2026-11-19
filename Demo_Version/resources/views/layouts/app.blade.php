@@ -51,6 +51,7 @@
     <!-- جسم التطبيق (Sidebar + Main Content) -->
     <div class="flex flex-1 overflow-hidden">
         
+        @unless(View::hasSection('no_sidebar') && View::getSection('no_sidebar'))
         <!-- القائمة الجانبية (Sidebar) - نمط أبيض ناصع بأخضر داكن وبدون حشو -->
         <aside class="w-64 bg-white border-l border-slate-200 flex flex-col justify-between flex-shrink-0 z-20">
             <div>
@@ -122,10 +123,12 @@
                 </div>
             </div>
         </aside>
+        @endunless
 
         <!-- المحتوى الرئيسي للموقع -->
         <main class="flex-1 flex flex-col overflow-y-auto">
             
+            @unless(View::hasSection('no_header') && View::getSection('no_header'))
             <!-- الشريط العلوي النظيف (Header) -->
             <header class="h-16 bg-white border-b border-slate-200 px-6 sm:px-8 flex items-center justify-between sticky top-0 z-10 flex-shrink-0">
                 <div class="flex items-center space-x-3 space-x-reverse">
@@ -148,6 +151,7 @@
                     </a>
                 </div>
             </header>
+            @endunless
 
             <!-- جسم الصفحة الرئيسي -->
             <div class="p-6 sm:p-8 space-y-6 flex-1 max-w-7xl w-full mx-auto">
