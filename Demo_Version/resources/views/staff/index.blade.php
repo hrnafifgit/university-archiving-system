@@ -179,6 +179,9 @@
                                 <a href="{{ route('staff.show', $staff->id) }}" title="معاينة الملف والأرشيف" class="p-1.5 rounded-lg text-slate-500 hover:text-brand-900 hover:bg-brand-50 transition">
                                     <i data-lucide="eye" class="w-4 h-4"></i>
                                 </a>
+                                <a href="{{ route('staff.edit', $staff->id) }}" title="تعديل بيانات الكادر" class="p-1.5 rounded-lg text-slate-500 hover:text-brand-900 hover:bg-brand-50 transition">
+                                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                </a>
                                 <a href="{{ route('reports.index', ['staff_id' => $staff->id]) }}" title="بيان الحالة" class="p-1.5 rounded-lg text-slate-500 hover:text-brand-900 hover:bg-brand-50 transition">
                                     <i data-lucide="printer" class="w-4 h-4"></i>
                                 </a>

@@ -413,6 +413,141 @@ class StaffController extends Controller
     }
 
     /**
+     * واجهة تعديل بيانات الكادر القائم (Edit Form)
+     */
+    public function edit($id)
+    {
+        $staff = StaffBase::with([
+            'department.entity',
+            'academicDetails.rank',
+            'administrativeDetails.jobGrade',
+            'contractDetails',
+            'qualifications',
+            'decisions',
+            'archives'
+        ])->findOrFail($id);
+
+        $entities = OrganizationalEntity::with('departments')->orderBy('name')->get();
+        $departments = DepartmentUnit::with('entity')->orderBy('name')->get();
+        $ranks = AcademicRank::orderBy('seniority_order')->get();
+        $grades = JobGrade::all();
+        $lookups = self::getExcelLookups();
+
+        return view('staff.edit', compact('staff', 'entities', 'departments', 'ranks', 'grades', 'lookups'));
+    }
+
+    /**
+     * حفظ وتحديث بيانات الكادر في قاعدة البيانات (Update)
+     */
+    public function update(Request $request, $id)
+    {
+        $staff = StaffBase::findOrFail($id);
+
+        // 1. التحقق من صحة المدخلات مع استثناء معرف الكادر الحالي
+        $validated = $request->validate([
+            'department_id' => 'required|exists:departments_units,id',
+            'job_number' => 'required|string|max:50|unique:staff_base,job_number,' . $staff->id,
+            'national_id' => 'required|string|max:50|unique:staff_base,national_id,' . $staff->id,
+            'full_name' => 'required|string|max:255',
+            'gender' => 'required|in:ذكر,أنثى',
+            'birth_date' => 'nullable|date',
+            'phone' => 'nullable|string|max:30',
+            'email' => 'nullable|email|max:100',
+            'hire_date' => 'nullable|date',
+            'staff_type' => 'required|in:academic,administrative,contract',
+            'job_status' => 'required|string|max:50',
+            'document_file' => 'nullable|file|mimes:pdf|max:20480',
+            'document_title' => 'nullable|string|max:255',
+            'tree_category' => 'nullable|string|max:100',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            // 2. تحديث جدول الأساس المشترك (staff_base)
+            $staff->update([
+                'department_id' => $validated['department_id'],
+                'job_number' => $validated['job_number'],
+                'national_id' => $validated['national_id'],
+                'full_name' => $validated['full_name'],
+                'gender' => $validated['gender'],
+                'birth_date' => $validated['birth_date'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'email' => $validated['email'] ?? null,
+                'hire_date' => $validated['hire_date'] ?? $staff->hire_date,
+                'staff_type' => $validated['staff_type'],
+                'job_status' => $validated['job_status'],
+            ]);
+
+            // 3. تحديث تفاصيل الفئة (Subtypes)
+            if ($validated['staff_type'] === 'academic') {
+                AcademicDetail::updateOrCreate(
+                    ['staff_id' => $staff->id],
+                    [
+                        'rank_id' => $request->input('rank_id', 1),
+                        'general_specialization' => $request->input('general_specialization', 'علوم حاسوب'),
+                        'exact_specialization' => $request->input('exact_specialization', 'هندسة برمجيات'),
+                        'academic_status' => $request->input('academic_status', 'مستمر'),
+                        'teaching_load' => $request->input('teaching_load', 12),
+                        'last_promotion_date' => $request->input('last_promotion_date', null),
+                    ]
+                );
+            } elseif ($validated['staff_type'] === 'administrative') {
+                AdministrativeDetail::updateOrCreate(
+                    ['staff_id' => $staff->id],
+                    [
+                        'job_grade_id' => $request->input('job_grade_id', 1),
+                        'job_title' => $request->input('job_title', 'موظف إداري'),
+                        'work_nature' => $request->input('work_nature', 'مكتبي'),
+                        'admin_confirmation_date' => $request->input('admin_confirmation_date', null),
+                        'performance_rating' => $request->input('performance_rating', 'ممتاز'),
+                    ]
+                );
+            } elseif ($validated['staff_type'] === 'contract') {
+                ContractDetail::updateOrCreate(
+                    ['staff_id' => $staff->id],
+                    [
+                        'contract_type' => $request->input('contract_type', 'ساعات فصلي'),
+                        'approved_hours' => $request->input('approved_hours', 8),
+                        'hourly_rate' => $request->input('hourly_rate', 5000),
+                        'contract_start_date' => $request->input('contract_start_date', now()->toDateString()),
+                        'contract_end_date' => $request->input('contract_end_date', null),
+                    ]
+                );
+            }
+
+            // 4. إذا تم رفع ملف PDF جديد يتم حفظه في الأرشيف
+            if ($request->hasFile('document_file')) {
+                $file = $request->file('document_file');
+                $uuid = (string) Str::uuid();
+                $cleanFileName = $uuid . '.pdf';
+                $path = $file->storeAs('archives/' . $staff->job_number, $cleanFileName, 'public');
+
+                DigitalArchive::create([
+                    'uuid' => $uuid,
+                    'staff_id' => $staff->id,
+                    'decision_id' => null,
+                    'qualification_id' => null,
+                    'document_title' => $request->input('document_title', 'وثيقة أرشيف إضافية معدلة'),
+                    'tree_category' => $request->input('tree_category', 'القرارات الإدارية'),
+                    'file_path' => $path,
+                    'file_size_bytes' => $file->getSize(),
+                    'page_count' => 1,
+                    'mime_type' => 'application/pdf',
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('staff.show', $staff->id)
+                             ->with('success', 'تم تحديث بيانات الكادر بنجاح وحفظ التغييرات في قاعدة البيانات!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->with('error', 'حدث خطأ أثناء تعديل البيانات: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * حذف كادر من قاعدة البيانات
      */
     public function destroy($id)

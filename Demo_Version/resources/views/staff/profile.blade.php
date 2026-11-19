@@ -29,9 +29,14 @@
                         </span>
                     </div>
                 </div>
-                <span class="text-xs font-mono font-bold text-slate-500 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200">
-                    {{ $staff->job_number }}
-                </span>
+                <div class="flex items-center space-x-1.5 space-x-reverse">
+                    <a href="{{ route('staff.edit', $staff->id) }}" class="p-1.5 text-slate-500 hover:text-brand-900 rounded-lg hover:bg-brand-50 transition" title="تعديل بيانات الكادر">
+                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                    </a>
+                    <span class="text-xs font-mono font-bold text-slate-500 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200">
+                        {{ $staff->job_number }}
+                    </span>
+                </div>
             </div>
 
             <!-- معلومات الكلية والقسم -->
