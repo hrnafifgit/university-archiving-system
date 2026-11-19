@@ -13,12 +13,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Tailwind CSS (محلي وسريع) -->
+    <script src="{{ asset('js/tailwind.js') }}"></script>
+    <!-- Lucide Icons (محلي وسريع) -->
+    <script src="{{ asset('js/lucide.min.js') }}"></script>
+    <!-- Chart.js (محلي وسريع) -->
+    <script src="{{ asset('js/chart.min.js') }}"></script>
 
     <script>
         tailwind.config = {
@@ -67,6 +67,12 @@
                        class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('dashboard') ? 'bg-brand-900 text-white font-bold shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-brand-900' }}">
                         <i data-lucide="layout-dashboard" class="w-4 h-4 ml-2.5 {{ request()->routeIs('dashboard') ? 'text-white' : 'text-slate-400' }}"></i>
                         <span>لوحة التحكم</span>
+                    </a>
+
+                    <a href="{{ route('statistics') }}" 
+                       class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('statistics') ? 'bg-brand-900 text-white font-bold shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-brand-900' }}">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4 ml-2.5 {{ request()->routeIs('statistics') ? 'text-white' : 'text-slate-400' }}"></i>
+                        <span>شاشة الإحصائيات</span>
                     </a>
 
                     <a href="{{ route('staff.index') }}" 

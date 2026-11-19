@@ -12,4 +12,9 @@ class AcademicRank extends Model
     protected $table = 'academic_ranks';
 
     protected $fillable = ['name', 'seniority_order'];
+
+    public function academicDetails(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(AcademicDetail::class, 'rank_id');
+    }
 }
