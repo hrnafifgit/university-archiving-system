@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\ReportBuilderController;
 use Illuminate\Support\Facades\Route;
 
 // مسارات المصادقة وتسجيل الدخول الموحد لجامعة إب
@@ -38,5 +39,9 @@ Route::middleware('auth')->group(function () {
 
     // مركز المؤشرات والإحصائيات التفاعلي (مكافئ شاشات eh1 إلى eh8 في الإكسل)
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+
+    // منشئ التقارير المخصصة واختيار الأعمدة (مكافئ واجهة ReportForm وشيت Repj1)
+    Route::get('/reports/builder', [ReportBuilderController::class, 'index'])->name('reports.builder');
+    Route::get('/reports/builder/export', [ReportBuilderController::class, 'exportCsv'])->name('reports.builder.export');
 
 });
