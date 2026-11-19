@@ -134,17 +134,26 @@
             <div class="p-4 border-t border-navy-800 bg-navy-950/80">
                 <div class="flex items-center mb-2">
                     <div class="relative">
-                        <img class="w-10 h-10 rounded-full border-2 border-univ-500 p-0.5 object-cover" src="https://ui-avatars.com/api/?name=أحمد+الشميري&background=248874&color=fff" alt="User">
+                        <img class="w-10 h-10 rounded-full border-2 border-univ-500 p-0.5 object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name ?? 'مسؤول الأرشيف') }}&background=248874&color=fff" alt="User">
                         <span class="absolute bottom-0 right-0 w-3 h-3 bg-univ-500 rounded-full border-2 border-navy-950"></span>
                     </div>
                     <div class="mr-3 overflow-hidden">
-                        <p class="text-xs font-bold text-white truncate">أ. أحمد الشميري</p>
-                        <p class="text-[10px] text-univ-300 font-medium truncate">مسؤول شؤون الكادر والأرشفة</p>
+                        <p class="text-xs font-bold text-white truncate">{{ auth()->user()->name ?? 'مسؤول الأرشيف المركزي' }}</p>
+                        <p class="text-[10px] text-univ-300 font-medium truncate">{{ auth()->user()->email ?? 'admin@ibbuniv.edu.ye' }}</p>
                     </div>
                 </div>
-                <div class="text-[9px] text-slate-400 text-center border-t border-navy-800/80 pt-2 font-mono flex items-center justify-center">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 ml-1.5"></span>
-                    <span>جامعة إب — منصة معتمدة 2026م</span>
+                <div class="flex items-center justify-between pt-2 border-t border-navy-800/80 text-[10px]">
+                    <span class="text-slate-400 font-mono flex items-center">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 ml-1.5"></span>
+                        جلسة نشطة
+                    </span>
+                    <form action="{{ route('logout') }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="text-rose-400 hover:text-rose-300 font-bold flex items-center transition" title="تسجيل الخروج">
+                            <i data-lucide="log-out" class="w-3.5 h-3.5 ml-1"></i>
+                            <span>خروج</span>
+                        </button>
+                    </form>
                 </div>
             </div>
         </aside>
@@ -181,6 +190,14 @@
                         <i data-lucide="user-plus" class="w-4 h-4 ml-1.5"></i>
                         <span>إضافة كادر</span>
                     </a>
+
+                    <!-- زر تسجيل الخروج السريع من الترويسة -->
+                    <form action="{{ route('logout') }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="flex items-center bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 p-2.5 rounded-xl text-xs font-bold transition border border-slate-200" title="تسجيل الخروج">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                        </button>
+                    </form>
                 </div>
             </header>
 
