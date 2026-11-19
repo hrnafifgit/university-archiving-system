@@ -230,7 +230,7 @@
             datasets: [{
                 label: 'عدد الكادر',
                 data: {!! json_encode($colleges->pluck('staff_count')) !!},
-                backgroundColor: '#059669',
+                backgroundColor: '#248874',
                 borderRadius: 8
             }]
         },
@@ -253,7 +253,7 @@
             labels: ['أكاديمي', 'إداري', 'متعاقد'],
             datasets: [{
                 data: [{{ $academicStaffCount }}, {{ $adminStaffCount }}, {{ $contractStaffCount }}],
-                backgroundColor: ['#10b981', '#6366f1', '#f59e0b'],
+                backgroundColor: ['#248874', '#031a3d', '#f4bf00'],
                 borderWidth: 0
             }]
         },

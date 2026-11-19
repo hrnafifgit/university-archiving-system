@@ -34,27 +34,34 @@
         </div>
 
         <!-- الترويسة الرسمية -->
-        <div class="relative z-10 border-b-2 border-slate-900 pb-6 mb-8">
+        <div class="relative z-10 border-b-2 border-navy-900 pb-6 mb-8">
             <div class="flex items-center justify-between">
                 <div class="text-right text-xs leading-relaxed font-bold text-slate-700">
-                    <p>الجمهورية اليمنية</p>
-                    <p>وزارة التعليم العالي والبحث العلمي</p>
-                    <p class="text-univ-900 font-black">جامعة إب</p>
+                    <p class="text-slate-500">الجمهورية اليمنية</p>
+                    <p class="text-slate-500">وزارة التعليم العالي والبحث العلمي</p>
+                    <p class="text-univ-700 font-black text-sm">جامعة إب — Ibb University</p>
                     <p class="text-[11px] text-slate-600">الإدارة العامة للشؤون الأكاديمية والأرشيف</p>
+                    <span class="inline-flex items-center text-[10px] text-univ-700 font-mono bg-univ-50 px-2 py-0.5 rounded border border-univ-200 mt-1">
+                        archives.ibbuniv.edu.ye
+                    </span>
                 </div>
                 <div class="text-center">
-                    <div class="w-24 h-24 p-1 rounded-2xl bg-white border border-slate-200 flex items-center justify-center mx-auto mb-1 shadow-sm">
-                        <img src="{{ asset('images/ibb_logo.png') }}" alt="شعار جامعة إب الرسمي" class="w-full h-full object-contain">
+                    <div class="h-20 px-3 py-1 rounded-2xl bg-white border border-slate-200 flex items-center justify-center mx-auto mb-1 shadow-sm">
+                        <img src="{{ asset('images/official_web_logo.png') }}" alt="شعار جامعة إب الرسمي" class="h-16 w-auto object-contain">
                     </div>
-                    <span class="text-[9px] text-slate-500 font-mono font-bold">IBB-UNIV-OFFICIAL-STATEMENT</span>
+                    <span class="text-[9px] text-slate-500 font-mono font-bold tracking-wider">IBB-UNIV-OFFICIAL-STATEMENT</span>
                 </div>
                 <div class="text-left text-xs leading-relaxed font-bold text-slate-700 font-mono">
                     <p>الرقم: ب.ح / {{ $staff->job_number }}/2026</p>
                     <p>التاريخ: {{ date('Y/m/d') }}م</p>
                     <p>المرفقات: شهادات وقرارات مؤرشفة</p>
+                    <div class="mt-2 inline-block bg-slate-50 p-1.5 rounded-lg border border-slate-200 text-center">
+                        <span class="block text-[8px] text-slate-400 font-sans">رمز التحقق الإلكتروني</span>
+                        <span class="text-[10px] text-navy-800 font-mono font-black">IBB-{{ substr(md5($staff->id . $staff->job_number), 0, 8) }}</span>
+                    </div>
                 </div>
             </div>
-            <h2 class="text-center text-lg font-black text-slate-900 mt-6 underline decoration-univ-700 decoration-2 underline-offset-8">
+            <h2 class="text-center text-lg font-black text-navy-900 mt-6 underline decoration-univ-600 decoration-2 underline-offset-8">
                 بيان حالة أكاديمية ووظيفية موحدة
             </h2>
         </div>
@@ -135,7 +142,7 @@
         </div>
 
         <!-- التوقيعات والاعتماد الرسمي -->
-        <div class="mt-12 pt-6 border-t-2 border-slate-900 grid grid-cols-3 text-center text-xs font-bold text-slate-800">
+        <div class="mt-12 pt-6 border-t-2 border-navy-900 grid grid-cols-3 text-center text-xs font-bold text-slate-800">
             <div>
                 <p>المختص بالأرشيف الإلكتروني</p>
                 <p class="mt-8">...............................</p>
@@ -145,10 +152,21 @@
                 <p class="mt-8">...............................</p>
             </div>
             <div>
-                <p>أ.د / رئيس جامعة إب</p>
-                <div class="w-16 h-16 border-2 border-red-500 text-red-600 rounded-full flex items-center justify-center text-[9px] mx-auto mt-2 rotate-[-10deg]">
-                    خاتم الجامعة<br>الرسمي
+                <p class="text-navy-900 font-black">أ.د / رئيس جامعة إب</p>
+                <div class="w-16 h-16 border-2 border-emerald-600 text-univ-700 rounded-full flex items-center justify-center text-[9px] mx-auto mt-2 rotate-[-5deg] font-bold">
+                    ختم الجامعة<br>الرسمي المعتمد
                 </div>
+            </div>
+        </div>
+
+        <!-- تذييل التحقق الرقمي الرسمي -->
+        <div class="mt-8 pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between text-[10px] text-slate-500">
+            <div class="flex items-center space-x-2 space-x-reverse mb-2 sm:mb-0">
+                <i data-lucide="shield-check" class="w-4 h-4 text-univ-600"></i>
+                <span>وثيقة رسمية صادرة إلكترونياً من بوابة الأرشيف المركزي الموحد: <strong class="text-navy-900 font-mono">https://archives.ibbuniv.edu.ye</strong></span>
+            </div>
+            <div class="font-mono text-slate-400">
+                UUID: {{ $staff->uuid ?? 'IBB-ARC-' . substr(sha1($staff->id . $staff->job_number), 0, 16) }}
             </div>
         </div>
 
