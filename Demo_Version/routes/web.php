@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\AnalyticsController;
 use Illuminate\Support\Facades\Route;
 
 // مسارات المصادقة وتسجيل الدخول الموحد لجامعة إب
@@ -34,5 +35,8 @@ Route::middleware('auth')->group(function () {
 
         return view('reports.index', compact('staff'));
     })->name('reports.index');
+
+    // مركز المؤشرات والإحصائيات التفاعلي (مكافئ شاشات eh1 إلى eh8 في الإكسل)
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
 
 });

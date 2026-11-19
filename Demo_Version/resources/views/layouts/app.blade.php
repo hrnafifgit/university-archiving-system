@@ -75,6 +75,12 @@
                         <span>دليل الكادر</span>
                     </a>
 
+                    <a href="{{ route('analytics.index') }}" 
+                       class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('analytics.index') ? 'bg-brand-900 text-white font-bold shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-brand-900' }}">
+                        <i data-lucide="bar-chart-3" class="w-4 h-4 ml-2.5 {{ request()->routeIs('analytics.index') ? 'text-white' : 'text-slate-400' }}"></i>
+                        <span>المؤشرات والإحصائيات</span>
+                    </a>
+
                     <a href="{{ route('staff.create') }}" 
                        class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('staff.create') ? 'bg-brand-900 text-white font-bold shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-brand-900' }}">
                         <i data-lucide="user-plus" class="w-4 h-4 ml-2.5 {{ request()->routeIs('staff.create') ? 'text-white' : 'text-slate-400' }}"></i>

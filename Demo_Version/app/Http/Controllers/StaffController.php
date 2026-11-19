@@ -198,6 +198,27 @@ class StaffController extends Controller
             $query->where('gender', $request->gender);
         }
 
+        // 8. تصفية الحالة الأكاديمية
+        if ($request->filled('academic_status')) {
+            $query->whereHas('academicDetails', function ($q) use ($request) {
+                $q->where('academic_status', $request->academic_status);
+            });
+        }
+
+        // 9. تصفية الدرجة الوظيفية المالية
+        if ($request->filled('job_grade_id')) {
+            $query->whereHas('administrativeDetails', function ($q) use ($request) {
+                $q->where('job_grade_id', $request->job_grade_id);
+            });
+        }
+
+        // 10. تصفية المؤهل العلمي
+        if ($request->filled('degree_type')) {
+            $query->whereHas('qualifications', function ($q) use ($request) {
+                $q->where('degree_type', 'like', "%{$request->degree_type}%");
+            });
+        }
+
         // إحصائيات العدّادات اللحظية المتطابقة مع عدّادات bisho (TxtCount1 to TxtCount8)
         $totalMatched = (clone $query)->count();
         $academicCount = (clone $query)->where('staff_type', 'academic')->count();
