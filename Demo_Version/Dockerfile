@@ -28,5 +28,5 @@ RUN mkdir -p storage/framework/sessions storage/framework/views storage/framewor
 
 EXPOSE 8080
 
-# تشغيل اكتشاف الحزم وترحيل الجداول وزرع البيانات تلقائياً ثم بدء السيرفر
-CMD ["sh", "-c", "php artisan config:clear && php artisan package:discover --ansi && php artisan migrate --force && php artisan db:seed --class=PersonnelRecordsMasterSeeder --force && php artisan db:seed --class=ExcelStaffMigrationSeeder --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
+# تشغيل اكتشاف الحزم وبدء السيرفر فوراً وترحيل البيانات في الخلفية بدون حجب المنفذ
+CMD ["sh", "-c", "php artisan config:clear && php artisan package:discover --ansi && (sleep 2 && php artisan migrate --force && php artisan db:seed --class=PersonnelRecordsMasterSeeder --force && php artisan db:seed --class=ExcelStaffMigrationSeeder --force) & exec php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
