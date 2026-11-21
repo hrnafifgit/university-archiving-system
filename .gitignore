@@ -47,3 +47,7 @@ New Text Document*.txt
 **/public/build
 *.sqlite-journal
 
+
+**/vendor_php84/
+*.bak
+*.lock
