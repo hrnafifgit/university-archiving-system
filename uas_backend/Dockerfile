@@ -1,4 +1,4 @@
-FROM php:8.3-cli
+FROM php:8.4-cli
 
 # تثبيت مكتبات PostgreSQL وضغط الملفات
 RUN apt-get update && apt-get install -y \
@@ -19,8 +19,8 @@ WORKDIR /app
 # نسخ ملفات المشروع
 COPY . .
 
-# تثبيت اعتماديات Laravel وتخطي أي تعارض في متطلبات المنصة
-RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
+# تثبيت اعتماديات Laravel بدون تشغيل سكريبتات أثناء البناء لتفادي أي خطأ
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs --no-scripts
 
 # إنشاء وتأكيد مجلدات التخزين مع الصلاحيات الكاملة
 RUN mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache bootstrap/cache \
@@ -28,5 +28,5 @@ RUN mkdir -p storage/framework/sessions storage/framework/views storage/framewor
 
 EXPOSE 8080
 
-# تشغيل السيرفر مباشرة واستقبال المنفذ المخصص من Render
-CMD ["sh", "-c", "php artisan config:clear && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
+# تشغيل اكتشاف الحزم والسيرفر عند الإقلاع
+CMD ["sh", "-c", "php artisan config:clear && php artisan package:discover --ansi && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
