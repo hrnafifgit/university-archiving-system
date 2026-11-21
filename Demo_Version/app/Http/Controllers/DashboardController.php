@@ -2,88 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AcademicRank;
-use App\Models\DigitalArchive;
-use App\Models\OrganizationalEntity;
-use App\Models\Qualification;
-use App\Models\StaffBase;
-use Illuminate\Support\Facades\DB;
+use App\Services\StatisticsService;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    /**
-     * لوحة التحكم والعمليات الرئيسية (مركز الأزرار التشغيلية دون حشو الإحصائيات)
-     */
-    public function index()
-    {
-        $totalStaff = StaffBase::count();
-        $totalArchives = DigitalArchive::count();
-        $academicStaffCount = StaffBase::where('staff_type', 'academic')->count();
-        $adminStaffCount = StaffBase::where('staff_type', 'administrative')->count();
-        $contractStaffCount = StaffBase::where('staff_type', 'contract')->count();
-        $collegesCount = OrganizationalEntity::count();
-
-        // أحدث الكوادر المقيدة
-        $recentStaff = StaffBase::with(['department.entity'])->latest()->take(4)->get();
-
-        return view('dashboard', compact(
-            'totalStaff',
-            'totalArchives',
-            'academicStaffCount',
-            'adminStaffCount',
-            'contractStaffCount',
-            'collegesCount',
-            'recentStaff'
-        ));
-    }
+    public function __construct(
+        protected StatisticsService $statisticsService
+    ) {}
 
     /**
-     * شاشة الإحصائيات والمؤشرات الجامعية الشاملة (شاشة منفصلة متكاملة)
+     * عرض مركز الإحصائيات والتحليلات الأكاديمية والأرشيفية الشامل في واجهة موحدة
      */
-    public function statistics()
+    public function index(Request $request)
     {
-        $totalStaff = StaffBase::count();
-        $totalArchives = DigitalArchive::count();
-        $academicStaffCount = StaffBase::where('staff_type', 'academic')->count();
-        $adminStaffCount = StaffBase::where('staff_type', 'administrative')->count();
-        $contractStaffCount = StaffBase::where('staff_type', 'contract')->count();
+        $filters = [
+            'college_id' => $request->get('college_id'),
+            'rank_id'    => $request->get('rank_id'),
+            'period'     => $request->get('period', 'all'),
+        ];
 
-        // توزيع الكادر حسب الكليات والمراكز
-        $colleges = OrganizationalEntity::with(['departments' => function($q) {
-            $q->withCount('staff');
-        }])->withCount(['departments as staff_count' => function ($q) {
-            $q->join('staff_base', 'departments_units.id', '=', 'staff_base.department_id');
-        }])->get();
+        $forceRefresh = $request->boolean('refresh');
 
-        // الرتب الأكاديمية
-        $academicRanks = AcademicRank::withCount('academicDetails')->orderBy('seniority_order')->get();
+        $metrics = $this->statisticsService->getDashboardMetrics($filters, $forceRefresh);
 
-        // المؤهلات العلمية
-        $qualificationStats = Qualification::select('degree_type', DB::raw('count(*) as count'))
-            ->groupBy('degree_type')
-            ->get();
-
-        // توزيع الجنس (ذكور / إناث)
-        $genderStats = StaffBase::select('gender', DB::raw('count(*) as count'))
-            ->groupBy('gender')
-            ->get();
-
-        // توزيع الموقف الوظيفي
-        $jobStatusStats = StaffBase::select('job_status', DB::raw('count(*) as count'))
-            ->groupBy('job_status')
-            ->get();
-
-        return view('statistics', compact(
-            'totalStaff',
-            'totalArchives',
-            'academicStaffCount',
-            'adminStaffCount',
-            'contractStaffCount',
-            'colleges',
-            'academicRanks',
-            'qualificationStats',
-            'genderStats',
-            'jobStatusStats'
-        ));
+        return view('dashboard', $metrics);
     }
 }

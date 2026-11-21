@@ -1,0 +1,305 @@
+@extends('layouts.app')
+
+@section('title', 'جامعة إب - المستودع الرقمي والأرشيف')
+
+@section('content')
+<div class="flex-1 flex flex-col min-h-0 gap-3.5 pb-0">
+
+    <!-- 1. شريط العمليات والفلترة الموحد -->
+    <div class="bg-white border border-slate-200 p-4 px-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 shadow-xs shrink-0 rounded-2xl select-none">
+        
+        <!-- نموذج البحث والتصفية المباشر -->
+        <form method="GET" action="{{ route('archive.index') }}" class="flex flex-wrap items-center gap-3 flex-1 min-w-0 text-sm">
+            
+            <!-- حقل البحث الموسع -->
+            <div class="relative w-72 md:w-80 lg:w-96 shrink-0">
+                <input type="text" name="search" value="{{ request('search') }}" 
+                       placeholder="بحث بالعنوان، الرقم، الكادر، أو الرقم الوظيفي..." 
+                       class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-900 focus:bg-white pr-10 font-medium rounded-xl shadow-2xs transition">
+                <i class="fa-solid fa-search absolute right-3.5 top-3.5 text-slate-400 text-sm"></i>
+            </div>
+
+            <!-- تصنيف الوثيقة الأساسي -->
+            <div class="w-48 md:w-60 shrink-0">
+                <select name="type_id" class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-brand-900 font-medium rounded-xl shadow-2xs transition">
+                    <option value="">-- كافة تصنيفات الوثائق --</option>
+                    @foreach($documentTypes as $dt)
+                        <option value="{{ $dt->document_type_id }}" {{ request('type_id') == $dt->document_type_id ? 'selected' : '' }}>
+                            {{ $dt->type_name_ar }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- أزرار التصفية -->
+            <div class="flex items-center gap-2 shrink-0">
+                <button type="submit" class="bg-brand-900 hover:bg-brand-800 text-white font-bold py-2.5 px-5 rounded-xl text-sm transition flex items-center gap-2 cursor-pointer shadow-xs whitespace-nowrap">
+                    <i class="fa-solid fa-filter text-xs"></i> بحث
+                </button>
+                @if(request()->anyFilled(['search', 'type_id']))
+                    <a href="{{ route('archive.index') }}" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 px-3.5 rounded-xl text-sm transition border border-slate-200 text-center shrink-0" title="إلغاء التصفية">
+                        <i class="fa-solid fa-rotate-left text-xs"></i>
+                    </a>
+                @endif
+            </div>
+
+        </form>
+
+        <!-- عدادات الأرشيف المدمجة وزر الأرشفة -->
+        <div class="flex items-center gap-3 shrink-0 text-sm whitespace-nowrap">
+            <span class="bg-slate-50 text-slate-700 font-semibold px-4 py-2.5 rounded-xl border border-slate-200 font-mono text-xs">
+                وثائق: <strong class="text-brand-900 text-sm">{{ $totalDocsCount }}</strong>
+                <span class="text-slate-300 mx-2">|</span>
+                إصدارات: <strong class="text-brand-900 text-sm">{{ $totalVersionsCount }}</strong>
+            </span>
+            <button type="button" onclick="document.getElementById('directUploadModal').classList.remove('hidden')" class="bg-brand-900 hover:bg-brand-800 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition flex items-center gap-2 shadow-xs cursor-pointer shrink-0">
+                <i class="fa-solid fa-cloud-arrow-up text-sm"></i> أرشفة وثيقة
+            </button>
+        </div>
+
+    </div>
+
+    <!-- 2. جدول وثائق الأرشيف الإلكتروني -->
+    <div class="flex-1 bg-white border border-slate-200 shadow-xs flex flex-col min-h-0 rounded-2xl overflow-hidden relative">
+        <div id="archive-scroll-container" class="flex-1 overflow-y-auto min-h-0 relative no-scrollbar">
+            <table class="w-full text-right text-sm border-collapse">
+                <thead class="bg-slate-50 text-slate-800 font-bold sticky top-0 z-20 select-none text-sm border-b border-slate-200">
+                    <tr>
+                        <th class="py-3.5 px-4 w-14 text-center font-mono text-slate-400 font-bold">#</th>
+                        <th class="py-3.5 px-4 min-w-[240px] text-slate-900">عنوان الوثيقة</th>
+                        <th class="py-3.5 px-4 w-44 text-slate-700">التصنيف</th>
+                        <th class="py-3.5 px-4 w-56 text-slate-700">الكادر المعني</th>
+                        <th class="py-3.5 px-4 w-32 text-center font-mono text-slate-700">رقم القيد</th>
+                        <th class="py-3.5 px-4 w-40 text-center text-slate-700">حالة الملف</th>
+                        <th class="py-3.5 px-4 w-32 text-center text-slate-700">تاريخ الأرشفة</th>
+                        <th class="py-3.5 px-4 w-36 text-center text-slate-700">الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 font-semibold text-slate-800 text-sm">
+                    @forelse($documents as $index => $doc)
+                        @php 
+                            $v = $doc->currentVersion ?? $doc->versions->first(); 
+                            $hasFile = $v && $v->file_size_bytes > 0;
+                        @endphp
+                        <tr class="hover:bg-slate-50 transition {{ $index % 2 == 0 ? 'bg-white' : 'bg-slate-50/40' }}">
+                            <td class="py-3.5 px-4 text-center text-slate-400 font-mono text-xs">{{ $documents->firstItem() + $index }}</td>
+                            <td class="py-3.5 px-4">
+                                <span class="font-bold text-slate-900 flex items-center gap-2.5">
+                                    <i class="fa-regular fa-file-pdf text-brand-900 text-lg shrink-0"></i>
+                                    <span class="truncate max-w-[280px]" title="{{ $doc->document_title }}">{{ $doc->document_title }}</span>
+                                </span>
+                            </td>
+                            <td class="py-3.5 px-4 text-slate-700 font-medium whitespace-nowrap">
+                                <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-lg text-xs font-semibold border border-slate-200">
+                                    {{ $doc->documentType?->type_name_ar ?? 'عام' }}
+                                </span>
+                            </td>
+                            <td class="py-3.5 px-4">
+                                @if($doc->employee)
+                                    <a href="{{ route('employees.show', $doc->employee->employee_id) }}" class="font-bold text-brand-900 hover:underline flex items-center gap-1.5">
+                                        <span class="truncate max-w-[170px]">{{ $doc->employee->full_name_ar }}</span>
+                                        <span class="text-xs text-slate-400 font-mono font-normal">({{ $doc->employee->employee_number }})</span>
+                                    </a>
+                                @else
+                                    <span class="text-slate-400 font-normal">سجل عام</span>
+                                @endif
+                            </td>
+                            <td class="py-3.5 px-4 text-center font-mono text-slate-600 whitespace-nowrap">
+                                {{ $doc->document_number ?? '—' }}
+                            </td>
+                            <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                                @if($hasFile)
+                                    <span class="inline-flex items-center gap-1.5 bg-brand-50 text-brand-900 border border-brand-200 px-3 py-1 rounded-lg text-xs font-bold" title="بصمة التحقق: {{ $v?->checksum_sha256 }}">
+                                        <i class="fa-solid fa-check text-brand-900 text-xs"></i>
+                                        <span>مؤرشف ({{ number_format($v->file_size_bytes / 1024, 0) }} KB)</span>
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 bg-slate-50 text-slate-400 border border-slate-200 px-2.5 py-1 rounded-lg text-xs">
+                                        <span>قيد ورقي</span>
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-3.5 px-4 text-center font-mono text-slate-600 text-sm whitespace-nowrap">
+                                {{ $doc->created_at ? $doc->created_at->format('Y-m-d') : '—' }}
+                            </td>
+                            <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    @if($v)
+                                        <a href="{{ route('archive.preview', $v->document_version_id) }}" 
+                                           target="_blank"
+                                           class="w-8 h-8 bg-white hover:bg-slate-50 text-slate-700 hover:text-brand-900 rounded-lg border border-slate-200 transition text-xs font-bold inline-flex items-center justify-center shadow-2xs cursor-pointer" 
+                                           title="معاينة الوثيقة">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </a>
+                                        @if($hasFile)
+                                            <a href="{{ route('archive.download', $v->document_version_id) }}" 
+                                               class="w-8 h-8 bg-white hover:bg-slate-50 text-slate-700 hover:text-brand-900 rounded-lg border border-slate-200 transition text-xs font-bold inline-flex items-center justify-center shadow-2xs cursor-pointer" 
+                                               title="تنزيل الملف">
+                                                <i class="fa-solid fa-download"></i>
+                                            </a>
+                                        @endif
+                                    @endif
+                                    <button type="button" onclick="upgradeDocVersion({{ json_encode($doc) }})" 
+                                            class="w-8 h-8 bg-brand-50 hover:bg-brand-100 text-brand-900 rounded-lg border border-brand-200 transition text-xs font-bold inline-flex items-center justify-center cursor-pointer shadow-2xs" 
+                                            title="تحديث أو ترقية إصدار الوثيقة">
+                                        <i class="fa-solid fa-cloud-arrow-up text-xs"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="py-16 text-center text-slate-400 font-medium bg-white">
+                                <i class="fa-solid fa-inbox text-4xl text-slate-300 mb-3 block"></i>
+                                لا توجد وثائق مؤرشفة مطابقة للبحث أو التصفية.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <!-- مؤشر التمرير السفلي -->
+        <button type="button" id="scroll-down-indicator" onclick="scrollArchiveDown()" 
+                class="hidden absolute bottom-3 left-1/2 -translate-x-1/2 z-30 transition-all duration-300 bg-white hover:bg-slate-50 text-slate-600 hover:text-brand-900 border border-slate-200 rounded-full w-9 h-9 shadow-sm flex items-center justify-center cursor-pointer select-none"
+                title="توجد وثائق إضافية">
+            <i class="fa-solid fa-chevron-down text-brand-900 text-sm animate-subtle-bounce"></i>
+        </button>
+    </div>
+
+</div>
+
+<!-- Modal أرشفة وثيقة مباشرة من المستودع -->
+<div id="directUploadModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 select-none">
+    <div class="bg-white border border-slate-200 w-full max-w-lg flex flex-col shadow-xl rounded-2xl overflow-hidden">
+        <div class="bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between shrink-0">
+            <span class="font-bold text-sm text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-cloud-arrow-up text-brand-900 text-base"></i> أرشفة وثيقة جديدة في المستودع
+            </span>
+            <button onclick="document.getElementById('directUploadModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 font-bold text-xl cursor-pointer transition">&times;</button>
+        </div>
+        <form method="POST" action="{{ route('archive.store') }}" enctype="multipart/form-data" class="p-6 text-sm space-y-4">
+            @csrf
+            <div>
+                <label class="block font-semibold mb-1.5 text-slate-800">الكادر المعني بالوثيقة: <span class="text-rose-600">*</span></label>
+                <select name="employee_id" required class="w-full bg-slate-50 border border-slate-200 p-2.5 text-sm focus:outline-none focus:border-brand-900 font-medium rounded-xl">
+                    <option value="">-- حدد الكادر --</option>
+                    @foreach($employees as $e)
+                        <option value="{{ $e->employee_id }}">{{ $e->full_name_ar }} ({{ $e->employee_number }})</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="grid grid-cols-2 gap-3.5">
+                <div>
+                    <label class="block font-semibold mb-1.5 text-slate-800">تصنيف الوثيقة: <span class="text-rose-600">*</span></label>
+                    <select name="document_type_id" required class="w-full bg-slate-50 border border-slate-200 p-2.5 text-sm focus:outline-none focus:border-brand-900 font-medium rounded-xl">
+                        @foreach($documentTypes as $dt)
+                            <option value="{{ $dt->document_type_id }}">{{ $dt->type_name_ar }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1.5 text-slate-800">رقم الوثيقة / القيد:</label>
+                    <input type="text" name="document_number" placeholder="رقم القيد أو القرار..." class="w-full bg-slate-50 border border-slate-200 p-2.5 text-sm focus:outline-none focus:border-brand-900 font-mono rounded-xl">
+                </div>
+            </div>
+            <div>
+                <label class="block font-semibold mb-1.5 text-slate-800">عنوان وموضوع الوثيقة: <span class="text-rose-600">*</span></label>
+                <input type="text" name="document_title" required placeholder="مثال: شهادة دكتوراه، قرار ترقية، وثيقة هوية..." class="w-full bg-slate-50 border border-slate-200 p-2.5 text-sm focus:outline-none focus:border-brand-900 font-medium rounded-xl">
+            </div>
+            <div>
+                <label class="block font-semibold mb-1.5 text-slate-800">ملف الوثيقة (PDF أو صورة حتى 50MB): <span class="text-rose-600">*</span></label>
+                <input type="file" name="document_file" required accept="application/pdf,image/*" class="w-full bg-slate-50 border border-slate-200 p-2 text-sm file:py-2 file:px-4 file:bg-brand-900 file:text-white file:border-0 file:rounded-lg file:text-xs text-sm rounded-xl">
+            </div>
+            <div>
+                <label class="block font-semibold mb-1.5 text-slate-800">وصف أو ملاحظات أرشيفية:</label>
+                <textarea name="description" rows="2" placeholder="أي بيانات توثيقية إضافية..." class="w-full bg-slate-50 border border-slate-200 p-2.5 text-sm focus:outline-none focus:border-brand-900 rounded-xl"></textarea>
+            </div>
+            <div class="flex items-center gap-2 pt-1">
+                <input type="checkbox" id="conf_check" name="is_confidential" value="1" checked class="rounded text-brand-900 border-slate-300 w-4 h-4">
+                <label for="conf_check" class="text-slate-800 font-medium cursor-pointer text-sm">وثيقة سرية / محمية</label>
+            </div>
+            <div class="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button type="button" onclick="document.getElementById('directUploadModal').classList.add('hidden')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold cursor-pointer transition">إلغاء</button>
+                <button type="submit" class="bg-brand-900 hover:bg-brand-800 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 cursor-pointer shadow-xs transition">
+                    <i class="fa-solid fa-cloud-arrow-up text-sm"></i> رفع وأرشفة
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal رفع إصدار أحدث v+ لوثيقة موجودة -->
+<div id="upgradeVersionModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 select-none">
+    <div class="bg-white border border-slate-200 w-full max-w-md flex flex-col shadow-xl rounded-2xl overflow-hidden">
+        <div class="bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between shrink-0">
+            <span class="font-bold text-sm text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-code-branch text-brand-900 text-base"></i> ترقية إصدار الوثيقة الأرشيفية
+            </span>
+            <button onclick="document.getElementById('upgradeVersionModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 font-bold text-xl cursor-pointer transition">&times;</button>
+        </div>
+        <form id="form-upgrade-version" method="POST" action="" enctype="multipart/form-data" class="p-6 text-sm space-y-4">
+            @csrf
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-slate-800">
+                <div class="font-bold text-sm mb-1 text-brand-900" id="upgrade_doc_title"></div>
+                <div class="text-xs text-slate-600" id="upgrade_doc_meta"></div>
+            </div>
+            <div>
+                <label class="block font-semibold mb-1.5 text-slate-800">الملف الإلكتروني المحدث (PDF أو صورة حتى 50MB): <span class="text-rose-600">*</span></label>
+                <input type="file" name="document_file" required accept="application/pdf,image/*" class="w-full bg-slate-50 border border-slate-200 p-2 text-sm file:py-2 file:px-4 file:bg-brand-900 file:text-white file:border-0 file:rounded-lg file:text-xs text-sm rounded-xl">
+            </div>
+            <p class="text-xs text-slate-500 leading-relaxed">
+                <i class="fa-solid fa-shield-halved text-emerald-600"></i> سيتم أرشفة النسخة السابقة تلقائياً وتعيين الملف الجديد كإصدار حالي مع حساب بصمة رقمية SHA-256 جديدة.
+            </p>
+            <div class="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button type="button" onclick="document.getElementById('upgradeVersionModal').classList.add('hidden')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold cursor-pointer transition">إلغاء</button>
+                <button type="submit" class="bg-brand-900 hover:bg-brand-800 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 cursor-pointer shadow-xs transition">
+                    <i class="fa-solid fa-upload text-sm"></i> تأكيد الترقية
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@endsection
+
+@section('scripts')
+<script>
+    const scrollContainer = document.getElementById('archive-scroll-container');
+    const scrollIndicator = document.getElementById('scroll-down-indicator');
+
+    function updateScrollIndicator() {
+        if (!scrollIndicator || !scrollContainer) return;
+        const canScroll = scrollContainer.scrollHeight > scrollContainer.clientHeight + 10;
+        const isNearBottom = (scrollContainer.scrollTop + scrollContainer.clientHeight) >= (scrollContainer.scrollHeight - 25);
+        if (canScroll && !isNearBottom) {
+            scrollIndicator.classList.remove('hidden');
+        } else {
+            scrollIndicator.classList.add('hidden');
+        }
+    }
+
+    function scrollArchiveDown() {
+        if (!scrollContainer) return;
+        scrollContainer.scrollBy({ top: 220, behavior: 'smooth' });
+    }
+
+    if (scrollContainer) {
+        scrollContainer.addEventListener('scroll', updateScrollIndicator);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(updateScrollIndicator, 200);
+    });
+
+    window.addEventListener('resize', updateScrollIndicator);
+
+    function upgradeDocVersion(doc) {
+        document.getElementById('form-upgrade-version').action = '/archive/' + doc.document_id + '/versions';
+        document.getElementById('upgrade_doc_title').innerText = doc.document_title || 'وثيقة';
+        const empName = doc.employee ? doc.employee.full_name_ar : 'سجل عام';
+        document.getElementById('upgrade_doc_meta').innerText = 'الكادر: ' + empName + ' | عدد الإصدارات: ' + (doc.versions ? doc.versions.length : 1);
+        document.getElementById('upgradeVersionModal').classList.remove('hidden');
+    }
+</script>
+@endsection

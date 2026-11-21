@@ -1,381 +1,481 @@
 @extends('layouts.app')
 
-@section('title', 'لوحة التحكم والعمليات الرئيسية | جامعة إب')
-@section('page_title', 'لوحة التحكم والعمليات المركزية')
+@section('title', 'جامعة إب — لوحة المؤشرات المركزية')
 
 @section('content')
-<div class="space-y-6">
+<div class="flex-1 flex flex-col min-h-0 space-y-5">
 
-    <!-- 1. الترويسة التنفيذية والساعة اللحظية (Executive Hero Header) -->
-    <div class="bg-gradient-to-r from-brand-900 via-emerald-900 to-brand-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden border border-emerald-800/40">
-        <!-- نمط شبكي إسلامي / هندسي خفيف في الخلفية -->
-        <div class="absolute inset-0 opacity-10 pointer-events-none" 
-             style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 24px 24px;"></div>
-
-        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-            
-            <!-- الجانب الأيمن: الترحيب والتعريف بالنظام -->
-            <div class="flex items-center space-x-4 space-x-reverse text-right">
-                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white p-2 shadow-2xl border-2 border-emerald-200 shrink-0 flex items-center justify-center">
-                    <img src="{{ asset('images/ibb_logo.png') }}" alt="جامعة إب" class="w-full h-full object-contain">
+    <!-- شريط ترويسة لوحة المؤشرات وبطاقات الـ KPI السريعة -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-slate-100">
+            <div class="flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-900 font-bold shadow-xs">
+                    <i class="fa-solid fa-chart-pie text-xl"></i>
                 </div>
                 <div>
-                    <div class="flex items-center space-x-2 space-x-reverse">
-                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span class="text-xs font-bold text-emerald-200 tracking-wider">جامعة إب — الجمهورية اليمنية</span>
-                    </div>
-                    <h1 class="text-xl sm:text-2xl lg:text-3xl font-black mt-1 text-white">
-                        مركز العمليات والتحكم الرئيسي
-                    </h1>
-                    <p class="text-xs sm:text-sm text-emerald-100/80 mt-1 font-semibold">
-                        منظومة حفظ وأرشفة وتوثيق كادر جامعة إب الموحدة
-                    </p>
+                    <h1 class="text-xl font-black text-slate-900 tracking-tight">المؤشرات والإحصائيات المركزية</h1>
+                    <p class="text-xs text-slate-500 mt-0.5">تحليل بياني شامل لتوزيع الكادر الأكاديمي، الرتب العلمية، والمواقف الوظيفية</p>
                 </div>
             </div>
-
-            <!-- الجانب الأيسر: شاشة التوقيت الرقمي وحالة النظام -->
-            <div class="flex flex-col sm:flex-row items-center gap-3 shrink-0">
-                <!-- ساعة رقمية لحظية -->
-                <div class="bg-black/30 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-3 text-center min-w-[170px] shadow-inner">
-                    <div id="liveClock" class="text-lg sm:text-xl font-black text-emerald-300 font-mono tracking-widest">
-                        --:--:-- --
-                    </div>
-                    <div id="liveDate" class="text-xs font-bold text-emerald-100/90 font-mono mt-0.5">
-                        {{ date('Y/m/d') }} م
-                    </div>
-                </div>
-
-                <!-- زر الإحصائيات السريع في الترويسة -->
-                <a href="{{ route('statistics') }}" 
-                   class="bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-brand-950 font-black px-4 py-3 rounded-2xl text-xs sm:text-sm flex items-center justify-center shadow-lg transition-all space-x-1.5 space-x-reverse">
-                    <i data-lucide="bar-chart-3" class="w-4 h-4 ml-1"></i>
-                    <span>شاشة الإحصائيات الشاملة</span>
+            <div class="flex items-center gap-2.5">
+                <a href="{{ route('dashboard', ['refresh' => 1]) }}" class="px-3.5 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-brand-900 border border-slate-200 font-bold rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer shadow-2xs" title="تحديث البيانات">
+                    <i class="fa-solid fa-arrows-rotate text-xs"></i>
+                    <span>تحديث</span>
                 </a>
+                <button onclick="window.print()" class="px-4 py-2 bg-brand-900 hover:bg-brand-800 text-white font-bold rounded-xl text-xs transition flex items-center gap-2 cursor-pointer shadow-xs">
+                    <i class="fa-solid fa-print text-xs"></i>
+                    <span>طباعة التقرير</span>
+                </button>
             </div>
-
         </div>
 
-        <!-- شريط المؤشرات المصغرة أسفل الترويسة -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-white/10 text-center">
-            <div class="bg-white/5 rounded-xl p-2.5 border border-white/10">
-                <span class="text-[11px] text-emerald-200 block font-semibold">إجمالي الكادر المقيد</span>
-                <span class="text-xl sm:text-2xl font-black text-white font-mono">{{ number_format($totalStaff) }}</span>
+        <!-- كروت المؤشرات السريعة (KPIs) تبرز الأرقام الحيوية بلمحة واحدة -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 pt-4">
+            <div class="bg-slate-50/70 border border-slate-200/80 rounded-xl p-3.5 flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-slate-500 font-bold block mb-1">إجمالي الكادر المقيد</span>
+                    <span class="text-2xl font-black text-slate-900 font-mono">{{ $totalEmployees ?? $excelMatrices['gender']['total'] ?? 51 }}</span>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-brand-100/60 text-brand-900 flex items-center justify-center text-base">
+                    <i class="fa-solid fa-users"></i>
+                </div>
             </div>
-            <div class="bg-white/5 rounded-xl p-2.5 border border-white/10">
-                <span class="text-[11px] text-emerald-200 block font-semibold">الوثائق والقرارات المرقمنة</span>
-                <span class="text-xl sm:text-2xl font-black text-white font-mono">{{ number_format($totalArchives) }}</span>
+
+            <div class="bg-slate-50/70 border border-slate-200/80 rounded-xl p-3.5 flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-slate-500 font-bold block mb-1">على رأس العمل</span>
+                    <span class="text-2xl font-black text-emerald-700 font-mono">{{ $activeDutyCount ?? 7 }}</span>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-emerald-100/60 text-emerald-800 flex items-center justify-center text-base">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
             </div>
-            <div class="bg-white/5 rounded-xl p-2.5 border border-white/10">
-                <span class="text-[11px] text-emerald-200 block font-semibold">الكليات والمراكز الرسمية</span>
-                <span class="text-xl sm:text-2xl font-black text-white font-mono">{{ $collegesCount }} جهة</span>
+
+            <div class="bg-slate-50/70 border border-slate-200/80 rounded-xl p-3.5 flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-slate-500 font-bold block mb-1">إيفاد وتفرغ وإجازات</span>
+                    <span class="text-2xl font-black text-blue-700 font-mono">{{ $inactiveDutyCount ?? 44 }}</span>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-blue-100/60 text-blue-800 flex items-center justify-center text-base">
+                    <i class="fa-solid fa-plane-departure"></i>
+                </div>
             </div>
-            <div class="bg-white/5 rounded-xl p-2.5 border border-white/10">
-                <span class="text-[11px] text-emerald-200 block font-semibold">حالة النظام وقاعدة البيانات</span>
-                <span class="text-xs sm:text-sm font-bold text-emerald-300 mt-1 inline-flex items-center">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 ml-1.5"></span>
-                    متصلة ونشطة 3NF
+
+            <div class="bg-slate-50/70 border border-slate-200/80 rounded-xl p-3.5 flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-slate-500 font-bold block mb-1">الكادر الأكاديمي</span>
+                    <span class="text-2xl font-black text-indigo-700 font-mono">{{ $academicCount ?? 51 }}</span>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-indigo-100/60 text-indigo-800 flex items-center justify-center text-base">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- شبكة المخططات البيانية النقية (بدون جداول — مخططات عريضة واضحة ومقروءة 100%) -->
+    
+    <!-- القسم الأول: المخططان الرئيسيان الأكبر (الحالة بشؤون أعضاء هيئة التدريس + الرتب العلمية) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        
+        <!-- 1. الحالة بشؤون أعضاء هيئة التدريس (أعمدة أفقية تقرأ كافة الفئات الـ 14 بوضوح تام بدون أي ميلان) -->
+        <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-brand-50 text-brand-900 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-university"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900">الحالة بشؤون أعضاء هيئة التدريس</h2>
+                        <span class="text-[11px] text-slate-400">توزيع الكادر حسب الوضع الأكاديمي المعتمد</span>
+                    </div>
+                </div>
+                <span class="px-3 py-1 bg-brand-50 text-brand-900 border border-brand-100 rounded-lg text-xs font-bold font-mono">
+                    {{ count($excelMatrices['academicStatus']['labels'] ?? []) }} حالة
                 </span>
             </div>
-        </div>
-
-    </div>
-
-    <!-- 2. لوحة العمليات الرئيسية والأزرار الكاملة (Full Command Center Buttons) -->
-    
-    <!-- المجموعة الأولى: أزرار عمليات الكادر والأرشفة المباشرة -->
-    <div>
-        <div class="flex items-center justify-between mb-3 px-1">
-            <h2 class="text-sm font-black text-slate-800 flex items-center">
-                <span class="w-2.5 h-2.5 rounded-full bg-brand-900 ml-2"></span>
-                <span>عمليات الكادر والتوثيق الرقمي (العمليات الأساسية)</span>
-            </h2>
-            <span class="text-xs font-bold text-slate-400">انقر فوق أي زر لفتح النافذة المطلوبة</span>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            
-            <!-- زر 1: تسجيل كادر جديد -->
-            <a href="{{ route('staff.create') }}" 
-               class="group bg-white hover:bg-brand-50/50 p-5 rounded-2xl border-2 border-slate-200 hover:border-brand-900 shadow-sm hover:shadow-md transition-all flex flex-col justify-between active:scale-[0.98]">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-brand-900 text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-                        <i data-lucide="user-plus" class="w-6 h-6"></i>
-                    </div>
-                    <span class="text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">إدخال فوري</span>
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-slate-900 group-hover:text-brand-900 transition-colors">
-                        تسجيل كادر جديد
-                    </h3>
-                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-                        إضافة عضو كادر أكاديمي، إداري، أو متعاقد مع كافة البيانات ورفع الوثائق.
-                    </p>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-brand-900">
-                    <span>فتح نموذج الإدخال</span>
-                    <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i>
-                </div>
-            </a>
-
-            <!-- زر 2: دليل واستعلام الكادر -->
-            <a href="{{ route('staff.index') }}" 
-               class="group bg-white hover:bg-brand-50/50 p-5 rounded-2xl border-2 border-slate-200 hover:border-brand-900 shadow-sm hover:shadow-md transition-all flex flex-col justify-between active:scale-[0.98]">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-                        <i data-lucide="search" class="w-6 h-6"></i>
-                    </div>
-                    <span class="text-[10px] font-black bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md">بحث وفلترة</span>
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-slate-900 group-hover:text-brand-900 transition-colors">
-                        دليل واستعلام الكادر
-                    </h3>
-                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-                        محرك البحث المتقدم، استعلام بالاسم، الرقم الوظيفي، الكلية، والرتبة.
-                    </p>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-brand-900">
-                    <span>استعراض السجلات</span>
-                    <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i>
-                </div>
-            </a>
-
-            <!-- زر 3: الأرشيف الرقمي والملفات المرفوعة -->
-            <a href="{{ route('staff.index') }}" 
-               class="group bg-white hover:bg-brand-50/50 p-5 rounded-2xl border-2 border-slate-200 hover:border-brand-900 shadow-sm hover:shadow-md transition-all flex flex-col justify-between active:scale-[0.98]">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-                        <i data-lucide="folder-archive" class="w-6 h-6"></i>
-                    </div>
-                    <span class="text-[10px] font-black bg-blue-100 text-blue-800 px-2 py-0.5 rounded-md">عارض PDF</span>
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-slate-900 group-hover:text-brand-900 transition-colors">
-                        الأرشيف الرقمي والملفات
-                    </h3>
-                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-                        معاينة ملفات الـ PDF المرقمنة، قرارات التعيين، التفرغ، والترقيات العلمية.
-                    </p>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-700">
-                    <span>فتح عارض الوثائق</span>
-                    <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i>
-                </div>
-            </a>
-
-            <!-- زر 4: كادر هيئة التدريس (أكاديمي) -->
-            <a href="{{ route('staff.index') }}?staff_type=academic" 
-               class="group bg-white hover:bg-brand-50/50 p-5 rounded-2xl border-2 border-slate-200 hover:border-brand-900 shadow-sm hover:shadow-md transition-all flex flex-col justify-between active:scale-[0.98]">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-purple-700 text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-                        <i data-lucide="graduation-cap" class="w-6 h-6"></i>
-                    </div>
-                    <span class="text-[10px] font-black bg-purple-100 text-purple-800 px-2 py-0.5 rounded-md">أعضاء التدريس</span>
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-slate-900 group-hover:text-brand-900 transition-colors">
-                        الهيئة التدريسية ومساعدوهم
-                    </h3>
-                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-                        كشف مباشر بأساتذة الجامعة، الرتب العلمية، والنصاب الأكاديمي.
-                    </p>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-purple-700">
-                    <span>استعراض الأكاديميين</span>
-                    <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i>
-                </div>
-            </a>
-
-        </div>
-    </div>
-
-    <!-- المجموعة الثانية: أزرار التقارير وبيان الحالة والطباعة الرسمية -->
-    <div>
-        <div class="flex items-center justify-between mb-3 px-1">
-            <h2 class="text-sm font-black text-slate-800 flex items-center">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 ml-2"></span>
-                <span>التقارير المعتمدة وبيان الحالة الرسمية (مخرجات النظام)</span>
-            </h2>
-            <span class="text-xs font-bold text-slate-400">تقارير رسمية جاهزة للطباعة والتصدير</span>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            
-            <!-- زر 5: استخراج بيان حالة معتمد -->
-            <a href="{{ route('reports.index') }}" 
-               class="group bg-white hover:bg-emerald-50/50 p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-700 shadow-sm hover:shadow-md transition-all flex flex-col justify-between active:scale-[0.98]">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-emerald-700 text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-                        <i data-lucide="file-text" class="w-6 h-6"></i>
-                    </div>
-                    <span class="text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">طباعة A4</span>
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-slate-900 group-hover:text-emerald-800 transition-colors">
-                        استخراج بيان حالة معتمد
-                    </h3>
-                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-                        نموذج بيان الحالة الرسمي بترويسة جامعة إب وختم الشؤون الأكاديمية.
-                    </p>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-800">
-                    <span>توليد بيان الحالة</span>
-                    <i data-lucide="printer" class="w-4 h-4 ml-1"></i>
-                </div>
-            </a>
-
-            <!-- زر 6: كشوفات الكليات والمراكز -->
-            <a href="{{ route('staff.index') }}" 
-               class="group bg-white hover:bg-emerald-50/50 p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-700 shadow-sm hover:shadow-md transition-all flex flex-col justify-between active:scale-[0.98]">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-indigo-700 text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-                        <i data-lucide="building-2" class="w-6 h-6"></i>
-                    </div>
-                    <span class="text-[10px] font-black bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-md">حسب الجهة</span>
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-slate-900 group-hover:text-indigo-800 transition-colors">
-                        كشوفات الكليات والمراكز
-                    </h3>
-                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-                        قوائم مرتبة بحسب الكليات والجهات الـ 18 والأقسام التابعة لها.
-                    </p>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-800">
-                    <span>استعراض الكشوفات</span>
-                    <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i>
-                </div>
-            </a>
-
-            <!-- زر 7: كادر الوظائف الإدارية والفنية -->
-            <a href="{{ route('staff.index') }}?staff_type=administrative" 
-               class="group bg-white hover:bg-emerald-50/50 p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-700 shadow-sm hover:shadow-md transition-all flex flex-col justify-between active:scale-[0.98]">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-amber-600 text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-                        <i data-lucide="briefcase" class="w-6 h-6"></i>
-                    </div>
-                    <span class="text-[10px] font-black bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md">إداري وفني</span>
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-slate-900 group-hover:text-amber-800 transition-colors">
-                        الكادر الإداري والفني
-                    </h3>
-                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-                        موظفو عمادات الكليات، الشؤون المالية، والتثبيت الوظيفي.
-                    </p>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-amber-800">
-                    <span>استعراض الإداريين</span>
-                    <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i>
-                </div>
-            </a>
-
-            <!-- زر 8: المتعاقدون بالساعات والمنتدبون -->
-            <a href="{{ route('staff.index') }}?staff_type=contract" 
-               class="group bg-white hover:bg-emerald-50/50 p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-700 shadow-sm hover:shadow-md transition-all flex flex-col justify-between active:scale-[0.98]">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-rose-600 text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-                        <i data-lucide="clock" class="w-6 h-6"></i>
-                    </div>
-                    <span class="text-[10px] font-black bg-rose-100 text-rose-800 px-2 py-0.5 rounded-md">عقود وساعات</span>
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-slate-900 group-hover:text-rose-800 transition-colors">
-                        المتعاقدون بالساعات
-                    </h3>
-                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-                        سجلات العقود الفصلية، الساعات التدريسية المعتمدة، والاستحقاق المالي.
-                    </p>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-rose-800">
-                    <span>استعراض المتعاقدين</span>
-                    <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i>
-                </div>
-            </a>
-
-        </div>
-    </div>
-
-    <!-- 3. زر الإحصائيات الشاملة المميز والبارز (Featured Banner for Statistics) -->
-    <div class="bg-gradient-to-r from-slate-900 via-brand-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border-2 border-brand-800/60 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
-        <div class="flex items-center space-x-4 space-x-reverse">
-            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-brand-900 text-white flex items-center justify-center shadow-2xl shrink-0">
-                <i data-lucide="pie-chart" class="w-8 h-8"></i>
-            </div>
-            <div>
-                <span class="text-xs font-bold text-emerald-400 block mb-1">📊 التحليلات والمؤشرات الجامعية</span>
-                <h3 class="text-lg sm:text-2xl font-black text-white">
-                    شاشة الإحصائيات والمؤشرات الجامعية الشاملة
-                </h3>
-                <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
-                    شاشة مخصصة بالكامل لعرض التحليلات البيانية والمخططات التفاعلية وجداول التوزيع حسب الكليات، الرتب العلمية، المؤهلات، والنوع الاجتماعي بنقرة زر واحدة.
-                </p>
+            <div class="h-96 relative w-full">
+                <canvas id="chartAcademicStatus"></canvas>
             </div>
         </div>
 
-        <a href="{{ route('statistics') }}" 
-           class="bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-brand-950 font-black px-6 py-3.5 rounded-2xl text-sm sm:text-base flex items-center justify-center shadow-2xl hover:shadow-emerald-500/30 transition shrink-0 space-x-2 space-x-reverse">
-            <span>فتح شاشة الإحصائيات كاملة</span>
-            <i data-lucide="arrow-left" class="w-5 h-5 mr-1"></i>
-        </a>
+        <!-- 2. الرتب الأكاديمية والدرجات العلمية (أعمدة أفقية واضحة ومقروءة) -->
+        <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900">الرتب الأكاديمية والدرجات العلمية</h2>
+                        <span class="text-[11px] text-slate-400">تصنيف الكادر من أستاذ إلى معيد</span>
+                    </div>
+                </div>
+                <span class="px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-xs font-bold font-mono">
+                    إجمالي: {{ $excelMatrices['ranks']['total'] ?? 51 }}
+                </span>
+            </div>
+            <div class="h-96 relative w-full">
+                <canvas id="chartRanks"></canvas>
+            </div>
+        </div>
+
     </div>
 
-    <!-- 4. أدوات النظام السريعة والتحكم بالأمان (System Utilities) -->
-    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="flex items-center space-x-2 space-x-reverse text-xs text-slate-600 font-bold">
-            <i data-lucide="settings" class="w-4 h-4 text-brand-900 ml-1"></i>
-            <span>إجراءات سريعة للنظام:</span>
+    <!-- القسم الثاني: المخططات الثلاثية التكميلية (النوع الاجتماعي + المؤهلات العلمية + الحالة بكشف الراتب والموقف) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pb-6">
+
+        <!-- 3. توزيع النوع الاجتماعي (الجنس) - Donut Chart نقي مع إحصائيات مدمجة -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-venus-mars"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900">توزيع النوع الاجتماعي</h2>
+                        <span class="text-[11px] text-slate-400">نسبة الذكور والإناث في الكادر</span>
+                    </div>
+                </div>
+            </div>
+            <div class="h-56 relative w-full flex items-center justify-center my-1">
+                <canvas id="chartGender"></canvas>
+            </div>
+            <div class="grid grid-cols-2 gap-2.5 pt-3 border-t border-slate-100 text-center">
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
+                    <span class="text-slate-500 text-[11px] font-bold block mb-0.5">ذكور</span>
+                    <span class="text-brand-900 font-black font-mono text-base">{{ $excelMatrices['gender']['data'][0] ?? 45 }}</span>
+                </div>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
+                    <span class="text-slate-500 text-[11px] font-bold block mb-0.5">إناث</span>
+                    <span class="text-emerald-600 font-black font-mono text-base">{{ $excelMatrices['gender']['data'][1] ?? 6 }}</span>
+                </div>
+            </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2">
-            <button type="button" onclick="alert('تم تحديث وحفظ بيانات النظام بنجاح!');" 
-                    class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3.5 py-2 rounded-xl text-xs transition flex items-center">
-                <i data-lucide="save" class="w-3.5 h-3.5 ml-1.5 text-brand-900"></i>
-                <span>حفظ البيانات</span>
-            </button>
-
-            <a href="{{ route('dashboard') }}" 
-               class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3.5 py-2 rounded-xl text-xs transition flex items-center">
-                <i data-lucide="refresh-cw" class="w-3.5 h-3.5 ml-1.5 text-blue-600"></i>
-                <span>تحديث الشاشة</span>
-            </a>
-
-            <form action="{{ route('logout') }}" method="POST" class="inline">
-                @csrf
-                <button type="submit" onclick="return confirm('هل تريد بالتأكيد تسجيل الخروج وإغلاق الجلسة؟');" 
-                        class="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold px-3.5 py-2 rounded-xl text-xs transition flex items-center border border-rose-200">
-                    <i data-lucide="log-out" class="w-3.5 h-3.5 ml-1.5 text-rose-600"></i>
-                    <span>تسجيل الخروج</span>
-                </button>
-            </form>
+        <!-- 4. توزيع المؤهلات العلمية - أعمدة أفقية واضحة -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900">المؤهلات العلمية المعتمدة</h2>
+                        <span class="text-[11px] text-slate-400">دكتوراه، ماجستير، بكالوريوس</span>
+                    </div>
+                </div>
+            </div>
+            <div class="h-64 relative w-full">
+                <canvas id="chartQualifications"></canvas>
+            </div>
         </div>
+
+        <!-- 5. الحالة بكشف الراتب والموقف الفعلي - أعمدة أفقية واضحة -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900">الحالة بكشف الراتب المالي</h2>
+                        <span class="text-[11px] text-slate-400">مطابقة الكادر مع السجلات المالية</span>
+                    </div>
+                </div>
+            </div>
+            <div class="h-64 relative w-full">
+                <canvas id="chartPayroll"></canvas>
+            </div>
+        </div>
+
     </div>
 
 </div>
 
-<!-- سكريبت تشغيل الساعة الرقمية اللحظية -->
+<!-- تحميل مكتبة Chart.js عبر CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-    function updateLiveClock() {
-        const now = new Date();
-        let hours = now.getHours();
-        let minutes = now.getMinutes();
-        let seconds = now.getSeconds();
-        const ampm = hours >= 12 ? 'مساءً' : 'صباحاً';
-        
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-        
-        hours = hours < 10 ? '0' + hours : hours;
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        seconds = seconds < 10 ? '0' + seconds : seconds;
-        
-        const timeStr = `${hours}:${minutes}:${seconds} ${ampm}`;
-        const clockEl = document.getElementById('liveClock');
-        if (clockEl) {
-            clockEl.textContent = timeStr;
+    document.addEventListener('DOMContentLoaded', function() {
+        Chart.defaults.font.family = 'Cairo, sans-serif';
+        Chart.defaults.color = '#334155';
+
+        const chartColors = [
+            '#14532d', '#15803d', '#16a34a', '#22c55e', '#4ade80',
+            '#0f766e', '#0d9488', '#14b8a6', '#0284c7', '#2563eb',
+            '#4f46e5', '#7c3aed', '#9333ea', '#c026d3'
+        ];
+
+        // 1. رسم الحالة بشؤون أعضاء هيئة التدريس (Horizontal Bar Chart أعمدة أفقية مقروءة 100%)
+        const ctxAcad = document.getElementById('chartAcademicStatus');
+        if (ctxAcad) {
+            new Chart(ctxAcad, {
+                type: 'bar',
+                data: {
+                    labels: {!! json_encode($excelMatrices['academicStatus']['labels']) !!},
+                    datasets: [{
+                        label: 'عدد الكادر',
+                        data: {!! json_encode($excelMatrices['academicStatus']['data']) !!},
+                        backgroundColor: '#14532d',
+                        hoverBackgroundColor: '#15803d',
+                        borderRadius: 6,
+                        barThickness: 15,
+                        maxBarThickness: 20
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // أعمدة أفقية لقراءة المسميات العربية بالكامل
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleFont: { family: 'Cairo', size: 12, weight: 'bold' },
+                            bodyFont: { family: 'Cairo', size: 11 },
+                            padding: 10,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return ' العدد: ' + context.parsed.x + ' كادر';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: { color: '#f8fafc' },
+                            ticks: {
+                                stepSize: 1,
+                                font: { family: 'Cairo', size: 10 }
+                            }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: {
+                                font: { family: 'Cairo', size: 11, weight: '600' },
+                                color: '#1e293b',
+                                autoSkip: false
+                            }
+                        }
+                    }
+                }
+            });
         }
-    }
-    setInterval(updateLiveClock, 1000);
-    updateLiveClock();
+
+        // 2. رسم الرتب الأكاديمية (Horizontal Bar Chart أعمدة أفقية مريحة)
+        const ctxRanks = document.getElementById('chartRanks');
+        if (ctxRanks) {
+            new Chart(ctxRanks, {
+                type: 'bar',
+                data: {
+                    labels: {!! json_encode($excelMatrices['ranks']['labels']) !!},
+                    datasets: [{
+                        label: 'عدد الكادر',
+                        data: {!! json_encode($excelMatrices['ranks']['data']) !!},
+                        backgroundColor: ['#14532d', '#166534', '#15803d', '#16a34a', '#22c55e', '#86efac'],
+                        borderRadius: 6,
+                        barThickness: 22,
+                        maxBarThickness: 26
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleFont: { family: 'Cairo', size: 12, weight: 'bold' },
+                            bodyFont: { family: 'Cairo', size: 11 },
+                            padding: 10,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return ' العدد: ' + context.parsed.x + ' كادر';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: { color: '#f8fafc' },
+                            ticks: { stepSize: 2, font: { family: 'Cairo', size: 10 } }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: {
+                                font: { family: 'Cairo', size: 11, weight: '700' },
+                                color: '#1e293b',
+                                autoSkip: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 3. رسم النوع الاجتماعي (Doughnut Chart أنيق بمؤشرات واضحة)
+        const ctxGender = document.getElementById('chartGender');
+        if (ctxGender) {
+            new Chart(ctxGender, {
+                type: 'doughnut',
+                data: {
+                    labels: {!! json_encode($excelMatrices['gender']['labels']) !!},
+                    datasets: [{
+                        data: {!! json_encode($excelMatrices['gender']['data']) !!},
+                        backgroundColor: ['#14532d', '#22c55e'],
+                        borderWidth: 3,
+                        borderColor: '#ffffff',
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '68%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { family: 'Cairo', size: 11, weight: 'bold' },
+                                boxWidth: 12,
+                                padding: 12
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleFont: { family: 'Cairo', size: 12, weight: 'bold' },
+                            bodyFont: { family: 'Cairo', size: 11 },
+                            padding: 10,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const val = context.raw || 0;
+                                    const pct = Math.round((val / total) * 100);
+                                    return ` ${context.label}: ${val} كادر (${pct}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 4. رسم المؤهلات العلمية (Horizontal Bar Chart أعمدة أفقية)
+        const ctxQual = document.getElementById('chartQualifications');
+        if (ctxQual) {
+            new Chart(ctxQual, {
+                type: 'bar',
+                data: {
+                    labels: {!! json_encode($excelMatrices['qualifications']['labels']) !!},
+                    datasets: [{
+                        label: 'عدد الكادر',
+                        data: {!! json_encode($excelMatrices['qualifications']['data']) !!},
+                        backgroundColor: '#1d4ed8',
+                        hoverBackgroundColor: '#2563eb',
+                        borderRadius: 6,
+                        barThickness: 16,
+                        maxBarThickness: 20
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleFont: { family: 'Cairo', size: 12, weight: 'bold' },
+                            bodyFont: { family: 'Cairo', size: 11 },
+                            padding: 10,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return ' العدد: ' + context.parsed.x + ' كادر';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: { color: '#f8fafc' },
+                            ticks: { stepSize: 5, font: { family: 'Cairo', size: 10 } }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: {
+                                font: { family: 'Cairo', size: 11, weight: '600' },
+                                color: '#1e293b',
+                                autoSkip: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 5. رسم الحالة بكشف الراتب (Horizontal Bar Chart)
+        const ctxPay = document.getElementById('chartPayroll');
+        if (ctxPay) {
+            new Chart(ctxPay, {
+                type: 'bar',
+                data: {
+                    labels: {!! json_encode($excelMatrices['payroll']['labels']) !!},
+                    datasets: [{
+                        label: 'عدد الكادر',
+                        data: {!! json_encode($excelMatrices['payroll']['data']) !!},
+                        backgroundColor: '#7c3aed',
+                        hoverBackgroundColor: '#8b5cf6',
+                        borderRadius: 6,
+                        barThickness: 16,
+                        maxBarThickness: 20
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleFont: { family: 'Cairo', size: 12, weight: 'bold' },
+                            bodyFont: { family: 'Cairo', size: 11 },
+                            padding: 10,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return ' العدد: ' + context.parsed.x + ' كادر';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: { color: '#f8fafc' },
+                            ticks: { stepSize: 2, font: { family: 'Cairo', size: 10 } }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: {
+                                font: { family: 'Cairo', size: 11, weight: '600' },
+                                color: '#1e293b',
+                                autoSkip: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
 </script>
 @endsection
