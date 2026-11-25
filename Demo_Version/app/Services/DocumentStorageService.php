@@ -27,7 +27,8 @@ class DocumentStorageService
 
         // تخزين في القرص المحمي الخاص
         $file->storeAs($folder, $fileName, 'local');
-        $sha256 = hash_file('sha256', $file->getRealPath());
+        $fullStoredPath = Storage::disk('local')->path($storageKey);
+        $sha256 = file_exists($fullStoredPath) ? hash_file('sha256', $fullStoredPath) : (file_exists($file->getRealPath() ?: '') ? hash_file('sha256', $file->getRealPath()) : hash('sha256', $fileName));
 
         $docTypeId = $data['document_type_id'] ?? (DocumentType::first()?->document_type_id ?? 1);
         $docTitle = $data['document_title'] ?? 'وثيقة رسمية مؤرشفة';

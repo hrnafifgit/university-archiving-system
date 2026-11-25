@@ -31,12 +31,20 @@
                 </select>
             </div>
 
+            @if(request('unit_id') || request('dept_id'))
+                <input type="hidden" name="unit_id" value="{{ request('unit_id') ?? request('dept_id') }}">
+            @endif
+
+            @if(request('cadre_type'))
+                <input type="hidden" name="cadre_type" value="{{ request('cadre_type') }}">
+            @endif
+
             <!-- أزرار التصفية -->
             <div class="flex items-center gap-2 shrink-0">
                 <button type="submit" class="bg-brand-900 hover:bg-brand-800 text-white font-bold py-2.5 px-5 rounded-xl text-sm transition flex items-center gap-2 cursor-pointer shadow-xs whitespace-nowrap">
                     <i class="fa-solid fa-filter text-xs"></i> بحث
                 </button>
-                @if(request('search') || request('college_id'))
+                @if(request('search') || request('college_id') || request('faculty_id') || request('unit_id') || request('dept_id'))
                     <a href="{{ route('employees.index') }}" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 px-3.5 rounded-xl text-sm transition border border-slate-200 text-center shrink-0 shadow-2xs" title="إلغاء التصفية">
                         <i class="fa-solid fa-rotate-left text-xs"></i>
                     </a>
@@ -51,12 +59,60 @@
                 <span id="header-loaded-count" class="font-bold text-brand-900">{{ min(10, $totalMatched) }}</span> / <span id="header-total-count">{{ $totalMatched }}</span> كادر
             </span>
 
-            <a href="{{ route('employees.create') }}" class="bg-brand-900 hover:bg-brand-800 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition flex items-center gap-2 shadow-xs cursor-pointer shrink-0">
+            <a href="{{ route('employees.create') }}{{ (request('college_id') || request('faculty_id') || request('unit_id') || request('dept_id')) ? '?faculty_id=' . (request('college_id') ?? request('faculty_id')) . '&dept_id=' . (request('unit_id') ?? request('dept_id')) : '' }}" class="bg-brand-900 hover:bg-brand-800 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition flex items-center gap-2 shadow-xs cursor-pointer shrink-0">
                 <i class="fa-solid fa-plus text-xs"></i> إضافة كادر
             </a>
         </div>
 
     </div>
+
+    <!-- تبويبات تقسيم وتصفية الكادر: كافة الكوادر / كادر أكاديمي / كادر إداري / متقاعدين بالساعات -->
+    @php
+        $currentCadre = request('cadre_type');
+        $baseParams = request()->except(['cadre_type', 'page']);
+    @endphp
+    <div class="flex items-center gap-2 overflow-x-auto select-none shrink-0 pb-0.5">
+        <a href="{{ route('employees.index', array_merge($baseParams)) }}" 
+           class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border {{ empty($currentCadre) ? 'bg-[#14532d] text-white border-[#14532d] shadow-xs' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">
+            <i class="fa-solid fa-users text-xs"></i>
+            <span>كافة الكوادر</span>
+            <span class="px-2 py-0.5 rounded-lg text-[11px] font-mono {{ empty($currentCadre) ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700' }}">{{ $totalAllCount }}</span>
+        </a>
+
+        <a href="{{ route('employees.index', array_merge($baseParams, ['cadre_type' => 'academic'])) }}" 
+           class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border {{ $currentCadre === 'academic' ? 'bg-[#14532d] text-white border-[#14532d] shadow-xs' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">
+            <i class="fa-solid fa-graduation-cap text-xs {{ $currentCadre === 'academic' ? 'text-emerald-300' : 'text-emerald-700' }}"></i>
+            <span>كادر أكاديمي</span>
+            <span class="px-2 py-0.5 rounded-lg text-[11px] font-mono {{ $currentCadre === 'academic' ? 'bg-white/20 text-white' : 'bg-emerald-50 text-emerald-800' }}">{{ $academicCount }}</span>
+        </a>
+
+        <a href="{{ route('employees.index', array_merge($baseParams, ['cadre_type' => 'admin'])) }}" 
+           class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border {{ $currentCadre === 'admin' ? 'bg-blue-900 text-white border-blue-900 shadow-xs' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">
+            <i class="fa-solid fa-briefcase text-xs {{ $currentCadre === 'admin' ? 'text-blue-300' : 'text-blue-700' }}"></i>
+            <span>كادر إداري</span>
+            <span class="px-2 py-0.5 rounded-lg text-[11px] font-mono {{ $currentCadre === 'admin' ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-800' }}">{{ $adminCount }}</span>
+        </a>
+
+        <a href="{{ route('employees.index', array_merge($baseParams, ['cadre_type' => 'hourly'])) }}" 
+           class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border {{ $currentCadre === 'hourly' ? 'bg-amber-800 text-white border-amber-800 shadow-xs' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }}">
+            <i class="fa-solid fa-clock text-xs {{ $currentCadre === 'hourly' ? 'text-amber-300' : 'text-amber-700' }}"></i>
+            <span>متقاعدين بالساعات</span>
+            <span class="px-2 py-0.5 rounded-lg text-[11px] font-mono {{ $currentCadre === 'hourly' ? 'bg-white/20 text-white' : 'bg-amber-50 text-amber-800' }}">{{ $hourlyCount }}</span>
+        </a>
+    </div>
+
+    @if(isset($activeUnit) && $activeUnit)
+    <div class="mb-3 px-4 py-2.5 bg-indigo-50/90 border border-indigo-200 text-indigo-900 rounded-xl flex items-center justify-between text-xs font-semibold shadow-2xs">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-users text-indigo-600 text-sm"></i>
+            <span>تصفية مخصصة للكادر التابع لـ: <strong class="text-indigo-950 font-bold">{{ $activeUnit->unit_name_ar }}</strong></span>
+            <span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full text-[11px] font-mono font-bold">({{ $totalMatched }} كادر)</span>
+        </div>
+        <a href="{{ route('employees.index') }}" class="text-[11px] bg-white border border-indigo-300 text-indigo-700 hover:bg-indigo-100 px-2.5 py-1 rounded-lg transition inline-flex items-center gap-1 font-bold">
+            <i class="fa-solid fa-xmark"></i> عرض كافة الكوادر
+        </a>
+    </div>
+    @endif
 
     <!-- جدول السجلات النقي -->
     <div class="flex-1 bg-white border border-slate-200 shadow-xs flex flex-col min-h-0 rounded-2xl overflow-hidden relative">

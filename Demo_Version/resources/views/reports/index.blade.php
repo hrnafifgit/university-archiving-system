@@ -51,7 +51,7 @@
                     <i class="fa-solid fa-file-excel text-emerald-100 text-sm"></i> <span>تصدير إكسل</span>
                 </a>
             @elseif($reportType === 'roster_19' || $reportType === 'custom_builder')
-                <a href="{{ route('reports.export') }}"
+                <a href="{{ route('reports.export', request()->query()) }}"
                    class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-4 py-2 rounded-xl text-sm transition flex items-center gap-2 shadow-2xs cursor-pointer border border-emerald-800">
                     <i class="fa-solid fa-file-excel text-emerald-100 text-sm"></i> <span>تصدير إكسل</span>
                 </a>

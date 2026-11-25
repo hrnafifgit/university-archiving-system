@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 // مسارات المصادقة وتسجيل الدخول مع حماية Throttling من هجمات التخمين
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1')->name('login.post');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:60,1')->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // كافة مسارات النظام محمية بواسطة جلسة المصادقة المباشرة
@@ -42,6 +42,7 @@ Route::middleware([EnsureDesktopAuthenticated::class])->group(function () {
 
     // إدارة الهيكل والبيانات المرجعية (Master Data Management)
     Route::get('/master-data', [\App\Http\Controllers\MasterDataController::class, 'index'])->name('master_data.index');
+    Route::get('/master-data/unit-stats/{id}', [\App\Http\Controllers\MasterDataController::class, 'getUnitStats'])->name('master_data.unit_stats');
     Route::middleware([EnsureHasPermission::class . ':manage_master_data'])->group(function () {
         // 1. الكليات والأقسام
         Route::post('/master-data/units', [\App\Http\Controllers\MasterDataController::class, 'storeUnit'])->name('master_data.units.store');

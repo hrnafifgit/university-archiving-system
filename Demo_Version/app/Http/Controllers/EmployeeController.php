@@ -36,7 +36,14 @@ class EmployeeController extends Controller
             'currentEmployment.academicRank',
             'currentEmployment.jobGrade',
             'currentEmployment.employmentStatus',
+            'currentEmployment.jobTitle',
             'currentEmployment.category',
+            'latestEmployment.organizationalUnit.parent',
+            'latestEmployment.academicRank',
+            'latestEmployment.jobGrade',
+            'latestEmployment.employmentStatus',
+            'latestEmployment.jobTitle',
+            'latestEmployment.category',
         ])
         ->withCount('documents')
         ->where('is_active_record', true);
@@ -53,8 +60,8 @@ class EmployeeController extends Controller
         }
 
         // 2. تصفية الكلية / الجهة العليا
-        if ($request->filled('college_id')) {
-            $collegeId = $request->college_id;
+        $collegeId = $request->college_id ?? $request->faculty_id;
+        if (!empty($collegeId)) {
             $query->whereHas('currentEmployment.organizationalUnit', function ($q) use ($collegeId) {
                 $q->where('organizational_unit_id', $collegeId)
                   ->orWhere('parent_unit_id', $collegeId);
@@ -62,13 +69,35 @@ class EmployeeController extends Controller
         }
 
         // 3. تصفية القسم
-        if ($request->filled('unit_id')) {
-            $query->whereHas('currentEmployment', fn($q) => $q->where('organizational_unit_id', $request->unit_id));
+        $unitId = $request->unit_id ?? $request->dept_id;
+        if (!empty($unitId)) {
+            $query->whereHas('currentEmployment', fn($q) => $q->where('organizational_unit_id', $unitId));
         }
 
-        // 4. تصفية الفئة
-        if ($request->filled('category_id')) {
-            $query->whereHas('currentEmployment', fn($q) => $q->where('employee_category_id', $request->category_id));
+        $activeUnit = null;
+        if (!empty($unitId)) {
+            $activeUnit = OrganizationalUnit::find($unitId);
+        } elseif (!empty($collegeId)) {
+            $activeUnit = OrganizationalUnit::find($collegeId);
+        }
+
+        // 4. تصفية نوع الكادر (أكاديمي / إداري / متقاعدين بالساعات)
+        $cadreType = $request->cadre_type ?? $request->category_id;
+        if (!empty($cadreType)) {
+            if ($cadreType === 'academic' || $cadreType == '1') {
+                $query->whereHas('currentEmployment', fn($q) => $q->where('employee_category_id', 1));
+            } elseif ($cadreType === 'admin' || $cadreType == '2') {
+                $query->whereHas('currentEmployment', fn($q) => $q->whereIn('employee_category_id', [2, 3, 4]));
+            } elseif ($cadreType === 'hourly' || $cadreType == '7') {
+                $query->whereHas('currentEmployment', function($q) {
+                    $q->where('employee_category_id', 7)
+                      ->orWhere('appointment_basis', 'like', '%ساعات%')
+                      ->orWhere('appointment_basis', 'like', '%ساعة%')
+                      ->orWhere('notes', 'like', '%ساعات%');
+                });
+            } else {
+                $query->whereHas('currentEmployment', fn($q) => $q->where('employee_category_id', $cadreType));
+            }
         }
 
         // 5. تصفية الرتبة
@@ -115,6 +144,22 @@ class EmployeeController extends Controller
         $ranks = AcademicRank::orderBy('rank_order')->get();
         $statuses = EmploymentStatus::all();
 
+        // إحصائيات التبويبات الثلاثية لأنواع الكادر
+        $academicCount = Employee::where('is_active_record', true)
+            ->whereHas('currentEmployment', fn($q) => $q->where('employee_category_id', 1))
+            ->count();
+        $adminCount = Employee::where('is_active_record', true)
+            ->whereHas('currentEmployment', fn($q) => $q->whereIn('employee_category_id', [2, 3, 4]))
+            ->count();
+        $hourlyCount = Employee::where('is_active_record', true)
+            ->whereHas('currentEmployment', function($q) {
+                $q->where('employee_category_id', 7)
+                  ->orWhere('appointment_basis', 'like', '%ساعات%')
+                  ->orWhere('appointment_basis', 'like', '%ساعة%')
+                  ->orWhere('notes', 'like', '%ساعات%');
+            })->count();
+        $totalAllCount = Employee::where('is_active_record', true)->count();
+
         return view('employees.index', compact(
             'employees',
             'totalMatched',
@@ -122,7 +167,13 @@ class EmployeeController extends Controller
             'departments',
             'categories',
             'ranks',
-            'statuses'
+            'statuses',
+            'activeUnit',
+            'cadreType',
+            'academicCount',
+            'adminCount',
+            'hourlyCount',
+            'totalAllCount'
         ));
     }
 
@@ -144,6 +195,10 @@ class EmployeeController extends Controller
         $qualLevels = QualificationLevel::orderBy('level_order')->get();
         $docTypes = DocumentType::where('is_active', true)->get();
 
+        // توليد رقم القرار الإداري التلقائي
+        $maxDecisionNum = EmployeeDecision::selectRaw("COALESCE(MAX(CAST(REGEXP_REPLACE(decision_number, '[^0-9]', '', 'g') AS INTEGER)), 202) as max_num")->value('max_num') ?? 202;
+        $nextDecisionNumber = $maxDecisionNum + 1;
+
         return view('employees.create', compact(
             'colleges',
             'categories',
@@ -152,7 +207,8 @@ class EmployeeController extends Controller
             'statuses',
             'decisionTypes',
             'qualLevels',
-            'docTypes'
+            'docTypes',
+            'nextDecisionNumber'
         ));
     }
 
@@ -173,7 +229,8 @@ class EmployeeController extends Controller
             
             // بيانات التكليف والوظيفة
             'organizational_unit_id' => 'required|exists:organizational_units,organizational_unit_id',
-            'employee_category_id' => 'required|exists:employee_categories,employee_category_id',
+            'employee_category_id' => 'nullable|exists:employee_categories,employee_category_id',
+            'cadre_type' => 'nullable|in:academic,admin,hourly',
             'academic_rank_id' => 'nullable|exists:academic_ranks,academic_rank_id',
             'job_grade_id' => 'nullable|exists:job_grades,job_grade_id',
             'employment_status_id' => 'required|exists:employment_statuses,employment_status_id',
@@ -191,10 +248,20 @@ class EmployeeController extends Controller
             'photo_file' => 'nullable|image|max:10240',
             'university_name' => 'nullable|string|max:200',
 
-            // ملف الأرشيف (PDF أو صورة)
-            'document_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:51200',
+            // ملف الأرشيف (PDF أو صورة حتى 25MB)
+            'document_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:25600',
             'document_type_id' => 'nullable|exists:document_types,document_type_id',
             'document_title' => 'nullable|string|max:250',
+        ], [
+            'full_name_ar.required' => 'يرجى إدخال اسم الكادر الرباعي كاملاً.',
+            'organizational_unit_id.required' => 'يرجى اختيار الكلية والقسم التابع لهما الكادر.',
+            'employee_category_id.required' => 'يرجى تحديد الفئة الوظيفية للكادر.',
+            'employment_status_id.required' => 'يرجى تحديد الحالة الوظيفية.',
+            'start_date.required' => 'يرجى إدخال تاريخ مباشرة العمل.',
+            'document_file.uploaded' => 'تعذر رفع ملف الوثيقة، يرجى التأكد من أن حجم الملف لا يتجاوز 25 ميجابايت وصيغته PDF أو صورة.',
+            'document_file.max' => 'حجم ملف الأرشيف يتجاوز الحد الأقصى المسموح به (25 ميجابايت).',
+            'document_file.mimes' => 'نوع ملف الأرشيف غير مدعوم، يرجى رفع ملف PDF أو صورة (JPG, PNG).',
+            'photo_file.max' => 'حجم الصورة الشخصية يتجاوز الحد الأقصى (10 ميجابايت).',
         ]);
 
         DB::beginTransaction();
@@ -223,44 +290,104 @@ class EmployeeController extends Controller
                 DocumentStorageService::storeEmployeePhoto($employee, $request->file('photo_file'));
             }
 
-            // 2. قرار إداري تأسيسي (إن وجد)
-            $decisionId = null;
-            if ($request->filled('decision_number')) {
-                $decision = EmployeeDecision::create([
-                    'employee_id' => $employee->employee_id,
-                    'decision_type_id' => $request->input('decision_type_id', 1),
-                    'decision_number' => $request->input('decision_number'),
-                    'issuing_authority' => $request->input('issuing_authority', 'رئيس جامعة إب'),
-                    'issue_date' => $request->input('issue_date', now()->toDateString()),
-                    'effective_start_date' => $validated['start_date'],
-                    'decision_status_id' => 1,
-                    'summary' => $request->input('decision_summary', 'قرار تعيين / تكليف رسمي'),
-                    'created_at' => now(),
-                ]);
-                $decisionId = $decision->decision_id;
+            // تحديد نوع الكادر وفئته المؤسسية
+            $cadreType = $request->input('cadre_type', 'academic');
+            $categoryId = $request->input('employee_category_id');
+            if ($cadreType === 'admin') {
+                $categoryId = 2; // إداري
+            } elseif ($cadreType === 'hourly') {
+                $categoryId = 7; // متقاعدين بالساعات
+            } elseif ($cadreType === 'academic' || empty($categoryId)) {
+                $categoryId = 1; // أكاديمي
             }
+
+            // تجميع الملاحظات الإضافية الخاصة بنوع الكادر
+            $customNotes = [];
+            if ($cadreType === 'hourly') {
+                if ($request->filled('hourly_hours')) $customNotes[] = "نصاب الساعات: " . $request->hourly_hours . " ساعة";
+                if ($request->filled('hourly_rate')) $customNotes[] = "أجر الساعة: " . $request->hourly_rate . " ريال";
+                if ($request->filled('academic_year')) $customNotes[] = "العام الجامعي: " . $request->academic_year;
+                if ($request->filled('retirement_source')) $customNotes[] = "جهة التقاعد: " . $request->retirement_source;
+            } elseif ($cadreType === 'admin') {
+                if ($request->filled('admin_job_title')) $customNotes[] = "المسمى الإداري: " . $request->admin_job_title;
+            }
+            if ($request->filled('notes')) {
+                $customNotes[] = $request->notes;
+            }
+            $finalNotes = !empty($customNotes) ? implode(' | ', $customNotes) : 'سجل التكليف الأولي عند إنشاء الملف في النظام';
+
+            // تحديد أساس التكليف والقرار بحسب نوع الكادر
+            $defaultBasis = match($cadreType) {
+                'hourly' => 'تدريس بالساعات الإضافية',
+                'admin' => 'تثبيت إداري رسمي',
+                default => 'تثبيت رسمي'
+            };
+            $appointmentBasis = $request->filled('appointment_basis') ? $request->appointment_basis : $defaultBasis;
+
+            $decisionSummary = match($cadreType) {
+                'hourly' => 'قرار استعانة وتكليف بالساعات',
+                'admin' => 'قرار تعيين وتسكين إداري',
+                default => 'قرار تعيين / تكليف رسمي'
+            };
+
+            // 2. قرار إداري تأسيسي (مرقم تلقائياً أو وفق المدخل)
+            $decisionId = null;
+            $decisionNum = $request->filled('decision_number')
+                ? trim($request->input('decision_number'))
+                : (string)((EmployeeDecision::selectRaw("COALESCE(MAX(CAST(REGEXP_REPLACE(decision_number, '[^0-9]', '', 'g') AS INTEGER)), 202) as max_num")->value('max_num') ?? 202) + 1);
+
+            $decision = EmployeeDecision::create([
+                'employee_id' => $employee->employee_id,
+                'decision_type_id' => $request->input('decision_type_id', 1),
+                'decision_number' => $decisionNum,
+                'issuing_authority' => $request->input('issuing_authority', 'رئيس جامعة إب'),
+                'issue_date' => $request->input('issue_date', now()->toDateString()),
+                'effective_start_date' => $validated['start_date'],
+                'decision_status_id' => 1,
+                'summary' => $request->input('decision_summary', $decisionSummary),
+                'created_at' => now(),
+            ]);
+            $decisionId = $decision->decision_id;
+
+            // تحديد المسمى بكشف الراتب
+            $payrollTitle = $request->input('payroll_job_title');
+            if ($cadreType === 'admin' && empty($payrollTitle) && $request->filled('admin_job_title')) {
+                $payrollTitle = $request->admin_job_title;
+            } elseif ($cadreType === 'hourly' && empty($payrollTitle)) {
+                $payrollTitle = 'متقاعد بنظام الساعات';
+            }
+
+            // تحديد حالة الراتب
+            $payrollStatus = $request->input('payroll_status');
+            if ($cadreType === 'hourly' && empty($payrollStatus)) {
+                $payrollStatus = 'متقاعد بالساعات';
+            }
+
+            // الرتبة الأكاديمية: null للإداري
+            $academicRankId = ($cadreType === 'admin') ? null : ($validated['academic_rank_id'] ?? null);
+            $academicAppDate = ($cadreType === 'admin') ? null : $request->input('academic_appointment_date', null);
 
             // 3. إنشاء سجل التوظيف الأولي (Employment Record التاريخي)
             $employmentRecord = EmploymentRecord::create([
                 'employee_id' => $employee->employee_id,
-                'employee_category_id' => $validated['employee_category_id'],
+                'employee_category_id' => $categoryId,
                 'organizational_unit_id' => $validated['organizational_unit_id'],
                 'job_grade_id' => $validated['job_grade_id'] ?? null,
-                'academic_rank_id' => $validated['academic_rank_id'] ?? null,
+                'academic_rank_id' => $academicRankId,
                 'employment_status_id' => $validated['employment_status_id'],
                 'start_date' => $validated['start_date'],
                 'end_date' => null,
                 'is_primary' => true,
-                'appointment_basis' => $validated['appointment_basis'] ?? 'تثبيت رسمي',
+                'appointment_basis' => $appointmentBasis,
                 'first_appointment_date' => $request->input('first_appointment_date', null),
-                'academic_appointment_date' => $request->input('academic_appointment_date', null),
+                'academic_appointment_date' => $academicAppDate,
                 'qualification_at_appointment' => $request->input('qualification_at_appointment', null),
                 'initial_rank' => $request->input('initial_rank', null),
-                'payroll_status' => $request->input('payroll_status', null),
-                'payroll_job_title' => $request->input('payroll_job_title', null),
+                'payroll_status' => $payrollStatus,
+                'payroll_job_title' => $payrollTitle,
                 'payroll_job_grade' => $request->input('payroll_job_grade', null),
                 'decision_id' => $decisionId,
-                'notes' => 'سجل التكليف الأولي عند إنشاء الملف في النظام',
+                'notes' => $finalNotes,
                 'created_at' => now(),
             ]);
 
@@ -327,6 +454,12 @@ class EmployeeController extends Controller
     {
         $employee = Employee::with([
             'photoDocument.currentVersion',
+            'currentEmployment.organizationalUnit.parent',
+            'currentEmployment.academicRank',
+            'currentEmployment.jobGrade',
+            'currentEmployment.employmentStatus',
+            'currentEmployment.category',
+            'currentEmployment.decision',
             'employmentRecords.organizationalUnit.parent',
             'employmentRecords.category',
             'employmentRecords.academicRank',

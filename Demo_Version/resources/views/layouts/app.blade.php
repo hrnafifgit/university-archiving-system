@@ -493,6 +493,20 @@
                 updateSidebarUI(false);
             }
         })();
+
+        // التحقق الشامل من حجم الملفات المرفوعة قبل الإرسال
+        window.validateFileSize = function(input, maxMB) {
+            if (input && input.files && input.files[0]) {
+                const file = input.files[0];
+                const fileSizeMB = file.size / (1024 * 1024);
+                if (fileSizeMB > maxMB) {
+                    alert('تنبيه: حجم الملف المحدد (' + fileSizeMB.toFixed(2) + ' ميجابايت) يتجاوز الحد الأقصى المسموح به (' + maxMB + ' ميجابايت).\nيرجى اختيار ملف أصغر حجماً.');
+                    input.value = '';
+                    return false;
+                }
+            }
+            return true;
+        };
     </script>
 
     @yield('scripts')

@@ -17,7 +17,29 @@
                         <i class="fa-solid fa-user text-slate-400"></i>
                     </div>
                 @endif
-                <span class="text-sm font-bold text-slate-900">{{ $emp->full_name_ar }}</span>
+                <div class="min-w-0">
+                    <span class="text-sm font-bold text-slate-900 block truncate">{{ $emp->full_name_ar }}</span>
+                    @php
+                        $catId = $emp->currentEmployment?->employee_category_id;
+                        $basis = $emp->currentEmployment?->appointment_basis ?? '';
+                        $notes = $emp->currentEmployment?->notes ?? '';
+                        $isHourly = ($catId == 7 || str_contains($basis, 'ساعات') || str_contains($basis, 'ساعة') || str_contains($notes, 'ساعات'));
+                        $isAdmin = in_array($catId, [2, 3, 4]);
+                    @endphp
+                    @if($isHourly)
+                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.2 rounded-md mt-0.5">
+                            <i class="fa-solid fa-clock text-[9px]"></i> متقاعد بالساعات
+                        </span>
+                    @elseif($isAdmin)
+                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-blue-800 bg-blue-50 border border-blue-200 px-1.5 py-0.2 rounded-md mt-0.5">
+                            <i class="fa-solid fa-briefcase text-[9px]"></i> كادر إداري
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 rounded-md mt-0.5">
+                            <i class="fa-solid fa-graduation-cap text-[9px]"></i> كادر أكاديمي
+                        </span>
+                    @endif
+                </div>
             </div>
         </td>
         <td class="py-3.5 px-4 text-slate-800 font-medium text-sm truncate max-w-[200px]">
@@ -27,7 +49,13 @@
             {{ $emp->currentEmployment?->organizationalUnit?->unit_name_ar ?? '—' }}
         </td>
         <td class="py-3.5 px-4 text-slate-800 font-semibold text-sm whitespace-nowrap">
-            {{ $emp->currentEmployment?->academicRank?->rank_name_ar ?? ($emp->currentEmployment?->jobGrade?->grade_name_ar ?? 'إداري') }}
+            @if($isAdmin)
+                {{ $emp->currentEmployment?->jobTitle?->title_name_ar ?? ($emp->currentEmployment?->payroll_job_title ?? ($emp->currentEmployment?->jobGrade?->grade_name_ar ?? 'كادر إداري')) }}
+            @elseif($isHourly)
+                {{ $emp->currentEmployment?->academicRank?->rank_name_ar ?? 'متقاعد بالساعات' }}
+            @else
+                {{ $emp->currentEmployment?->academicRank?->rank_name_ar ?? ($emp->currentEmployment?->jobGrade?->grade_name_ar ?? 'كادر أكاديمي') }}
+            @endif
         </td>
         <td class="py-3.5 px-4 text-center whitespace-nowrap">
             <span class="px-3 py-1 rounded-lg text-xs font-bold border {{ $emp->currentEmployment?->employmentStatus?->is_active_status ? 'bg-brand-50 text-brand-900 border-brand-200' : 'bg-slate-100 text-slate-700 border-slate-200' }}">

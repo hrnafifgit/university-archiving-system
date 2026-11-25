@@ -97,24 +97,28 @@
                         </div>
                     @else
                         @php
-                            $primaryRec = $employee->currentEmployment;
+                            $primaryRec = $employee->active_employment ?? $employee->currentEmployment ?? $employee->latestEmployment ?? $employee->employmentRecords->sortByDesc('start_date')->first();
                             $ou = $primaryRec?->organizationalUnit;
-                            $faculty = $ou?->parent ?? $ou;
-                            $dept = ($ou && $ou->parent_unit_id) ? $ou : null;
+                            $faculty = ($ou && $ou->parent && $ou->parent->unit_type !== 'university') ? $ou->parent : $ou;
+                            $dept = ($ou && $ou->parent_unit_id && $ou->parent_unit_id !== $ou->organizational_unit_id) ? $ou : null;
                             
                             // المؤهلات الثلاثة
                             $bachelor = $qualificationsByLevel['bachelor'];
                             $master = $qualificationsByLevel['master'];
                             $phd = $qualificationsByLevel['phd'];
 
-                            // التخصص الدقيق من الملاحظات أو من الدكتوراه
+                            // التخصص الدقيق من الملاحظات أو من المؤهلات
                             $exactSpec = '';
                             if ($employee->notes && str_contains($employee->notes, 'التخصص الدقيق:')) {
                                 $exactSpec = trim(str_replace('التخصص الدقيق:', '', $employee->notes));
-                            } elseif ($bachelor && $bachelor->major_specialization) {
-                                $exactSpec = $bachelor->major_specialization;
+                            } elseif ($phd && ($phd->specialization?->name_ar || $phd->degree_title)) {
+                                $exactSpec = $phd->specialization?->name_ar ?? $phd->degree_title;
+                            } elseif ($master && ($master->specialization?->name_ar || $master->degree_title)) {
+                                $exactSpec = $master->specialization?->name_ar ?? $master->degree_title;
+                            } elseif ($bachelor && ($bachelor->specialization?->name_ar || $bachelor->degree_title)) {
+                                $exactSpec = $bachelor->specialization?->name_ar ?? $bachelor->degree_title;
                             } else {
-                                $exactSpec = 'رياضيات';
+                                $exactSpec = '—';
                             }
 
                             // رقم الملف المرجعي
@@ -212,9 +216,9 @@
                                 <td style="background-color: #eae5d9; border: 1px solid black; width: 28%; padding: 3px;">الدرجة بحسب كشف الراتب</td>
                             </tr>
                             <tr>
-                                <td style="background-color: #ffffff; border: 1px solid black; padding: 3px;">{{ $primaryRec?->payroll_status ?? 'غير محدد' }}</td>
-                                <td style="background-color: #ffffff; border: 1px solid black; padding: 3px;">{{ $primaryRec?->payroll_job_title ?? 'غير محدد' }}</td>
-                                <td style="background-color: #ffffff; border: 1px solid black; padding: 3px;">{{ $primaryRec?->payroll_job_grade ?? 'غير محدد' }}</td>
+                                <td style="background-color: #ffffff; border: 1px solid black; padding: 3px;">{{ $primaryRec?->payroll_status ?: ($primaryRec?->employmentStatus?->status_name_ar ?: 'غير محدد') }}</td>
+                                <td style="background-color: #ffffff; border: 1px solid black; padding: 3px;">{{ $primaryRec?->payroll_job_title ?: ($primaryRec?->academicRank?->rank_name_ar ?: 'غير محدد') }}</td>
+                                <td style="background-color: #ffffff; border: 1px solid black; padding: 3px;">{{ $primaryRec?->payroll_job_grade ?: ($primaryRec?->jobGrade?->grade_name_ar ?: 'غير محدد') }}</td>
                             </tr>
                         </table>
 
@@ -242,18 +246,18 @@
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">تاريخ التعيين بالوظيفة لاول مرة</td>
                                 <td style="background-color: #eae5d9; border: 1px solid black; width: 14%; padding: 2.5px;">التخصص</td>
                                 <td colspan="2" style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
-                                    {{ $bachelor ? ($bachelor->major_specialization ?: ($bachelor->degree_title ?: 'رياضيات')) : 'غير محدد' }}
+                                    {{ $bachelor ? ($bachelor->specialization?->name_ar ?: ($bachelor->degree_title ?: '—')) : '—' }}
                                 </td>
                             </tr>
 
                             <!-- السطر 3: القيمة / التقدير بك -->
                             <tr>
                                 <td style="background-color: #ffffff; border: 1px solid black; padding: 2.5px; font-family: monospace;">
-                                    {{ $primaryRec?->first_appointment_date ? $primaryRec->first_appointment_date->format('Y/m/d') : '2004/12/14' }}
+                                    {{ $primaryRec?->first_appointment_date ? $primaryRec->first_appointment_date->format('Y/m/d') : '—' }}
                                 </td>
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">التقدير</td>
                                 <td colspan="2" style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
-                                    {{ $bachelor?->gpa_scale ?? 'ممتاز' }}
+                                    {{ $bachelor ? ($bachelor->grade_or_gpa ?: '—') : '—' }}
                                 </td>
                             </tr>
 
@@ -262,16 +266,18 @@
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">الجهة المعين بها</td>
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">تاريخها</td>
                                 <td colspan="2" style="background-color: #ffffff; border: 1px solid black; padding: 2.5px; font-family: monospace;">
-                                    {{ $bachelor?->graduation_date ? $bachelor->graduation_date->format('Y') : '2003' }}
+                                    {{ $bachelor?->graduation_date ? $bachelor->graduation_date->format('Y') : ($bachelor?->award_date ? $bachelor->award_date->format('Y') : '—') }}
                                 </td>
                             </tr>
 
                             <!-- السطر 5: القيمة / الجامعة بك -->
                             <tr>
-                                <td style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">غير محدد</td>
+                                <td style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
+                                    {{ $primaryRec?->initial_appointing_entity ?: 'جامعة إب' }}
+                                </td>
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">الجامعة</td>
                                 <td colspan="2" style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
-                                    {{ $bachelor?->university?->university_name_ar ?? ($bachelor?->notes ?? 'اب') }}
+                                    {{ $bachelor?->university?->university_name_ar ?: ($bachelor?->notes ?: '—') }}
                                 </td>
                             </tr>
 
@@ -280,14 +286,14 @@
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">تاريخ التعين بالجامعة اكاديمي</td>
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">الدولة</td>
                                 <td colspan="2" style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
-                                    {{ $bachelor?->country?->country_name_ar ?? 'اليمن' }}
+                                    {{ $bachelor?->country?->country_name_ar ?: 'اليمن' }}
                                 </td>
                             </tr>
 
                             <!-- السطر 7: القيمة / ترويسة شهادة الماجستير -->
                             <tr>
                                 <td style="background-color: #ffffff; border: 1px solid black; padding: 2.5px; font-family: monospace;">
-                                    {{ $primaryRec?->academic_appointment_date ? $primaryRec->academic_appointment_date->format('Y/m/d') : '2004/12/14' }}
+                                    {{ $primaryRec?->academic_appointment_date ? $primaryRec->academic_appointment_date->format('Y/m/d') : '—' }}
                                 </td>
                                 <td colspan="3" style="background-color: #fce4d6; border: 1px solid black; padding: 3px; font-size: 11px;">شهادة الماجستير</td>
                             </tr>
@@ -297,18 +303,18 @@
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">المؤهل عند التعيين بالجامعة</td>
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">التخصص</td>
                                 <td colspan="2" style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
-                                    {{ $master ? ($master->major_specialization ?: ($master->degree_title ?: 'غير محدد')) : 'غير محدد' }}
+                                    {{ $master ? ($master->specialization?->name_ar ?: ($master->degree_title ?: '—')) : '—' }}
                                 </td>
                             </tr>
 
                             <!-- السطر 9: القيمة / التقدير مج -->
                             <tr>
                                 <td style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
-                                    {{ $primaryRec?->qualification_at_appointment ?? 'بكالوريوس' }}
+                                    {{ $primaryRec?->qualification_at_appointment ?: ($bachelor ? 'بكالوريوس' : '—') }}
                                 </td>
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">التقدير</td>
                                 <td colspan="2" style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
-                                    {{ $master?->gpa_scale ?? '' }}
+                                    {{ $master ? ($master->grade_or_gpa ?: '—') : '—' }}
                                 </td>
                             </tr>
 
@@ -317,18 +323,18 @@
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">الدرجة المعين فيها</td>
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">تاريخها</td>
                                 <td colspan="2" style="background-color: #ffffff; border: 1px solid black; padding: 2.5px; font-family: monospace;">
-                                    {{ $master?->graduation_date ? $master->graduation_date->format('Y') : '0' }}
+                                    {{ $master?->graduation_date ? $master->graduation_date->format('Y') : ($master?->award_date ? $master->award_date->format('Y') : '—') }}
                                 </td>
                             </tr>
 
                             <!-- السطر 11: القيمة / الجامعة مج -->
                             <tr>
                                 <td style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
-                                    {{ $primaryRec?->initial_rank ?? 'معيد' }}
+                                    {{ $primaryRec?->initial_rank ?: 'معيد' }}
                                 </td>
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">الجامعة</td>
                                 <td colspan="2" style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
-                                    {{ $master?->university?->university_name_ar ?? '0' }}
+                                    {{ $master?->university?->university_name_ar ?: ($master?->notes ?: '—') }}
                                 </td>
                             </tr>
 
@@ -337,14 +343,14 @@
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">الكلية</td>
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">الدولة</td>
                                 <td colspan="2" style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
-                                    {{ $master?->country?->country_name_ar ?? '0' }}
+                                    {{ $master?->country?->country_name_ar ?: '—' }}
                                 </td>
                             </tr>
 
                             <!-- السطر 13: القيمة / ترويسة شهادة الدكتوراه -->
                             <tr>
                                 <td style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
-                                    {{ $faculty?->unit_name_ar ?? 'كلية العلوم التطبيقية والتربوية النادرة' }}
+                                    {{ $faculty?->unit_name_ar ?: $employee->college_name }}
                                 </td>
                                 <td colspan="3" style="background-color: #fce4d6; border: 1px solid black; padding: 3px; font-size: 11px;">شهادة الدكتوراة</td>
                             </tr>
@@ -354,18 +360,18 @@
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">القسم</td>
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">التخصص</td>
                                 <td colspan="2" style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
-                                    {{ $phd ? ($phd->major_specialization ?: ($phd->degree_title ?: 'غير محدد')) : 'غير محدد' }}
+                                    {{ $phd ? ($phd->specialization?->name_ar ?: ($phd->degree_title ?: '—')) : '—' }}
                                 </td>
                             </tr>
 
                             <!-- السطر 15: القيمة / التقدير دك -->
                             <tr>
                                 <td style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
-                                    {{ $dept?->unit_name_ar ?? 'قسم الرياضيات' }}
+                                    {{ $dept?->unit_name_ar ?: $employee->department_name }}
                                 </td>
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">التقدير</td>
                                 <td colspan="2" style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
-                                    {{ $phd?->gpa_scale ?? '' }}
+                                    {{ $phd ? ($phd->grade_or_gpa ?: '—') : '—' }}
                                 </td>
                             </tr>
 
@@ -374,18 +380,18 @@
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">الدرجة الحالية</td>
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">تاريخها</td>
                                 <td colspan="2" style="background-color: #ffffff; border: 1px solid black; padding: 2.5px; font-family: monospace;">
-                                    {{ $phd?->graduation_date ? $phd->graduation_date->format('Y') : '0' }}
+                                    {{ $phd?->graduation_date ? $phd->graduation_date->format('Y') : ($phd?->award_date ? $phd->award_date->format('Y') : '—') }}
                                 </td>
                             </tr>
 
                             <!-- السطر 17: القيمة (أزرق سماوي) / الجامعة دك -->
                             <tr>
-                                <td style="background-color: #e6f0fa; border: 1px solid black; padding: 2.5px; font-weight: black; color: #000;">
-                                    {{ $primaryRec?->academicRank?->rank_name_ar ?? 'استاذ مشارك' }}
+                                <td style="background-color: #e6f0fa; border: 1px solid black; padding: 2.5px; font-weight: bold; color: #000;">
+                                    {{ $primaryRec?->academicRank?->rank_name_ar ?: ($employee->rank_name ?: '—') }}
                                 </td>
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">الجامعة</td>
                                 <td colspan="2" style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
-                                    {{ $phd?->university?->university_name_ar ?? '0' }}
+                                    {{ $phd?->university?->university_name_ar ?: ($phd?->notes ?: '—') }}
                                 </td>
                             </tr>
 
@@ -394,17 +400,17 @@
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">الوضع الحالي</td>
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">الدولة</td>
                                 <td colspan="2" style="background-color: #ffffff; border: 1px solid black; padding: 2.5px;">
-                                    {{ $phd?->country?->country_name_ar ?? '0' }}
+                                    {{ $phd?->country?->country_name_ar ?: '—' }}
                                 </td>
                             </tr>
 
                             <!-- السطر 19: القيمة (وردي فاتح) / التخصص الدقيق (أخضر نعناعي) -->
                             <tr>
-                                <td style="background-color: #fde8e8; border: 1px solid black; padding: 2.5px; font-weight: black; color: #000;">
-                                    {{ $primaryRec?->employmentStatus?->status_name_ar ?? 'اجازة تفرغ براتب' }}
+                                <td style="background-color: #fde8e8; border: 1px solid black; padding: 2.5px; font-weight: bold; color: #000;">
+                                    {{ $primaryRec?->employmentStatus?->status_name_ar ?: ($employee->status_name ?: '—') }}
                                 </td>
                                 <td style="background-color: #eae5d9; border: 1px solid black; padding: 2.5px;">التخصص الدقيق</td>
-                                <td colspan="2" style="background-color: #e2f5ee; border: 1px solid black; padding: 2.5px; font-weight: black;">
+                                <td colspan="2" style="background-color: #e2f5ee; border: 1px solid black; padding: 2.5px; font-weight: bold;">
                                     {{ $exactSpec }}
                                 </td>
                             </tr>

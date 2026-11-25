@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class JobTitle extends Model
 {
@@ -16,4 +17,25 @@ class JobTitle extends Model
     public $timestamps = false;
 
     protected $fillable = ['title_name_ar', 'title_name_en', 'employee_category_id', 'is_active'];
+
+    public function employmentRecords(): HasMany
+    {
+        return $this->hasMany(EmploymentRecord::class, 'job_title_id', 'job_title_id');
+    }
+
+    /**
+     * جلب الكادر المرتبط بهذا المسمى سواء عبر المعرف أو نص الوظيفة بكشف الراتب
+     */
+    public function getEmployeesAttribute()
+    {
+        $fromRecords = $this->employmentRecords->map(fn($r) => $r->employee)->filter();
+        
+        $fromPayroll = EmploymentRecord::where('payroll_job_title', $this->title_name_ar)
+            ->with(['employee'])
+            ->get()
+            ->map(fn($r) => $r->employee)
+            ->filter();
+
+        return $fromRecords->merge($fromPayroll)->unique('employee_id');
+    }
 }

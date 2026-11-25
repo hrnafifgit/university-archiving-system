@@ -131,16 +131,18 @@ class ReportMatrixService
     }
 
     /**
-     * eh1: إحصائية الكادر في الكليات والمراكز بحسب القسم
+     * eh1: إحصائية الكادر في الكليات والمراكز بحسب القسم (منظمة ومفصلة لكل كلية)
      */
     public function getMatrixEh1()
     {
         $faculties = $this->getFaculties();
 
-        $records = DB::table('employment_records as er')
+        // 1. تفصيل دقيق للكادر بحسب الكلية والقسم والرتبة العلمية والنوع (الجنس)
+        $detailed = DB::table('employment_records as er')
             ->join('employees as e', 'er.employee_id', '=', 'e.employee_id')
             ->join('organizational_units as ou', 'er.organizational_unit_id', '=', 'ou.organizational_unit_id')
             ->leftJoin('organizational_units as parent', 'ou.parent_unit_id', '=', 'parent.organizational_unit_id')
+            ->leftJoin('academic_ranks as ar', 'er.academic_rank_id', '=', 'ar.academic_rank_id')
             ->where('er.is_primary', true)
             ->whereNull('er.end_date')
             ->where('e.is_active_record', true)
@@ -151,24 +153,161 @@ class ReportMatrixService
                     ELSE ou.unit_name_ar 
                 END as raw_faculty_name"),
                 'ou.unit_name_ar as dept_name',
+                DB::raw("COALESCE(ar.rank_name_ar, 'غير محدد') as rank_name"),
+                'e.gender',
                 DB::raw('COUNT(*) as total')
             ])
-            ->groupBy('raw_faculty_name', 'dept_name')
+            ->groupBy('raw_faculty_name', 'dept_name', 'rank_name', 'e.gender')
             ->get();
 
-        $allDepts = OrganizationalUnit::where('unit_type', 'department')
-            ->orWhere('unit_name_ar', 'عام')
-            ->orderBy('unit_name_ar')
-            ->pluck('unit_name_ar')
-            ->unique()
-            ->values()
-            ->toArray();
+        $collegeGroups = [];
+        $totalStaff = 0;
+        $totalDeptsCount = 0;
 
-        if (!in_array('عام', $allDepts)) {
-            array_unshift($allDepts, 'عام');
+        foreach ($detailed as $row) {
+            $fac = $this->normalizeFacultyName($row->raw_faculty_name);
+            $dept = trim($row->dept_name);
+
+            if (!isset($collegeGroups[$fac])) {
+                $collegeGroups[$fac] = [
+                    'faculty_name' => $fac,
+                    'total' => 0,
+                    'male' => 0,
+                    'female' => 0,
+                    'departments' => []
+                ];
+            }
+
+            if (!isset($collegeGroups[$fac]['departments'][$dept])) {
+                $collegeGroups[$fac]['departments'][$dept] = [
+                    'name' => $dept,
+                    'total' => 0,
+                    'male' => 0,
+                    'female' => 0,
+                    'prof' => 0,        // أستاذ دكتور / بروفيسور
+                    'assoc_prof' => 0,  // أستاذ مشارك
+                    'assist_prof' => 0, // أستاذ مساعد
+                    'lecturer' => 0,    // مدرس
+                    'ta' => 0,          // معيد
+                    'other_rank' => 0,  // غير محدد / أخرى
+                ];
+                $totalDeptsCount++;
+            }
+
+            $cnt = (int)$row->total;
+            $totalStaff += $cnt;
+            $collegeGroups[$fac]['total'] += $cnt;
+            $collegeGroups[$fac]['departments'][$dept]['total'] += $cnt;
+
+            $isFemale = in_array(strtolower(trim($row->gender ?? '')), ['female', 'f', 'أنثى', 'انثى'], true);
+            if ($isFemale) {
+                $collegeGroups[$fac]['female'] += $cnt;
+                $collegeGroups[$fac]['departments'][$dept]['female'] += $cnt;
+            } else {
+                $collegeGroups[$fac]['male'] += $cnt;
+                $collegeGroups[$fac]['departments'][$dept]['male'] += $cnt;
+            }
+
+            $rnk = $row->rank_name;
+            if (str_contains($rnk, 'بروفيسور') || (str_contains($rnk, 'أستاذ') && !str_contains($rnk, 'مشارك') && !str_contains($rnk, 'مساعد'))) {
+                $collegeGroups[$fac]['departments'][$dept]['prof'] += $cnt;
+            } elseif (str_contains($rnk, 'مشارك')) {
+                $collegeGroups[$fac]['departments'][$dept]['assoc_prof'] += $cnt;
+            } elseif (str_contains($rnk, 'مساعد')) {
+                $collegeGroups[$fac]['departments'][$dept]['assist_prof'] += $cnt;
+            } elseif (str_contains($rnk, 'مدرس')) {
+                $collegeGroups[$fac]['departments'][$dept]['lecturer'] += $cnt;
+            } elseif (str_contains($rnk, 'معيد')) {
+                $collegeGroups[$fac]['departments'][$dept]['ta'] += $cnt;
+            } else {
+                $collegeGroups[$fac]['departments'][$dept]['other_rank'] += $cnt;
+            }
         }
 
-        return $this->formatMatrix('eh1', 'احصائية بعدد اعضاء هيئة التدريس في الكليات والمراكز بحسب القسم', 'القسم', $records, $faculties, $allDepts, 'dept_name');
+        // تضمين الأقسام التابعة للكليات حتى لو لم يكن بها كادر حالياً لتكتمل الهيكلية الأكاديمية
+        $dbColleges = OrganizationalUnit::whereIn('unit_type', ['faculty', 'college', 'center'])
+            ->with(['children' => fn($q) => $q->orderBy('unit_name_ar')])
+            ->get();
+
+        foreach ($dbColleges as $col) {
+            $normalizedName = $this->normalizeFacultyName($col->unit_name_ar);
+            if (!isset($collegeGroups[$normalizedName])) {
+                $collegeGroups[$normalizedName] = [
+                    'faculty_name' => $normalizedName,
+                    'total' => 0,
+                    'male' => 0,
+                    'female' => 0,
+                    'departments' => []
+                ];
+            }
+            foreach ($col->children as $childDept) {
+                $dName = trim($childDept->unit_name_ar);
+                if (!isset($collegeGroups[$normalizedName]['departments'][$dName])) {
+                    $collegeGroups[$normalizedName]['departments'][$dName] = [
+                        'name' => $dName,
+                        'total' => 0,
+                        'male' => 0,
+                        'female' => 0,
+                        'prof' => 0,
+                        'assoc_prof' => 0,
+                        'assist_prof' => 0,
+                        'lecturer' => 0,
+                        'ta' => 0,
+                        'other_rank' => 0,
+                    ];
+                }
+            }
+        }
+
+        // إعادة ترتيب الكليات بحسب الترتيب المؤسسي المعتمد
+        $orderedGroups = [];
+        foreach ($faculties as $fName) {
+            if (isset($collegeGroups[$fName])) {
+                $orderedGroups[$fName] = $collegeGroups[$fName];
+            }
+        }
+        foreach ($collegeGroups as $fName => $g) {
+            if (!isset($orderedGroups[$fName])) {
+                $orderedGroups[$fName] = $g;
+            }
+        }
+
+        $chartLabels = [];
+        $chartData = [];
+        foreach ($orderedGroups as $fName => $g) {
+            if ($g['total'] > 0) {
+                $chartLabels[] = $fName;
+                $chartData[] = $g['total'];
+            }
+        }
+
+        return [
+            'id' => 'eh1',
+            'code' => 'eh1',
+            'title' => 'احصائية بعدد اعضاء هيئة التدريس في الكليات والمراكز بحسب القسم',
+            'rowHeader' => 'الجهة',
+            'colHeader' => 'القسم',
+            'faculties' => $faculties,
+            'collegeGroups' => $orderedGroups,
+            'totalStaff' => $totalStaff,
+            'totalDeptsCount' => $totalDeptsCount,
+            'isOrganizedEh1' => true,
+            'grandTotal' => $totalStaff,
+            'chartLabels' => $chartLabels,
+            'chartDatasets' => [
+                [
+                    'label' => 'إجمالي الكادر',
+                    'data' => $chartData,
+                    'backgroundColor' => '#14532d',
+                    'borderColor' => '#0f3d21',
+                    'borderWidth' => 1
+                ]
+            ],
+            'columns' => ['أستاذ دكتور', 'أستاذ مشارك', 'أستاذ مساعد', 'مدرس', 'معيد', 'ذكور', 'إناث', 'الإجمالي'],
+            'matrix' => [],
+            'rowTotals' => array_combine($chartLabels, $chartData),
+            'colTotals' => [],
+        ];
     }
 
     /**

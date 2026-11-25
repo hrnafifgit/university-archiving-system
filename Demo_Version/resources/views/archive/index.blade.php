@@ -31,12 +31,19 @@
                 </select>
             </div>
 
+            @if(request('unit_id') || request('dept_id'))
+                <input type="hidden" name="unit_id" value="{{ request('unit_id') ?? request('dept_id') }}">
+            @endif
+            @if(request('college_id') || request('faculty_id'))
+                <input type="hidden" name="college_id" value="{{ request('college_id') ?? request('faculty_id') }}">
+            @endif
+
             <!-- أزرار التصفية -->
             <div class="flex items-center gap-2 shrink-0">
                 <button type="submit" class="bg-brand-900 hover:bg-brand-800 text-white font-bold py-2.5 px-5 rounded-xl text-sm transition flex items-center gap-2 cursor-pointer shadow-xs whitespace-nowrap">
                     <i class="fa-solid fa-filter text-xs"></i> بحث
                 </button>
-                @if(request()->anyFilled(['search', 'type_id']))
+                @if(request()->anyFilled(['search', 'type_id', 'dept_id', 'unit_id', 'college_id', 'faculty_id']))
                     <a href="{{ route('archive.index') }}" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 px-3.5 rounded-xl text-sm transition border border-slate-200 text-center shrink-0" title="إلغاء التصفية">
                         <i class="fa-solid fa-rotate-left text-xs"></i>
                     </a>
@@ -58,6 +65,19 @@
         </div>
 
     </div>
+
+    @if(isset($activeUnit) && $activeUnit)
+    <div class="mb-3 px-4 py-2.5 bg-purple-50/90 border border-purple-200 text-purple-900 rounded-xl flex items-center justify-between text-xs font-semibold shadow-2xs">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-box-archive text-purple-600 text-sm"></i>
+            <span>أرشيف ووثائق القسم: <strong class="text-purple-950 font-bold">{{ $activeUnit->unit_name_ar }}</strong></span>
+            <span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full text-[11px] font-mono font-bold">({{ $documents->total() }} وثيقة)</span>
+        </div>
+        <a href="{{ route('archive.index') }}" class="text-[11px] bg-white border border-purple-300 text-purple-700 hover:bg-purple-100 px-2.5 py-1 rounded-lg transition inline-flex items-center gap-1 font-bold">
+            <i class="fa-solid fa-xmark"></i> عرض كافة الوثائق
+        </a>
+    </div>
+    @endif
 
     <!-- 2. جدول وثائق الأرشيف الإلكتروني -->
     <div class="flex-1 bg-white border border-slate-200 shadow-xs flex flex-col min-h-0 rounded-2xl overflow-hidden relative">

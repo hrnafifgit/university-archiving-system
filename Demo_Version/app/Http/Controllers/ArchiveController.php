@@ -43,7 +43,27 @@ class ArchiveController extends Controller
             $query->where('is_confidential', $request->confidential == '1');
         }
 
-        $documents = $query->orderByDesc('created_at')->paginate(20);
+        $activeUnit = null;
+        $unitId = $request->unit_id ?? $request->dept_id;
+        if (!empty($unitId)) {
+            $query->whereHas('employee.employmentRecords', function ($q) use ($unitId) {
+                $q->where('organizational_unit_id', $unitId);
+            });
+            $activeUnit = \App\Models\OrganizationalUnit::find($unitId);
+        }
+
+        $collegeId = $request->college_id ?? $request->faculty_id;
+        if (!empty($collegeId)) {
+            $query->whereHas('employee.employmentRecords.organizationalUnit', function ($q) use ($collegeId) {
+                $q->where('organizational_unit_id', $collegeId)
+                  ->orWhere('parent_unit_id', $collegeId);
+            });
+            if (!$activeUnit) {
+                $activeUnit = \App\Models\OrganizationalUnit::find($collegeId);
+            }
+        }
+
+        $documents = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
 
         $documentTypes = DocumentType::orderBy('type_name_ar')->get();
         $employees = Employee::orderBy('full_name_ar')->limit(150)->get(['employee_id', 'full_name_ar', 'employee_number']);
@@ -55,7 +75,8 @@ class ArchiveController extends Controller
             'documentTypes',
             'employees',
             'totalDocsCount',
-            'totalVersionsCount'
+            'totalVersionsCount',
+            'activeUnit'
         ));
     }
 
@@ -69,9 +90,13 @@ class ArchiveController extends Controller
             'document_type_id' => 'required|exists:document_types,document_type_id',
             'document_title' => 'required|string|max:250',
             'document_number' => 'nullable|string|max:100',
-            'document_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:51200',
+            'document_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:25600',
             'description' => 'nullable|string',
             'is_confidential' => 'nullable|boolean',
+        ], [
+            'document_file.required' => 'يرجى اختيار ملف الوثيقة.',
+            'document_file.max' => 'حجم الملف يتجاوز الحد الأقصى المسموح به (25 ميجابايت).',
+            'document_file.mimes' => 'نوع الملف غير مدعوم، الصيغ المقبولة: PDF, JPG, PNG.',
         ]);
 
         $employee = Employee::findOrFail($validated['employee_id']);
@@ -92,7 +117,11 @@ class ArchiveController extends Controller
         $document = Document::with('employee')->findOrFail($docId);
 
         $request->validate([
-            'document_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:51200',
+            'document_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:25600',
+        ], [
+            'document_file.required' => 'يرجى اختيار ملف الوثيقة المطلوب رفعه.',
+            'document_file.max' => 'حجم الملف يتجاوز الحد الأقصى المسموح به (25 ميجابايت).',
+            'document_file.mimes' => 'نوع الملف غير مدعوم، الصيغ المقبولة: PDF, JPG, PNG.',
         ]);
 
         $file = $request->file('document_file');
@@ -110,15 +139,17 @@ class ArchiveController extends Controller
 
         // حفظ الملف في القرص المحمي الخاص disk: local
         $file->storeAs($folder, $fileName, 'local');
+        $fullStoredPath = Storage::disk('local')->path($storageKey);
+        $sha256 = file_exists($fullStoredPath) ? hash_file('sha256', $fullStoredPath) : hash('sha256', $fileName);
 
-        DocumentVersion::create([
+        $newVersion = DocumentVersion::create([
             'document_id' => $document->document_id,
             'version_number' => $nextVersionNum,
             'storage_key' => $storageKey,
             'original_file_name' => $file->getClientOriginalName(),
             'mime_type' => $file->getMimeType() ?: ($ext === 'pdf' ? 'application/pdf' : 'image/' . $ext),
             'file_size_bytes' => $file->getSize(),
-            'checksum_sha256' => hash_file('sha256', $file->getRealPath()),
+            'checksum_sha256' => $sha256,
             'uploaded_at' => now(),
             'is_current' => true,
         ]);
@@ -127,10 +158,13 @@ class ArchiveController extends Controller
         AuditLogService::log('DOCUMENT_VERSION_UPGRADE', 'documents', $document->document_id, null, [
             'version_number' => $nextVersionNum,
             'file_name' => $file->getClientOriginalName(),
-            'checksum' => hash_file('sha256', $file->getRealPath()),
+            'checksum' => $sha256,
         ]);
 
-        return back()->with('success', "تم رفع النسخة الجديدة (الإصدار v{$nextVersionNum}) للوثيقة بنجاح وتحديث البصمة الرقمية.");
+        Cache::forget('dashboard_core_metrics');
+
+        return redirect()->route('archive.preview', $newVersion->document_version_id)
+            ->with('success', "تم رفع النسخة الجديدة (الإصدار v{$nextVersionNum}) للوثيقة بنجاح وتحديث البصمة الرقمية.");
     }
 
     /**
@@ -149,6 +183,17 @@ class ArchiveController extends Controller
                 $path = Storage::disk('public')->path($version->storage_key);
             } elseif (Storage::disk('local')->exists('public/' . $version->storage_key)) {
                 $path = Storage::disk('local')->path('public/' . $version->storage_key);
+            }
+        }
+
+        // فحص تلقائي للإصدار الأحدث إذا كان الإصدار الحالي مجرد قيد بانتظار الملف
+        if ((!$path || !file_exists($path)) && $version->document) {
+            $currVer = $version->document->currentVersion;
+            if ($currVer && $currVer->document_version_id !== $version->document_version_id && !empty($currVer->storage_key)) {
+                if (Storage::disk('local')->exists($currVer->storage_key)) {
+                    $path = Storage::disk('local')->path($currVer->storage_key);
+                    $version = $currVer;
+                }
             }
         }
 
@@ -184,6 +229,17 @@ class ArchiveController extends Controller
                 $path = Storage::disk('public')->path($version->storage_key);
             } elseif (Storage::disk('local')->exists('public/' . $version->storage_key)) {
                 $path = Storage::disk('local')->path('public/' . $version->storage_key);
+            }
+        }
+
+        // فحص تلقائي للإصدار الأحدث إذا كان الإصدار الحالي مجرد قيد بانتظار الملف
+        if ((!$path || !file_exists($path)) && $version->document) {
+            $currVer = $version->document->currentVersion;
+            if ($currVer && $currVer->document_version_id !== $version->document_version_id && !empty($currVer->storage_key)) {
+                if (Storage::disk('local')->exists($currVer->storage_key)) {
+                    $path = Storage::disk('local')->path($currVer->storage_key);
+                    $version = $currVer;
+                }
             }
         }
 
