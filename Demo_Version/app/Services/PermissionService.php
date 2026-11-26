@@ -15,12 +15,46 @@ use Illuminate\Support\Str;
 class PermissionService
 {
     public const MODULES = [
-        'dashboard'        => ['label' => 'لوحة التحكم', 'icon' => 'fa-chart-pie'],
-        'budget'           => ['label' => 'الموازنة', 'icon' => 'fa-coins'],
-        'hourly_contracts' => ['label' => 'عقود الساعات', 'icon' => 'fa-file-contract'],
-        'employees'        => ['label' => 'بيانات الموظفين', 'icon' => 'fa-users'],
-        'org_units'        => ['label' => 'الكليات والأقسام', 'icon' => 'fa-sitemap'],
-        'system_settings'  => ['label' => 'إعدادات النظام', 'icon' => 'fa-gears'],
+        'dashboard' => [
+            'label'   => 'الرئيسية (لوحة المؤشرات)',
+            'icon'    => 'fa-chart-pie',
+            'actions' => ['view'],
+        ],
+        'employees' => [
+            'label'   => 'دليل الكادر (الأكاديمي والإداري)',
+            'icon'    => 'fa-users',
+            'actions' => ['view', 'create', 'edit', 'delete'],
+        ],
+        'decisions' => [
+            'label'   => 'القرارات الإدارية والإجازات',
+            'icon'    => 'fa-stamp',
+            'actions' => ['view', 'create', 'edit', 'delete'],
+        ],
+        'archive' => [
+            'label'   => 'المستودع الرقمي (الأرشيف)',
+            'icon'    => 'fa-folder-tree',
+            'actions' => ['view', 'create', 'edit', 'delete'],
+        ],
+        'org_units' => [
+            'label'   => 'الهيكل الأكاديمي والبيانات المرجعية',
+            'icon'    => 'fa-sitemap',
+            'actions' => ['view', 'create', 'edit', 'delete'],
+        ],
+        'reports' => [
+            'label'   => 'مركز التقارير والكشوفات',
+            'icon'    => 'fa-file-contract',
+            'actions' => ['view', 'export'],
+        ],
+        'workflow' => [
+            'label'   => 'مسار الاعتمادات المتسلسل',
+            'icon'    => 'fa-clipboard-check',
+            'actions' => ['view', 'create', 'confirm'],
+        ],
+        'system_settings' => [
+            'label'   => 'الصلاحيات والأمان (الأدوار والمستخدمين)',
+            'icon'    => 'fa-user-shield',
+            'actions' => ['view', 'create', 'edit', 'delete'],
+        ],
     ];
 
     public const ACTIONS = [
@@ -28,7 +62,8 @@ class PermissionService
         'create'  => ['label' => 'إضافة', 'icon' => 'fa-plus'],
         'edit'    => ['label' => 'تعديل', 'icon' => 'fa-pen'],
         'delete'  => ['label' => 'حذف', 'icon' => 'fa-trash'],
-        'confirm' => ['label' => 'اعتماد (Confirm)', 'icon' => 'fa-circle-check'],
+        'export'  => ['label' => 'تصدير', 'icon' => 'fa-file-excel'],
+        'confirm' => ['label' => 'اعتماد', 'icon' => 'fa-circle-check'],
     ];
 
     public const ROLES_ORDER = [
@@ -64,12 +99,12 @@ class PermissionService
         $aliases = [
             'manage_employees'   => ['employees.create', 'employees.edit'],
             'delete_employees'   => ['employees.delete'],
-            'manage_decisions'   => ['employees.edit', 'employees.confirm'],
-            'delete_decisions'   => ['employees.delete'],
-            'manage_archive'     => ['employees.create', 'employees.edit'],
-            'delete_archive'     => ['employees.delete'],
+            'manage_decisions'   => ['decisions.create', 'decisions.edit'],
+            'delete_decisions'   => ['decisions.delete'],
+            'manage_archive'     => ['archive.create', 'archive.edit'],
+            'delete_archive'     => ['archive.delete'],
             'manage_master_data' => ['org_units.create', 'org_units.edit'],
-            'view_reports'       => ['dashboard.view', 'budget.view', 'employees.view'],
+            'view_reports'       => ['reports.view'],
         ];
 
         if (isset($aliases[$permissionCode])) {
@@ -94,21 +129,14 @@ class PermissionService
             return route('dashboard');
         }
 
-        if (self::hasPerm('dashboard.view', $permissions)) {
-            return route('dashboard');
-        }
-        if (self::hasPerm('employees.view', $permissions)) {
-            return route('employees.index');
-        }
-        if (self::hasPerm('org_units.view', $permissions)) {
-            return route('master_data.index');
-        }
-        if (self::hasPerm('hourly_contracts.view', $permissions) || self::hasPerm('budget.view', $permissions) || self::hasPerm('employees.confirm', $permissions)) {
-            return route('workflow.index');
-        }
-        if (self::hasPerm('system_settings.view', $permissions)) {
-            return route('security.roles.index');
-        }
+        if (self::hasPerm('dashboard.view', $permissions)) return route('dashboard');
+        if (self::hasPerm('employees.view', $permissions)) return route('employees.index');
+        if (self::hasPerm('decisions.view', $permissions)) return route('decisions.index');
+        if (self::hasPerm('archive.view', $permissions)) return route('archive.index');
+        if (self::hasPerm('org_units.view', $permissions)) return route('master_data.index');
+        if (self::hasPerm('reports.view', $permissions)) return route('reports.index');
+        if (self::hasPerm('workflow.view', $permissions)) return route('workflow.index');
+        if (self::hasPerm('system_settings.view', $permissions)) return route('security.roles.index');
 
         return route('employees.index');
     }
@@ -172,10 +200,13 @@ class PermissionService
      */
     public static function ensureSeeded(): void
     {
-        // 1. بذر الصلاحيات (30 صلاحية تفصيلية)
+        // 1. بذر الصلاحيات الفعلية حسب عمليات كل شاشة
         $permMap = [];
         foreach (self::MODULES as $modKey => $modInfo) {
-            foreach (self::ACTIONS as $actKey => $actInfo) {
+            $allowedActions = $modInfo['actions'] ?? array_keys(self::ACTIONS);
+            foreach ($allowedActions as $actKey) {
+                $actInfo = self::ACTIONS[$actKey] ?? null;
+                if (!$actInfo) continue;
                 $code = "{$modKey}.{$actKey}";
                 $perm = AppPermission::firstOrCreate(
                     ['permission_code' => $code],
@@ -193,37 +224,46 @@ class PermissionService
             'مدير نظام' => array_keys($permMap),
             'أمين عام' => [
                 'dashboard.view',
-                'budget.view', 'budget.confirm',
-                'hourly_contracts.view', 'hourly_contracts.confirm',
-                'employees.view', 'employees.confirm',
-                'org_units.view', 'org_units.confirm',
-                'system_settings.view',
+                'employees.view',
+                'decisions.view',
+                'archive.view',
+                'org_units.view',
+                'reports.view', 'reports.export',
+                'workflow.view', 'workflow.confirm',
             ],
             'مدير إدارة' => [
                 'dashboard.view',
-                'budget.view', 'budget.create', 'budget.edit', 'budget.confirm',
-                'hourly_contracts.view', 'hourly_contracts.create', 'hourly_contracts.edit', 'hourly_contracts.confirm',
-                'employees.view', 'employees.create', 'employees.edit', 'employees.confirm',
+                'employees.view', 'employees.create', 'employees.edit',
+                'decisions.view', 'decisions.create', 'decisions.edit',
+                'archive.view', 'archive.create', 'archive.edit',
                 'org_units.view', 'org_units.edit',
+                'reports.view', 'reports.export',
+                'workflow.view', 'workflow.create', 'workflow.confirm',
             ],
             'رئيس قسم' => [
                 'dashboard.view',
-                'hourly_contracts.view', 'hourly_contracts.create', 'hourly_contracts.edit', 'hourly_contracts.confirm',
-                'employees.view', 'employees.edit', 'employees.confirm',
+                'employees.view', 'employees.edit',
+                'decisions.view',
+                'archive.view',
                 'org_units.view',
+                'reports.view',
+                'workflow.view', 'workflow.confirm',
             ],
             'إداري' => [
                 'dashboard.view',
-                'budget.view', 'budget.create', 'budget.edit',
-                'hourly_contracts.view', 'hourly_contracts.create', 'hourly_contracts.edit',
                 'employees.view', 'employees.create', 'employees.edit',
+                'decisions.view', 'decisions.create', 'decisions.edit',
+                'archive.view', 'archive.create', 'archive.edit',
                 'org_units.view',
+                'reports.view',
+                'workflow.view', 'workflow.create',
             ],
             'أكاديمي' => [
                 'dashboard.view',
                 'employees.view',
                 'org_units.view',
-                'hourly_contracts.view',
+                'reports.view',
+                'workflow.view',
             ],
         ];
 

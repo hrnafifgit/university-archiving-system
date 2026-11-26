@@ -158,7 +158,7 @@
                     </a>
                     @endif
 
-                    @if(\App\Services\PermissionService::hasPerm('employees.view') || \App\Services\PermissionService::hasPerm('manage_decisions'))
+                    @if(\App\Services\PermissionService::hasPerm('decisions.view'))
                     <a href="{{ route('decisions.index') }}" 
                        class="flex items-center px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap {{ request()->routeIs('decisions.*') ? 'bg-brand-900 text-white shadow-xs' : 'text-slate-600 hover:text-brand-900 hover:bg-slate-100' }}" 
                        title="القرارات الإدارية والإجازات">
@@ -167,7 +167,7 @@
                     </a>
                     @endif
 
-                    @if(\App\Services\PermissionService::hasPerm('view_reports'))
+                    @if(\App\Services\PermissionService::hasPerm('reports.view'))
                     <a href="{{ route('reports.index') }}" 
                        class="flex items-center px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap {{ request()->routeIs('reports.*') ? 'bg-brand-900 text-white shadow-xs' : 'text-slate-600 hover:text-brand-900 hover:bg-slate-100' }}" 
                        title="مركز التقارير والكشوفات">
@@ -176,7 +176,7 @@
                     </a>
                     @endif
 
-                    @if(\App\Services\PermissionService::hasPerm('employees.view') || \App\Services\PermissionService::hasPerm('manage_archive'))
+                    @if(\App\Services\PermissionService::hasPerm('archive.view'))
                     <a href="{{ route('archive.index') }}" 
                        class="flex items-center px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap {{ request()->routeIs('archive.*') ? 'bg-brand-900 text-white shadow-xs' : 'text-slate-600 hover:text-brand-900 hover:bg-slate-100' }}" 
                        title="الأرشيف والملفات الرقمية">
@@ -194,7 +194,7 @@
                     </a>
                     @endif
 
-                    @if(\App\Services\PermissionService::hasPerm('hourly_contracts.view') || \App\Services\PermissionService::hasPerm('budget.view') || \App\Services\PermissionService::hasPerm('employees.confirm'))
+                    @if(\App\Services\PermissionService::hasPerm('workflow.view'))
                     <a href="{{ route('workflow.index') }}" 
                        class="flex items-center px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap {{ request()->routeIs('workflow.*') ? 'bg-brand-900 text-white shadow-xs' : 'text-slate-600 hover:text-brand-900 hover:bg-slate-100' }}" 
                        title="مسار الاعتماد والتأكيد المتسلسل">

@@ -41,79 +41,71 @@ Route::middleware([EnsureDesktopAuthenticated::class])->group(function () {
     Route::delete('/employees/{employeeId}/documents/{docId}', [\App\Http\Controllers\EmployeeOperationsController::class, 'deleteDocument'])->middleware(EnsureHasPermission::class . ':delete_archive')->name('employees.documents.destroy');
 
     // مركز التقارير وبيان الحالة والمصفوفات الإحصائية
-    Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
-    Route::get('/reports/export', [\App\Http\Controllers\ReportController::class, 'export'])->name('reports.export');
-    Route::get('/reports/matrix-export/{matrix}', [\App\Http\Controllers\ReportController::class, 'exportMatrix'])->name('reports.matrix.export');
+    Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->middleware(EnsureHasPermission::class . ':reports.view')->name('reports.index');
+    Route::get('/reports/export', [\App\Http\Controllers\ReportController::class, 'export'])->middleware(EnsureHasPermission::class . ':reports.export')->name('reports.export');
+    Route::get('/reports/matrix-export/{matrix}', [\App\Http\Controllers\ReportController::class, 'exportMatrix'])->middleware(EnsureHasPermission::class . ':reports.export')->name('reports.matrix.export');
 
     // إدارة الهيكل والبيانات المرجعية (Master Data Management)
-    Route::get('/master-data', [\App\Http\Controllers\MasterDataController::class, 'index'])->name('master_data.index');
-    Route::get('/master-data/unit-stats/{id}', [\App\Http\Controllers\MasterDataController::class, 'getUnitStats'])->name('master_data.unit_stats');
-    Route::middleware([EnsureHasPermission::class . ':manage_master_data'])->group(function () {
-        // 1. الكليات والأقسام
+    Route::get('/master-data', [\App\Http\Controllers\MasterDataController::class, 'index'])->middleware(EnsureHasPermission::class . ':org_units.view')->name('master_data.index');
+    Route::get('/master-data/unit-stats/{id}', [\App\Http\Controllers\MasterDataController::class, 'getUnitStats'])->middleware(EnsureHasPermission::class . ':org_units.view')->name('master_data.unit_stats');
+
+    Route::middleware([EnsureHasPermission::class . ':org_units.create'])->group(function () {
         Route::post('/master-data/units', [\App\Http\Controllers\MasterDataController::class, 'storeUnit'])->name('master_data.units.store');
-        Route::put('/master-data/units/{id}', [\App\Http\Controllers\MasterDataController::class, 'updateUnit'])->name('master_data.units.update');
-        Route::delete('/master-data/units/{id}', [\App\Http\Controllers\MasterDataController::class, 'destroyUnit'])->name('master_data.units.destroy');
-
-        // 2. الرتب العلمية
         Route::post('/master-data/ranks', [\App\Http\Controllers\MasterDataController::class, 'storeRank'])->name('master_data.ranks.store');
-        Route::put('/master-data/ranks/{id}', [\App\Http\Controllers\MasterDataController::class, 'updateRank'])->name('master_data.ranks.update');
-        Route::delete('/master-data/ranks/{id}', [\App\Http\Controllers\MasterDataController::class, 'destroyRank'])->name('master_data.ranks.destroy');
-
-        // 3. أنواع الوثائق
         Route::post('/master-data/doc-types', [\App\Http\Controllers\MasterDataController::class, 'storeDocType'])->name('master_data.doctypes.store');
-        Route::put('/master-data/doc-types/{id}', [\App\Http\Controllers\MasterDataController::class, 'updateDocType'])->name('master_data.doctypes.update');
-        Route::delete('/master-data/doc-types/{id}', [\App\Http\Controllers\MasterDataController::class, 'destroyDocType'])->name('master_data.doctypes.destroy');
-
-        // 4. الدرجات الوظيفية
         Route::post('/master-data/grades', [\App\Http\Controllers\MasterDataController::class, 'storeGrade'])->name('master_data.grades.store');
-        Route::put('/master-data/grades/{id}', [\App\Http\Controllers\MasterDataController::class, 'updateGrade'])->name('master_data.grades.update');
-        Route::delete('/master-data/grades/{id}', [\App\Http\Controllers\MasterDataController::class, 'destroyGrade'])->name('master_data.grades.destroy');
-
-        // 5. الحالات الوظيفية
         Route::post('/master-data/statuses', [\App\Http\Controllers\MasterDataController::class, 'storeStatus'])->name('master_data.statuses.store');
-        Route::put('/master-data/statuses/{id}', [\App\Http\Controllers\MasterDataController::class, 'updateStatus'])->name('master_data.statuses.update');
-        Route::delete('/master-data/statuses/{id}', [\App\Http\Controllers\MasterDataController::class, 'destroyStatus'])->name('master_data.statuses.destroy');
-
-        // 6. المسميات الوظيفية
         Route::post('/master-data/job-titles', [\App\Http\Controllers\MasterDataController::class, 'storeJobTitle'])->name('master_data.jobtitles.store');
-        Route::put('/master-data/job-titles/{id}', [\App\Http\Controllers\MasterDataController::class, 'updateJobTitle'])->name('master_data.jobtitles.update');
-        Route::delete('/master-data/job-titles/{id}', [\App\Http\Controllers\MasterDataController::class, 'destroyJobTitle'])->name('master_data.jobtitles.destroy');
-
-        // 7. أنواع القرارات
         Route::post('/master-data/decision-types', [\App\Http\Controllers\MasterDataController::class, 'storeDecisionType'])->name('master_data.decisiontypes.store');
-        Route::put('/master-data/decision-types/{id}', [\App\Http\Controllers\MasterDataController::class, 'updateDecisionType'])->name('master_data.decisiontypes.update');
-        Route::delete('/master-data/decision-types/{id}', [\App\Http\Controllers\MasterDataController::class, 'destroyDecisionType'])->name('master_data.decisiontypes.destroy');
-
-        // 8. الجامعات
         Route::post('/master-data/universities', [\App\Http\Controllers\MasterDataController::class, 'storeUniversity'])->name('master_data.universities.store');
+    });
+
+    Route::middleware([EnsureHasPermission::class . ':org_units.edit'])->group(function () {
+        Route::put('/master-data/units/{id}', [\App\Http\Controllers\MasterDataController::class, 'updateUnit'])->name('master_data.units.update');
+        Route::put('/master-data/ranks/{id}', [\App\Http\Controllers\MasterDataController::class, 'updateRank'])->name('master_data.ranks.update');
+        Route::put('/master-data/doc-types/{id}', [\App\Http\Controllers\MasterDataController::class, 'updateDocType'])->name('master_data.doctypes.update');
+        Route::put('/master-data/grades/{id}', [\App\Http\Controllers\MasterDataController::class, 'updateGrade'])->name('master_data.grades.update');
+        Route::put('/master-data/statuses/{id}', [\App\Http\Controllers\MasterDataController::class, 'updateStatus'])->name('master_data.statuses.update');
+        Route::put('/master-data/job-titles/{id}', [\App\Http\Controllers\MasterDataController::class, 'updateJobTitle'])->name('master_data.jobtitles.update');
+        Route::put('/master-data/decision-types/{id}', [\App\Http\Controllers\MasterDataController::class, 'updateDecisionType'])->name('master_data.decisiontypes.update');
         Route::put('/master-data/universities/{id}', [\App\Http\Controllers\MasterDataController::class, 'updateUniversity'])->name('master_data.universities.update');
+    });
+
+    Route::middleware([EnsureHasPermission::class . ':org_units.delete'])->group(function () {
+        Route::delete('/master-data/units/{id}', [\App\Http\Controllers\MasterDataController::class, 'destroyUnit'])->name('master_data.units.destroy');
+        Route::delete('/master-data/ranks/{id}', [\App\Http\Controllers\MasterDataController::class, 'destroyRank'])->name('master_data.ranks.destroy');
+        Route::delete('/master-data/doc-types/{id}', [\App\Http\Controllers\MasterDataController::class, 'destroyDocType'])->name('master_data.doctypes.destroy');
+        Route::delete('/master-data/grades/{id}', [\App\Http\Controllers\MasterDataController::class, 'destroyGrade'])->name('master_data.grades.destroy');
+        Route::delete('/master-data/statuses/{id}', [\App\Http\Controllers\MasterDataController::class, 'destroyStatus'])->name('master_data.statuses.destroy');
+        Route::delete('/master-data/job-titles/{id}', [\App\Http\Controllers\MasterDataController::class, 'destroyJobTitle'])->name('master_data.jobtitles.destroy');
+        Route::delete('/master-data/decision-types/{id}', [\App\Http\Controllers\MasterDataController::class, 'destroyDecisionType'])->name('master_data.decisiontypes.destroy');
         Route::delete('/master-data/universities/{id}', [\App\Http\Controllers\MasterDataController::class, 'destroyUniversity'])->name('master_data.universities.destroy');
     });
 
     // القرارات الإدارية وحركات التفرغ والإجازات (Decisions & Movements)
-    Route::get('/decisions', [\App\Http\Controllers\DecisionController::class, 'index'])->name('decisions.index');
-    Route::post('/decisions', [\App\Http\Controllers\DecisionController::class, 'store'])->middleware(EnsureHasPermission::class . ':manage_decisions')->name('decisions.store');
-    Route::put('/decisions/{id}', [\App\Http\Controllers\DecisionController::class, 'update'])->middleware(EnsureHasPermission::class . ':manage_decisions')->name('decisions.update');
-    Route::delete('/decisions/{id}', [\App\Http\Controllers\DecisionController::class, 'destroy'])->middleware(EnsureHasPermission::class . ':delete_decisions')->name('decisions.destroy');
-    Route::post('/decisions/absences', [\App\Http\Controllers\DecisionController::class, 'storeAbsence'])->middleware(EnsureHasPermission::class . ':manage_decisions')->name('decisions.absences.store');
-    Route::put('/decisions/absences/{id}', [\App\Http\Controllers\DecisionController::class, 'updateAbsence'])->middleware(EnsureHasPermission::class . ':manage_decisions')->name('decisions.absences.update');
-    Route::delete('/decisions/absences/{id}', [\App\Http\Controllers\DecisionController::class, 'destroyAbsence'])->middleware(EnsureHasPermission::class . ':delete_decisions')->name('decisions.absences.destroy');
+    Route::get('/decisions', [\App\Http\Controllers\DecisionController::class, 'index'])->middleware(EnsureHasPermission::class . ':decisions.view')->name('decisions.index');
+    Route::post('/decisions', [\App\Http\Controllers\DecisionController::class, 'store'])->middleware(EnsureHasPermission::class . ':decisions.create')->name('decisions.store');
+    Route::put('/decisions/{id}', [\App\Http\Controllers\DecisionController::class, 'update'])->middleware(EnsureHasPermission::class . ':decisions.edit')->name('decisions.update');
+    Route::delete('/decisions/{id}', [\App\Http\Controllers\DecisionController::class, 'destroy'])->middleware(EnsureHasPermission::class . ':decisions.delete')->name('decisions.destroy');
+    Route::post('/decisions/absences', [\App\Http\Controllers\DecisionController::class, 'storeAbsence'])->middleware(EnsureHasPermission::class . ':decisions.create')->name('decisions.absences.store');
+    Route::put('/decisions/absences/{id}', [\App\Http\Controllers\DecisionController::class, 'updateAbsence'])->middleware(EnsureHasPermission::class . ':decisions.edit')->name('decisions.absences.update');
+    Route::delete('/decisions/absences/{id}', [\App\Http\Controllers\DecisionController::class, 'destroyAbsence'])->middleware(EnsureHasPermission::class . ':decisions.delete')->name('decisions.absences.destroy');
 
     // المستودع الرقمي ومحرك بحث الأرشيف الإلكتروني (Digital Archive Explorer)
-    Route::get('/archive', [\App\Http\Controllers\ArchiveController::class, 'index'])->name('archive.index');
-    Route::get('/archive/export/excel', [\App\Http\Controllers\ArchiveController::class, 'exportExcel'])->name('archive.export.excel');
-    Route::post('/archive/upload', [\App\Http\Controllers\ArchiveController::class, 'storeDirect'])->middleware(EnsureHasPermission::class . ':manage_archive')->name('archive.store');
-    Route::post('/archive/bulk-upload', [\App\Http\Controllers\ArchiveController::class, 'bulkUpload'])->middleware(EnsureHasPermission::class . ':manage_archive')->name('archive.bulk_upload');
-    Route::post('/archive/{docId}/versions', [\App\Http\Controllers\ArchiveController::class, 'uploadNewVersion'])->middleware(EnsureHasPermission::class . ':manage_archive')->name('archive.versions.store');
-    Route::get('/archive/preview/{versionId}', [\App\Http\Controllers\ArchiveController::class, 'preview'])->name('archive.preview');
-    Route::get('/archive/download/{versionId}', [\App\Http\Controllers\ArchiveController::class, 'download'])->name('archive.download');
-    Route::delete('/archive/{id}', [\App\Http\Controllers\ArchiveController::class, 'destroy'])->middleware(EnsureHasPermission::class . ':manage_archive')->name('archive.destroy');
-    Route::post('/archive/{id}/restore', [\App\Http\Controllers\ArchiveController::class, 'restore'])->middleware(EnsureHasPermission::class . ':manage_archive')->name('archive.restore');
-    Route::delete('/archive/{id}/force', [\App\Http\Controllers\ArchiveController::class, 'forceDelete'])->middleware(EnsureHasPermission::class . ':manage_archive')->name('archive.force_delete');
-    Route::get('/archive/{id}/audit-trail', [\App\Http\Controllers\ArchiveController::class, 'auditTrail'])->name('archive.audit_trail');
+    Route::get('/archive', [\App\Http\Controllers\ArchiveController::class, 'index'])->middleware(EnsureHasPermission::class . ':archive.view')->name('archive.index');
+    Route::get('/archive/export/excel', [\App\Http\Controllers\ArchiveController::class, 'exportExcel'])->middleware(EnsureHasPermission::class . ':archive.view')->name('archive.export.excel');
+    Route::post('/archive/upload', [\App\Http\Controllers\ArchiveController::class, 'storeDirect'])->middleware(EnsureHasPermission::class . ':archive.create')->name('archive.store');
+    Route::post('/archive/bulk-upload', [\App\Http\Controllers\ArchiveController::class, 'bulkUpload'])->middleware(EnsureHasPermission::class . ':archive.create')->name('archive.bulk_upload');
+    Route::post('/archive/{docId}/versions', [\App\Http\Controllers\ArchiveController::class, 'uploadNewVersion'])->middleware(EnsureHasPermission::class . ':archive.create')->name('archive.versions.store');
+    Route::get('/archive/preview/{versionId}', [\App\Http\Controllers\ArchiveController::class, 'preview'])->middleware(EnsureHasPermission::class . ':archive.view')->name('archive.preview');
+    Route::get('/archive/download/{versionId}', [\App\Http\Controllers\ArchiveController::class, 'download'])->middleware(EnsureHasPermission::class . ':archive.view')->name('archive.download');
+    Route::delete('/archive/{id}', [\App\Http\Controllers\ArchiveController::class, 'destroy'])->middleware(EnsureHasPermission::class . ':archive.delete')->name('archive.destroy');
+    Route::post('/archive/{id}/restore', [\App\Http\Controllers\ArchiveController::class, 'restore'])->middleware(EnsureHasPermission::class . ':archive.edit')->name('archive.restore');
+    Route::delete('/archive/{id}/force', [\App\Http\Controllers\ArchiveController::class, 'forceDelete'])->middleware(EnsureHasPermission::class . ':archive.delete')->name('archive.force_delete');
+    Route::get('/archive/{id}/audit-trail', [\App\Http\Controllers\ArchiveController::class, 'auditTrail'])->middleware(EnsureHasPermission::class . ':archive.view')->name('archive.audit_trail');
 
     // الإضافة السريعة للتصنيفات من القوائم المنسدلة (Quick Add Inline Modal Actions - مقيدة بصلاحية الهيكل)
-    Route::middleware([EnsureHasPermission::class . ':manage_master_data'])->group(function () {
+    Route::middleware([EnsureHasPermission::class . ':org_units.create'])->group(function () {
         Route::post('/quick-add/unit', [\App\Http\Controllers\QuickAddController::class, 'storeUnit'])->name('quick.add.unit');
         Route::post('/quick-add/rank', [\App\Http\Controllers\QuickAddController::class, 'storeRank'])->name('quick.add.rank');
         Route::post('/quick-add/grade', [\App\Http\Controllers\QuickAddController::class, 'storeGrade'])->name('quick.add.grade');

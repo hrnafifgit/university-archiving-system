@@ -89,46 +89,48 @@
             </button>
 
             <!-- الزر الرئيسي الأخضر الغامق للإضافة -->
-            @if($tab === 'org_units')
-                <button type="button" onclick="openModal('modal-add-unit')" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 shadow-xs cursor-pointer whitespace-nowrap">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span>إضافة جهة / كلية</span>
-                </button>
-            @elseif($tab === 'ranks')
-                <button type="button" onclick="openModal('modal-add-rank')" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 shadow-xs cursor-pointer whitespace-nowrap">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span>إضافة رتبة علمية</span>
-                </button>
-            @elseif($tab === 'grades')
-                <button type="button" onclick="openModal('modal-add-grade')" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 shadow-xs cursor-pointer whitespace-nowrap">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span>إضافة درجة وظيفية</span>
-                </button>
-            @elseif($tab === 'doc_types')
-                <button type="button" onclick="openModal('modal-add-doctype')" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 shadow-xs cursor-pointer whitespace-nowrap">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span>إضافة نوع وثيقة</span>
-                </button>
-            @elseif($tab === 'statuses')
-                <button type="button" onclick="openModal('modal-add-status')" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 shadow-xs cursor-pointer whitespace-nowrap">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span>إضافة حالة وظيفية</span>
-                </button>
-            @elseif($tab === 'job_titles')
-                <button type="button" onclick="openModal('modal-add-jobtitle')" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 shadow-xs cursor-pointer whitespace-nowrap">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span>إضافة مسمى وظيفي</span>
-                </button>
-            @elseif($tab === 'decision_types')
-                <button type="button" onclick="openModal('modal-add-decisiontype')" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 shadow-xs cursor-pointer whitespace-nowrap">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span>إضافة نوع قرار</span>
-                </button>
-            @elseif($tab === 'universities')
-                <button type="button" onclick="openModal('modal-add-university')" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 shadow-xs cursor-pointer whitespace-nowrap">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span>إضافة جامعة</span>
-                </button>
+            @if(\App\Services\PermissionService::hasPerm('org_units.create'))
+                @if($tab === 'org_units')
+                    <button type="button" onclick="openModal('modal-add-unit')" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 shadow-xs cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>إضافة جهة / كلية</span>
+                    </button>
+                @elseif($tab === 'ranks')
+                    <button type="button" onclick="openModal('modal-add-rank')" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 shadow-xs cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>إضافة رتبة علمية</span>
+                    </button>
+                @elseif($tab === 'grades')
+                    <button type="button" onclick="openModal('modal-add-grade')" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 shadow-xs cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>إضافة درجة وظيفية</span>
+                    </button>
+                @elseif($tab === 'doc_types')
+                    <button type="button" onclick="openModal('modal-add-doctype')" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 shadow-xs cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>إضافة نوع وثيقة</span>
+                    </button>
+                @elseif($tab === 'statuses')
+                    <button type="button" onclick="openModal('modal-add-status')" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 shadow-xs cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>إضافة حالة وظيفية</span>
+                    </button>
+                @elseif($tab === 'job_titles')
+                    <button type="button" onclick="openModal('modal-add-jobtitle')" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 shadow-xs cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>إضافة مسمى وظيفي</span>
+                    </button>
+                @elseif($tab === 'decision_types')
+                    <button type="button" onclick="openModal('modal-add-decisiontype')" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 shadow-xs cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>إضافة نوع قرار</span>
+                    </button>
+                @elseif($tab === 'universities')
+                    <button type="button" onclick="openModal('modal-add-university')" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 shadow-xs cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>إضافة جامعة</span>
+                    </button>
+                @endif
             @endif
         </div>
     </div>
@@ -425,9 +427,11 @@
                                     <span class="font-black text-slate-900 text-sm tracking-wide">جامعة إب — الهيكل الإداري والأكاديمي الموحد</span>
                                 </div>
                                 <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+                                    @if(\App\Services\PermissionService::hasPerm('org_units.create'))
                                     <button type="button" onclick="openModal('modal-add-unit')" class="bg-brand-900 hover:bg-brand-800 text-white font-bold px-3 py-1 rounded-lg text-xs transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
                                         <i class="fa-solid fa-plus text-[10px]"></i> إضافة جهة / كلية
                                     </button>
+                                    @endif
                                 </div>
                             </div>
 
@@ -461,17 +465,22 @@
 
                                             <!-- أزرار الإجراءات للكلية (تظهر بسلاسة عند الهفر دون تحريك النص) -->
                                             <div class="flex items-center gap-1.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150" onclick="event.stopPropagation()">
+                                                @if(\App\Services\PermissionService::hasPerm('org_units.create'))
                                                 <button type="button" onclick="openAddDeptModal('{{ $fId }}', '{{ $fac->unit_name_ar }}')" 
                                                         class="px-2.5 py-1 bg-brand-900 hover:bg-brand-800 text-white rounded-lg text-xs font-bold inline-flex items-center gap-1 cursor-pointer shadow-2xs"
                                                         title="إضافة قسم جديد يتبع هذه الكلية">
                                                     <i class="fa-solid fa-plus text-[10px]"></i>
                                                     <span>قسم</span>
                                                 </button>
+                                                @endif
+                                                @if(\App\Services\PermissionService::hasPerm('org_units.edit'))
                                                 <button type="button" onclick="openEditUnitModal({{ json_encode($fac) }})"
                                                         class="w-7 h-7 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-brand-900 hover:text-white text-slate-600 transition border border-slate-300 text-xs cursor-pointer"
                                                         title="تعديل بيانات الكلية">
                                                     <i class="fa-solid fa-pen-to-square"></i>
                                                 </button>
+                                                @endif
+                                                @if(\App\Services\PermissionService::hasPerm('org_units.delete'))
                                                 <form method="POST" action="{{ route('master_data.units.destroy', $fId) }}" onsubmit="return confirm('تأكيد حذف الجهة: {{ $fac->unit_name_ar }}؟')" class="inline">
                                                     @csrf
                                                     @method('DELETE')
@@ -481,6 +490,7 @@
                                                         <i class="fa-solid fa-trash-can"></i>
                                                     </button>
                                                 </form>
+                                                @endif
                                             </div>
                                         </div>
 
@@ -511,15 +521,20 @@
 
                                                         <!-- أزرار الإجراءات للقسم (تظهر بسلاسة عند الهفر دون تحريك النص) -->
                                                         <div class="flex items-center gap-1.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150" onclick="event.stopPropagation()">
+                                                            @if(\App\Services\PermissionService::hasPerm('employees.create'))
                                                             <a href="{{ route('employees.create') }}?faculty_id={{ $fId }}&dept_id={{ $cId }}" class="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-xs font-bold inline-flex items-center gap-1 shadow-2xs cursor-pointer" title="إضافة وتعيين كادر في هذا القسم مباشرة">
                                                                 <i class="fa-solid fa-user-plus text-[10px]"></i>
                                                                 <span>+ كادر</span>
                                                             </a>
+                                                            @endif
+                                                            @if(\App\Services\PermissionService::hasPerm('org_units.edit'))
                                                             <button type="button" onclick="openEditUnitModal({{ json_encode($child) }})"
                                                                     class="w-7 h-7 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-brand-900 hover:text-white text-slate-600 transition border border-slate-300 text-xs cursor-pointer"
                                                                     title="تعديل بيانات القسم">
                                                                 <i class="fa-solid fa-pen-to-square"></i>
                                                             </button>
+                                                            @endif
+                                                            @if(\App\Services\PermissionService::hasPerm('org_units.delete'))
                                                             <form method="POST" action="{{ route('master_data.units.destroy', $cId) }}" onsubmit="return confirm('تأكيد حذف القسم: {{ $child->unit_name_ar }}؟')" class="inline">
                                                                 @csrf
                                                                 @method('DELETE')
@@ -529,6 +544,7 @@
                                                                     <i class="fa-solid fa-trash-can"></i>
                                                                 </button>
                                                             </form>
+                                                            @endif
                                                         </div>
                                                     </div>
 

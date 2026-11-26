@@ -161,17 +161,22 @@
 
                                 @foreach($actions as $actKey => $actInfo)
                                     @php
+                                        $supported = in_array($actKey, $modInfo['actions'] ?? [], true);
                                         $code = "{$modKey}.{$actKey}";
                                         $checked = in_array($code, $grantedCodes, true);
                                     @endphp
                                     <td class="py-2.5 px-3 text-center">
-                                        <input type="checkbox"
-                                               name="permissions[]"
-                                               value="{{ $code }}"
-                                               data-module="{{ $modKey }}"
-                                               data-action="{{ $actKey }}"
-                                               {{ $checked ? 'checked' : '' }}
-                                               class="perm-checkbox w-4 h-4 rounded border-slate-300 text-[#14532d] focus:ring-[#14532d] cursor-pointer">
+                                        @if($supported)
+                                            <input type="checkbox"
+                                                   name="permissions[]"
+                                                   value="{{ $code }}"
+                                                   data-module="{{ $modKey }}"
+                                                   data-action="{{ $actKey }}"
+                                                   {{ $checked ? 'checked' : '' }}
+                                                   class="perm-checkbox w-4 h-4 rounded border-slate-300 text-[#14532d] focus:ring-[#14532d] cursor-pointer">
+                                        @else
+                                            <span class="text-slate-300 font-bold select-none" title="غير منطبق على هذه الشاشة">—</span>
+                                        @endif
                                     </td>
                                 @endforeach
 
@@ -250,12 +255,14 @@
                     @foreach($modules as $modKey => $modInfo)
                         <div class="flex items-center justify-between py-1 border-b border-slate-100 last:border-0">
                             <span class="font-bold text-slate-800">{{ $modInfo['label'] }}</span>
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center flex-wrap gap-2">
                                 @foreach($actions as $actKey => $actInfo)
-                                    <label class="inline-flex items-center gap-1 text-[11px] text-slate-600 cursor-pointer">
-                                        <input type="checkbox" name="permissions[]" value="{{ $modKey }}.{{ $actKey }}" {{ $actKey === 'view' ? 'checked' : '' }} class="rounded text-[#14532d]">
-                                        <span>{{ $actInfo['label'] }}</span>
-                                    </label>
+                                    @if(in_array($actKey, $modInfo['actions'] ?? [], true))
+                                        <label class="inline-flex items-center gap-1 text-[11px] text-slate-600 cursor-pointer">
+                                            <input type="checkbox" name="permissions[]" value="{{ $modKey }}.{{ $actKey }}" {{ $actKey === 'view' ? 'checked' : '' }} class="rounded text-[#14532d]">
+                                            <span>{{ $actInfo['label'] }}</span>
+                                        </label>
+                                    @endif
                                 @endforeach
                             </div>
                         </div>
