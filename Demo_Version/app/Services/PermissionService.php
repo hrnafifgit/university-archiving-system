@@ -16,42 +16,42 @@ class PermissionService
 {
     public const MODULES = [
         'dashboard' => [
-            'label'   => 'الرئيسية (لوحة المؤشرات)',
+            'label'   => 'الشاشة الرئيسية',
             'icon'    => 'fa-chart-pie',
             'actions' => ['view'],
         ],
         'employees' => [
-            'label'   => 'دليل الكادر (الأكاديمي والإداري)',
+            'label'   => 'شاشة الكادر',
             'icon'    => 'fa-users',
             'actions' => ['view', 'create', 'edit', 'delete'],
         ],
         'decisions' => [
-            'label'   => 'القرارات الإدارية والإجازات',
+            'label'   => 'شاشة القرارات',
             'icon'    => 'fa-stamp',
             'actions' => ['view', 'create', 'edit', 'delete'],
         ],
         'archive' => [
-            'label'   => 'المستودع الرقمي (الأرشيف)',
+            'label'   => 'شاشة الأرشيف',
             'icon'    => 'fa-folder-tree',
             'actions' => ['view', 'create', 'edit', 'delete'],
         ],
         'org_units' => [
-            'label'   => 'الهيكل الأكاديمي والبيانات المرجعية',
+            'label'   => 'شاشة الهيكل',
             'icon'    => 'fa-sitemap',
             'actions' => ['view', 'create', 'edit', 'delete'],
         ],
         'reports' => [
-            'label'   => 'مركز التقارير والكشوفات',
+            'label'   => 'شاشة التقارير',
             'icon'    => 'fa-file-contract',
             'actions' => ['view', 'export'],
         ],
         'workflow' => [
-            'label'   => 'مسار الاعتمادات المتسلسل',
+            'label'   => 'شاشة الاعتمادات',
             'icon'    => 'fa-clipboard-check',
             'actions' => ['view', 'create', 'confirm'],
         ],
         'system_settings' => [
-            'label'   => 'الصلاحيات والأمان (الأدوار والمستخدمين)',
+            'label'   => 'شاشة الصلاحيات',
             'icon'    => 'fa-user-shield',
             'actions' => ['view', 'create', 'edit', 'delete'],
         ],
