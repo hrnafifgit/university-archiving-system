@@ -17,6 +17,7 @@ Route::middleware([EnsureDesktopAuthenticated::class])->group(function () {
     
     // لوحة العمليات المركزية والبحث الشامل
     Route::get('/', [DashboardController::class, 'index'])->middleware(EnsureHasPermission::class . ':dashboard.view')->name('dashboard');
+    Route::get('/no-permissions', fn() => view('auth.no_permissions'))->name('no_permissions');
     Route::get('/global-search', [DashboardController::class, 'globalSearch'])->name('global_search');
 
     // دليل وسجلات الكادر (CRUD)

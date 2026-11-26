@@ -138,7 +138,7 @@ class PermissionService
         if (self::hasPerm('workflow.view', $permissions)) return route('workflow.index');
         if (self::hasPerm('system_settings.view', $permissions)) return route('security.roles.index');
 
-        return route('employees.index');
+        return route('no_permissions');
     }
 
     /**
