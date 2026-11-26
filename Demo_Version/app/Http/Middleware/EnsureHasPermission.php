@@ -41,6 +41,7 @@ class EnsureHasPermission
             ], 403);
         }
 
-        return redirect()->route('dashboard')->with('error', "ليس لديك الصلاحية الكافية لإجراء هذه العملية ({$permission}).");
+        $landing = \App\Services\PermissionService::getLandingRoute();
+        return redirect($landing)->with('error', "ليس لديك الصلاحية الكافية لإجراء هذه العملية ({$permission}).");
     }
 }

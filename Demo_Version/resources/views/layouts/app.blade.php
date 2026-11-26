@@ -118,7 +118,7 @@
             
             <!-- ترويسة القائمة: الشعار وزر الطي الداخلي فقط بدون نصوص، ثابتة تماماً بدون تمرير -->
             <div class="h-16 px-3.5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
-                <a href="{{ route('dashboard') }}" class="flex items-center" title="جامعة إب">
+                <a href="{{ \App\Services\PermissionService::getLandingRoute() }}" class="flex items-center" title="جامعة إب">
                     <img src="{{ asset('images/official_web_logo.png') }}" alt="جامعة إب" class="h-10 w-auto object-contain">
                 </a>
                 <button type="button" onclick="toggleMainSidebar()" class="text-slate-400 hover:text-brand-900 hover:bg-slate-100 p-2 rounded-xl transition cursor-pointer" title="طي القائمة الجانبية">
@@ -140,61 +140,77 @@
                         <kbd class="bg-white border border-slate-300 text-slate-500 px-1.5 py-0.5 rounded text-[10px] font-mono shadow-2xs font-bold">Ctrl K</kbd>
                     </button>
 
+                    @if(\App\Services\PermissionService::hasPerm('dashboard.view'))
                     <a href="{{ route('dashboard') }}" 
                        class="flex items-center px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap {{ request()->routeIs('dashboard') ? 'bg-brand-900 text-white shadow-xs' : 'text-slate-600 hover:text-brand-900 hover:bg-slate-100' }}" 
                        title="لوحة التحكم">
                         <i class="fa-solid fa-chart-pie ml-3 text-base {{ request()->routeIs('dashboard') ? 'text-white' : 'text-slate-400' }}"></i>
                         <span>الرئيسية</span>
                     </a>
+                    @endif
 
+                    @if(\App\Services\PermissionService::hasPerm('employees.view'))
                     <a href="{{ route('employees.index') }}" 
                        class="flex items-center px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap {{ request()->routeIs('employees.*') ? 'bg-brand-900 text-white shadow-xs' : 'text-slate-600 hover:text-brand-900 hover:bg-slate-100' }}" 
                        title="دليل الكادر الأكاديمي والإداري">
                         <i class="fa-solid fa-users ml-3 text-base {{ request()->routeIs('employees.*') ? 'text-white' : 'text-slate-400' }}"></i>
                         <span>الكادر</span>
                     </a>
+                    @endif
 
+                    @if(\App\Services\PermissionService::hasPerm('employees.view') || \App\Services\PermissionService::hasPerm('manage_decisions'))
                     <a href="{{ route('decisions.index') }}" 
                        class="flex items-center px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap {{ request()->routeIs('decisions.*') ? 'bg-brand-900 text-white shadow-xs' : 'text-slate-600 hover:text-brand-900 hover:bg-slate-100' }}" 
                        title="القرارات الإدارية والإجازات">
                         <i class="fa-solid fa-stamp ml-3 text-base {{ request()->routeIs('decisions.*') ? 'text-white' : 'text-slate-400' }}"></i>
                         <span>القرارات</span>
                     </a>
+                    @endif
 
+                    @if(\App\Services\PermissionService::hasPerm('view_reports'))
                     <a href="{{ route('reports.index') }}" 
                        class="flex items-center px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap {{ request()->routeIs('reports.*') ? 'bg-brand-900 text-white shadow-xs' : 'text-slate-600 hover:text-brand-900 hover:bg-slate-100' }}" 
                        title="مركز التقارير والكشوفات">
                         <i class="fa-solid fa-file-contract ml-3 text-base {{ request()->routeIs('reports.*') ? 'text-white' : 'text-slate-400' }}"></i>
                         <span>التقارير</span>
                     </a>
+                    @endif
 
+                    @if(\App\Services\PermissionService::hasPerm('employees.view') || \App\Services\PermissionService::hasPerm('manage_archive'))
                     <a href="{{ route('archive.index') }}" 
                        class="flex items-center px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap {{ request()->routeIs('archive.*') ? 'bg-brand-900 text-white shadow-xs' : 'text-slate-600 hover:text-brand-900 hover:bg-slate-100' }}" 
                        title="الأرشيف والملفات الرقمية">
                         <i class="fa-solid fa-folder-tree ml-3 text-base {{ request()->routeIs('archive.*') ? 'text-white' : 'text-slate-400' }}"></i>
                         <span>الأرشيف</span>
                     </a>
+                    @endif
 
+                    @if(\App\Services\PermissionService::hasPerm('org_units.view'))
                     <a href="{{ route('master_data.index') }}" 
                        class="flex items-center px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap {{ request()->routeIs('master_data.*') ? 'bg-brand-900 text-white shadow-xs' : 'text-slate-600 hover:text-brand-900 hover:bg-slate-100' }}" 
                        title="الهيكل الأكاديمي والبيانات المرجعية">
                         <i class="fa-solid fa-sitemap ml-3 text-base {{ request()->routeIs('master_data.*') ? 'text-white' : 'text-slate-400' }}"></i>
                         <span>الهيكل</span>
                     </a>
+                    @endif
 
+                    @if(\App\Services\PermissionService::hasPerm('hourly_contracts.view') || \App\Services\PermissionService::hasPerm('budget.view') || \App\Services\PermissionService::hasPerm('employees.confirm'))
                     <a href="{{ route('workflow.index') }}" 
                        class="flex items-center px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap {{ request()->routeIs('workflow.*') ? 'bg-brand-900 text-white shadow-xs' : 'text-slate-600 hover:text-brand-900 hover:bg-slate-100' }}" 
                        title="مسار الاعتماد والتأكيد المتسلسل">
                         <i class="fa-solid fa-clipboard-check ml-3 text-base {{ request()->routeIs('workflow.*') ? 'text-white' : 'text-slate-400' }}"></i>
                         <span>الاعتمادات</span>
                     </a>
+                    @endif
 
+                    @if(\App\Services\PermissionService::hasPerm('system_settings.view'))
                     <a href="{{ route('security.roles.index') }}" 
                        class="flex items-center px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap {{ request()->routeIs('security.*') ? 'bg-brand-900 text-white shadow-xs' : 'text-slate-600 hover:text-brand-900 hover:bg-slate-100' }}" 
                        title="الأدوار والصلاحيات التفصيلية">
                         <i class="fa-solid fa-user-shield ml-3 text-base {{ request()->routeIs('security.*') ? 'text-white' : 'text-slate-400' }}"></i>
                         <span>الصلاحيات</span>
                     </a>
+                    @endif
                 </nav>
             </div>
 

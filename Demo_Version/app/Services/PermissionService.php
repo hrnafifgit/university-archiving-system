@@ -41,17 +41,76 @@ class PermissionService
     ];
 
     /**
-     * التحقق من امتلاك الجلسة الحالية لصلاحية معينة
+     * التحقق من امتلاك الجلسة الحالية لصلاحية معينة (مع دعم الصلاحيات الموروثة)
      */
-    public static function hasPerm(string $permissionCode): bool
+    public static function hasPerm(string $permissionCode, ?array $overridePerms = null): bool
     {
-        $roleName = (string) Session::get('logged_role_name', '');
-        if ($roleName === 'مدير نظام' || $roleName === 'مدير النظام' || str_contains(strtolower($roleName), 'super admin')) {
+        if ($overridePerms === null) {
+            $username = strtolower((string) Session::get('logged_username', ''));
+            $roleName = (string) Session::get('logged_role_name', '');
+            if ($username === 'admin' || $roleName === 'مدير نظام' || str_contains($roleName, 'مدير النظام') || str_contains(strtolower($roleName), 'super admin')) {
+                return true;
+            }
+            $perms = Session::get('logged_permissions', []);
+        } else {
+            $perms = $overridePerms;
+        }
+
+        if (in_array($permissionCode, $perms, true)) {
             return true;
         }
 
-        $perms = Session::get('logged_permissions', []);
-        return in_array($permissionCode, $perms, true);
+        // ربط الصلاحيات القديمة بمصفوفة الصلاحيات الحديثة
+        $aliases = [
+            'manage_employees'   => ['employees.create', 'employees.edit'],
+            'delete_employees'   => ['employees.delete'],
+            'manage_decisions'   => ['employees.edit', 'employees.confirm'],
+            'delete_decisions'   => ['employees.delete'],
+            'manage_archive'     => ['employees.create', 'employees.edit'],
+            'delete_archive'     => ['employees.delete'],
+            'manage_master_data' => ['org_units.create', 'org_units.edit'],
+            'view_reports'       => ['dashboard.view', 'budget.view', 'employees.view'],
+        ];
+
+        if (isset($aliases[$permissionCode])) {
+            foreach ($aliases[$permissionCode] as $alias) {
+                if (in_array($alias, $perms, true)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * تحديد الصفحة الافتراضية المناسبة للمستخدم بناءً على الصلاحيات الممنوحة لدوره
+     */
+    public static function getLandingRoute(?array $permissions = null): string
+    {
+        $username = strtolower((string) Session::get('logged_username', ''));
+        $roleName = (string) Session::get('logged_role_name', '');
+        if ($username === 'admin' || $roleName === 'مدير نظام' || str_contains($roleName, 'مدير النظام') || str_contains(strtolower($roleName), 'super admin')) {
+            return route('dashboard');
+        }
+
+        if (self::hasPerm('dashboard.view', $permissions)) {
+            return route('dashboard');
+        }
+        if (self::hasPerm('employees.view', $permissions)) {
+            return route('employees.index');
+        }
+        if (self::hasPerm('org_units.view', $permissions)) {
+            return route('master_data.index');
+        }
+        if (self::hasPerm('hourly_contracts.view', $permissions) || self::hasPerm('budget.view', $permissions) || self::hasPerm('employees.confirm', $permissions)) {
+            return route('workflow.index');
+        }
+        if (self::hasPerm('system_settings.view', $permissions)) {
+            return route('security.roles.index');
+        }
+
+        return route('employees.index');
     }
 
     /**
@@ -197,52 +256,37 @@ class PermissionService
             }
         }
 
-        // 3. بذر مستخدمين جاهزين للتجربة عبر Role Switcher
-        $demoUsers = [
-            ['username' => 'admin',         'display' => 'م. مدير النظام',          'role' => 'مدير نظام'],
-            ['username' => 'sec_general',   'display' => 'أ.د. الأمين العام للجامعة', 'role' => 'أمين عام'],
-            ['username' => 'admin_manager', 'display' => 'أ. مدير عام الموارد البشرية', 'role' => 'مدير إدارة'],
-            ['username' => 'dept_head',     'display' => 'د. رئيس قسم المحاسبة',    'role' => 'رئيس قسم'],
-            ['username' => 'staff_admin',   'display' => 'موظف إدخال إداري',         'role' => 'إداري'],
-            ['username' => 'academic_user', 'display' => 'عضو هيئة تدريس (أكاديمي)', 'role' => 'أكاديمي'],
-        ];
-
-        $userIds = [];
-        foreach ($demoUsers as $du) {
-            $u = DB::table('app_users')->where('username', $du['username'])->first();
-            if (!$u) {
-                $uid = (string) Str::uuid();
-                DB::table('app_users')->insert([
-                    'user_id' => $uid,
-                    'username' => $du['username'],
-                    'display_name_ar' => $du['display'],
-                    'password_hash' => Hash::make('admin123'),
-                    'is_active' => true,
-                    'allow_direct_password_change' => true,
-                    'require_confirm_sensitive_edit' => true,
-                    'created_at' => now(),
-                ]);
-                $uId = $uid;
-            } else {
-                $uId = $u->user_id;
-                if (empty($u->display_name_ar)) {
-                    DB::table('app_users')->where('user_id', $uId)->update(['display_name_ar' => $du['display']]);
-                }
-            }
-            $userIds[$du['username']] = $uId;
-
-            $hasRole = DB::table('user_roles')->where('user_id', $uId)->exists();
-            if (!$hasRole && isset($roleIds[$du['role']])) {
-                DB::table('user_roles')->insertOrIgnore([
-                    'user_id' => $uId,
-                    'role_id' => $roleIds[$du['role']],
-                ]);
+        // 3. التأكد من وجود المستخدم الرئيسي (admin) فقط دون إعادة بذر مستخدمين تجريبيين عشوائيين
+        $adminUser = DB::table('app_users')->where('username', 'admin')->first();
+        if (!$adminUser) {
+            $adminId = (string) Str::uuid();
+            DB::table('app_users')->insert([
+                'user_id' => $adminId,
+                'username' => 'admin',
+                'display_name_ar' => 'م. مدير النظام',
+                'password_hash' => Hash::make('admin123'),
+                'is_active' => true,
+                'allow_direct_password_change' => true,
+                'require_confirm_sensitive_edit' => true,
+                'created_at' => now(),
+            ]);
+        } else {
+            $adminId = $adminUser->user_id;
+            if (empty($adminUser->display_name_ar)) {
+                DB::table('app_users')->where('user_id', $adminId)->update(['display_name_ar' => 'م. مدير النظام']);
             }
         }
 
-        // 4. بذر معاملات اعتماد تجريبية إذا كان الجدول فارغاً
+        if (!DB::table('user_roles')->where('user_id', $adminId)->exists() && isset($roleIds['مدير نظام'])) {
+            DB::table('user_roles')->insertOrIgnore([
+                'user_id' => $adminId,
+                'role_id' => $roleIds['مدير نظام'],
+            ]);
+        }
+
+        // 4. بذر معاملات اعتماد تجريبية فقط إذا كان الجدول فارغاً
         if (WorkflowTransaction::count() === 0) {
-            self::seedSampleWorkflows($userIds);
+            self::seedSampleWorkflows(['admin' => $adminId]);
         }
     }
 

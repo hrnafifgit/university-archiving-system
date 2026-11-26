@@ -5,6 +5,20 @@
 @section('content')
 <div class="flex-1 flex flex-col gap-3 min-h-0 overflow-y-auto pr-0.5 pb-6 custom-scrollbar">
 
+    @if(isset($errors) && $errors->any())
+        <div class="p-3.5 px-5 bg-rose-50 border border-rose-200 text-rose-900 rounded-2xl text-xs font-bold space-y-1 shadow-xs">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation text-rose-600"></i>
+                <span>تعذر تنفيذ العملية للأسباب التالية:</span>
+            </div>
+            <ul class="list-disc list-inside text-[11px] font-medium pr-5 text-rose-800">
+                @foreach($errors->all() as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <!-- 1. شريط التحكم القياسي الموحد -->
     <div class="bg-white border border-slate-200 rounded-2xl p-3.5 px-5 flex flex-wrap items-center justify-between gap-3 shadow-xs shrink-0 select-none">
         
@@ -274,7 +288,7 @@
                 <select name="employee_id" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-bold">
                     <option value="">-- اختر من الكادر --</option>
                     @foreach($availableEmployees as $emp)
-                        <option value="{{ $emp->employee_id }}">{{ $emp->full_name_ar }} ({{ $emp->employee_number }})</option>
+                        <option value="{{ $emp->employee_id }}" {{ old('employee_id') == $emp->employee_id ? 'selected' : '' }}>{{ $emp->full_name_ar }} ({{ $emp->employee_number }})</option>
                     @endforeach
                 </select>
             </div>
@@ -282,29 +296,73 @@
                 <label class="block font-bold text-slate-800 mb-1">الدور الوظيفي *</label>
                 <select name="role_id" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-bold">
                     @foreach($roles as $r)
-                        <option value="{{ $r->role_id }}">{{ $r->role_name }}</option>
+                        <option value="{{ $r->role_id }}" {{ old('role_id') == $r->role_id ? 'selected' : '' }}>{{ $r->role_name }}</option>
                     @endforeach
                 </select>
             </div>
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block font-bold text-slate-800 mb-1">اسم المستخدم *</label>
-                    <input type="text" name="username" required placeholder="user_name" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-mono">
+                    <input type="text" name="username" id="assign_username_input" required 
+                           value="{{ old('username') }}"
+                           oninput="this.value = this.value.toLowerCase().replace(/[^a-z0-9_.\-]/g, ''); checkUsernameLive(this.value);"
+                           placeholder="ahmed_ali" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-mono">
+                    <div id="assign_username_feedback" class="hidden text-[10px] font-bold mt-1"></div>
                 </div>
                 <div>
                     <label class="block font-bold text-slate-800 mb-1">كلمة المرور *</label>
-                    <input type="password" name="password" required placeholder="••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-mono">
+                    <input type="password" name="password" required minlength="4" placeholder="••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-mono">
                 </div>
             </div>
             <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                 <button type="button" onclick="document.getElementById('assignCadreModal').classList.add('hidden')" class="px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-bold cursor-pointer">إلغاء</button>
-                <button type="submit" class="px-5 py-2 rounded-xl bg-[#14532d] hover:bg-[#166534] text-white font-bold cursor-pointer">تعيين وتخصيص الصلاحيات</button>
+                <button type="submit" id="assignUserSubmitBtn" class="px-5 py-2 rounded-xl bg-[#14532d] hover:bg-[#166534] text-white font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">تعيين وتخصيص الصلاحيات</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
+let usernameCheckTimer = null;
+function checkUsernameLive(val) {
+    clearTimeout(usernameCheckTimer);
+    const fb = document.getElementById('assign_username_feedback');
+    const btn = document.getElementById('assignUserSubmitBtn');
+    const inp = document.getElementById('assign_username_input');
+    if (!fb || !btn || !inp) return;
+
+    const clean = (val || '').trim();
+    if (!clean) {
+        fb.classList.add('hidden');
+        btn.disabled = false;
+        inp.classList.remove('border-rose-500', 'border-emerald-500');
+        return;
+    }
+
+    usernameCheckTimer = setTimeout(() => {
+        fetch(`{{ route('security.users.check_username') }}?username=${encodeURIComponent(clean)}`, {
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            fb.classList.remove('hidden', 'text-rose-600', 'text-emerald-700');
+            inp.classList.remove('border-rose-500', 'border-emerald-500');
+            if (data.available) {
+                fb.classList.add('text-emerald-700');
+                fb.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${data.message}`;
+                inp.classList.add('border-emerald-500');
+                btn.disabled = false;
+            } else {
+                fb.classList.add('text-rose-600');
+                fb.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${data.message}`;
+                inp.classList.add('border-rose-500');
+                btn.disabled = true;
+            }
+        })
+        .catch(() => {});
+    }, 250);
+}
+
 function toggleRow(moduleKey, state) {
     document.querySelectorAll(`.perm-checkbox[data-module="${moduleKey}"]`).forEach(cb => cb.checked = state);
 }

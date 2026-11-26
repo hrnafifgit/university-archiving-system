@@ -16,18 +16,18 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware([EnsureDesktopAuthenticated::class])->group(function () {
     
     // لوحة العمليات المركزية والبحث الشامل
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->middleware(EnsureHasPermission::class . ':dashboard.view')->name('dashboard');
     Route::get('/global-search', [DashboardController::class, 'globalSearch'])->name('global_search');
 
     // دليل وسجلات الكادر (CRUD)
-    Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
-    Route::get('/employees/export/excel', [EmployeeController::class, 'exportExcel'])->name('employees.export.excel');
-    Route::get('/employees/import/template', [EmployeeController::class, 'downloadImportTemplate'])->name('employees.import.template');
+    Route::get('/employees', [EmployeeController::class, 'index'])->middleware(EnsureHasPermission::class . ':employees.view')->name('employees.index');
+    Route::get('/employees/export/excel', [EmployeeController::class, 'exportExcel'])->middleware(EnsureHasPermission::class . ':employees.view')->name('employees.export.excel');
+    Route::get('/employees/import/template', [EmployeeController::class, 'downloadImportTemplate'])->middleware(EnsureHasPermission::class . ':employees.create')->name('employees.import.template');
     Route::post('/employees/import/excel', [EmployeeController::class, 'importExcel'])->middleware(EnsureHasPermission::class . ':manage_employees')->name('employees.import.excel');
-    Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
+    Route::get('/employees/create', [EmployeeController::class, 'create'])->middleware(EnsureHasPermission::class . ':employees.create')->name('employees.create');
     Route::get('/employees/check-duplicate', [EmployeeController::class, 'checkDuplicate'])->name('employees.check_duplicate');
     Route::post('/employees', [EmployeeController::class, 'store'])->middleware(EnsureHasPermission::class . ':manage_employees')->name('employees.store');
-    Route::get('/employees/{id}', [EmployeeController::class, 'show'])->name('employees.show');
+    Route::get('/employees/{id}', [EmployeeController::class, 'show'])->middleware(EnsureHasPermission::class . ':employees.view')->name('employees.show');
     Route::delete('/employees/{id}', [EmployeeController::class, 'destroy'])->middleware(EnsureHasPermission::class . ':delete_employees')->name('employees.destroy');
 
     // عمليات الملف الموحد التكميلية (Modals & Actions)
@@ -127,10 +127,12 @@ Route::middleware([EnsureDesktopAuthenticated::class])->group(function () {
     // ==========================================================
     // إدارة الأدوار والصلاحيات التفصيلية + مسار الاعتماد المتسلسل
     // ==========================================================
-    Route::get('/security/roles', [\App\Http\Controllers\RolePermissionController::class, 'index'])->name('security.roles.index');
-    Route::post('/security/roles', [\App\Http\Controllers\RolePermissionController::class, 'updateMatrix'])->name('security.roles.update');
-    Route::post('/security/roles/create', [\App\Http\Controllers\RolePermissionController::class, 'storeRole'])->name('security.roles.store');
-    Route::post('/security/users/assign', [\App\Http\Controllers\RolePermissionController::class, 'assignEmployeeUser'])->name('security.users.assign');
+    Route::get('/security/roles', [\App\Http\Controllers\RolePermissionController::class, 'index'])->middleware(EnsureHasPermission::class . ':system_settings.view')->name('security.roles.index');
+    Route::post('/security/roles', [\App\Http\Controllers\RolePermissionController::class, 'updateMatrix'])->middleware(EnsureHasPermission::class . ':system_settings.edit')->name('security.roles.update');
+    Route::post('/security/roles/create', [\App\Http\Controllers\RolePermissionController::class, 'storeRole'])->middleware(EnsureHasPermission::class . ':system_settings.create')->name('security.roles.store');
+    Route::get('/security/users/check-username', [\App\Http\Controllers\RolePermissionController::class, 'checkUsername'])->name('security.users.check_username');
+    Route::post('/security/users/assign', [\App\Http\Controllers\RolePermissionController::class, 'assignEmployeeUser'])->middleware(EnsureHasPermission::class . ':system_settings.create')->name('security.users.assign');
+    Route::delete('/security/users/{userId}', [\App\Http\Controllers\RolePermissionController::class, 'destroyUser'])->middleware(EnsureHasPermission::class . ':system_settings.delete')->name('security.users.destroy');
     Route::post('/security/switch-role', [\App\Http\Controllers\RolePermissionController::class, 'switchRole'])->name('security.switch_role');
 
     Route::get('/workflow', [\App\Http\Controllers\ApprovalWorkflowController::class, 'index'])->name('workflow.index');

@@ -177,41 +177,72 @@ class RolePermissionController extends Controller
     }
 
     /**
+     * فحص توفر اسم المستخدم لحظياً (منع التكرار)
+     */
+    public function checkUsername(Request $request)
+    {
+        $username = strtolower(trim($request->query('username', '')));
+        if (empty($username)) {
+            return response()->json(['available' => false, 'message' => '']);
+        }
+
+        $exists = DB::table('app_users')
+            ->whereRaw('LOWER(TRIM(username)) = ?', [$username])
+            ->exists();
+
+        return response()->json([
+            'available' => !$exists,
+            'message' => $exists ? 'اسم المستخدم محجوز مسبقاً لشخص آخر، يرجى اختيار اسم آخر!' : 'اسم المستخدم متاح ويمكن استخدامه.',
+        ]);
+    }
+
+    /**
      * تعيين كادر كمستخدم للنظام وتخصيص دوره وصلاحياته
      */
     public function assignEmployeeUser(Request $request)
     {
+        $normalizedUsername = strtolower(trim((string) $request->input('username', '')));
+        $request->merge(['username' => $normalizedUsername]);
+
         $validated = $request->validate([
-            'employee_id' => 'required|exists:employees,employee_id',
-            'username' => 'required|string|max:80|unique:app_users,username',
+            'employee_id' => 'required|exists:employees,employee_id|unique:app_users,employee_id',
+            'username' => ['required', 'string', 'min:3', 'max:80', 'regex:/^[a-z0-9_.\-]+$/', 'unique:app_users,username'],
             'password' => 'required|string|min:4',
             'role_id' => 'required|exists:app_roles,role_id',
         ], [
             'employee_id.required' => 'يرجى اختيار الكادر.',
+            'employee_id.unique' => 'هذا الكادر لديه حساب مستخدم مسجل مسبقاً في النظام.',
             'username.required' => 'يرجى إدخال اسم المستخدم.',
-            'username.unique' => 'اسم المستخدم مستخدم مسبقاً.',
+            'username.min' => 'اسم المستخدم يجب أن يكون 3 أحرف على الأقل.',
+            'username.regex' => 'اسم المستخدم يقبل أحرفاً إنجليزية صغيرة وأرقاماً وشرطة سفلية فقط (بدون مسافات).',
+            'username.unique' => 'اسم المستخدم مستخدم مسبقاً لشخص آخر، لا يمكن تكرار اسم المستخدم.',
             'password.required' => 'يرجى إدخال كلمة المرور.',
+            'password.min' => 'كلمة المرور يجب أن لا تقل عن 4 أحرف/أرقام.',
         ]);
 
         $emp = Employee::findOrFail($validated['employee_id']);
 
-        $userId = (string) Str::uuid();
-        DB::table('app_users')->insert([
-            'user_id' => $userId,
-            'employee_id' => $emp->employee_id,
-            'username' => trim($validated['username']),
-            'display_name_ar' => $emp->full_name_ar,
-            'password_hash' => Hash::make($validated['password']),
-            'is_active' => true,
-            'allow_direct_password_change' => true,
-            'require_confirm_sensitive_edit' => true,
-            'created_at' => now(),
-        ]);
+        $userId = DB::transaction(function () use ($validated, $emp) {
+            $uid = (string) Str::uuid();
+            DB::table('app_users')->insert([
+                'user_id' => $uid,
+                'employee_id' => $emp->employee_id,
+                'username' => $validated['username'],
+                'display_name_ar' => $emp->full_name_ar,
+                'password_hash' => Hash::make(trim($validated['password'])),
+                'is_active' => true,
+                'allow_direct_password_change' => true,
+                'require_confirm_sensitive_edit' => true,
+                'created_at' => now(),
+            ]);
 
-        DB::table('user_roles')->insert([
-            'user_id' => $userId,
-            'role_id' => $validated['role_id'],
-        ]);
+            DB::table('user_roles')->insert([
+                'user_id' => $uid,
+                'role_id' => $validated['role_id'],
+            ]);
+
+            return $uid;
+        });
 
         AuditLogService::log('EMPLOYEE_ASSIGNED_USER', 'app_users', $userId, null, [
             'employee_id' => $emp->employee_id,
@@ -219,7 +250,27 @@ class RolePermissionController extends Controller
         ]);
 
         return redirect()->route('security.roles.index', ['mode' => 'user', 'user_id' => $userId])
-            ->with('success', "تم تعيين الكادر ({$emp->full_name_ar}) كمستخدم للنظام. يمكنك الآن تخصيص صلاحياته.");
+            ->with('success', "تم إنشاء حساب المستخدم ({$validated['username']}) لـ ({$emp->full_name_ar}) وربطه بالدور بنجاح.");
+    }
+
+    /**
+     * حذف مستخدم فرعي (مع حماية المستخدم الرئيسي admin)
+     */
+    public function destroyUser($userId)
+    {
+        $user = DB::table('app_users')->where('user_id', $userId)->first();
+        if (!$user) {
+            return back()->with('error', 'المستخدم غير موجود.');
+        }
+        if (strtolower($user->username) === 'admin') {
+            return back()->with('error', 'لا يمكن حذف حساب مدير النظام الرئيسي (admin).');
+        }
+
+        DB::table('app_users')->where('user_id', $userId)->delete();
+        AuditLogService::log('USER_DELETED', 'app_users', $userId, ['username' => $user->username], null);
+
+        return redirect()->route('security.roles.index', ['mode' => 'user'])
+            ->with('success', "تم حذف حساب المستخدم ({$user->username}) بنجاح.");
     }
 
     /**
@@ -251,6 +302,7 @@ class RolePermissionController extends Controller
         Session::put('logged_role_name', $roleName);
         Session::put('logged_permissions', $permissions);
 
-        return back()->with('success', "تم التبديل إلى حساب ({$user->display_name_ar} — {$roleName}) بنجاح.");
+        $landing = PermissionService::getLandingRoute($permissions);
+        return redirect($landing)->with('success', "تم التبديل إلى حساب ({$user->display_name_ar} — {$roleName}) بنجاح.");
     }
 }
