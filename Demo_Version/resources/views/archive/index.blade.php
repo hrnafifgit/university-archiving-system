@@ -328,6 +328,7 @@
                             <!-- أزرار الإجراءات -->
                             <div class="flex items-center gap-1" onclick="event.stopPropagation()">
                                 @if($isTrash)
+                                    @if(\App\Services\PermissionService::hasPerm('archive.edit'))
                                     <!-- استعادة من سلة المحذوفات -->
                                     <form method="POST" action="{{ route('archive.restore', $doc->document_id) }}" class="inline">
                                         @csrf
@@ -335,6 +336,8 @@
                                             <i class="fa-solid fa-rotate-left text-xs"></i>
                                         </button>
                                     </form>
+                                    @endif
+                                    @if(\App\Services\PermissionService::hasPerm('archive.delete'))
                                     <!-- حذف نهائي -->
                                     <form method="POST" action="{{ route('archive.force_delete', $doc->document_id) }}" onsubmit="return confirm('تحذير: هل أنت متأكد من حذف هذه الوثيقة نهائياً؟ لا يمكن التراجع!')" class="inline">
                                         @csrf
@@ -343,6 +346,7 @@
                                             <i class="fa-solid fa-xmark text-xs"></i>
                                         </button>
                                     </form>
+                                    @endif
                                 @else
                                     @if($v)
                                         <a href="{{ route('archive.preview', $v->document_version_id) }}" 
@@ -359,11 +363,14 @@
                                             </a>
                                         @endif
                                     @endif
+                                    @if(\App\Services\PermissionService::hasPerm('archive.create'))
                                     <button type="button" onclick="upgradeDocVersion({{ json_encode($doc) }})" 
                                             class="w-7 h-7 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-900 border border-brand-200 flex items-center justify-center transition shadow-2xs" 
                                             title="ترقية / رفع إصدار جديد">
                                         <i class="fa-solid fa-cloud-arrow-up text-xs"></i>
                                     </button>
+                                    @endif
+                                    @if(\App\Services\PermissionService::hasPerm('archive.delete'))
                                     <!-- زر الحذف وسلة المحذوفات -->
                                     <form method="POST" action="{{ route('archive.destroy', $doc->document_id) }}" onsubmit="return confirm('هل تريد نقل هذه الوثيقة إلى سلة المحذوفات؟')" class="inline">
                                         @csrf
@@ -372,6 +379,7 @@
                                             <i class="fa-solid fa-trash-can text-[11px]"></i>
                                         </button>
                                     </form>
+                                    @endif
                                 @endif
                             </div>
                         </div>
@@ -457,12 +465,15 @@
                                 <td class="py-3 px-3.5 text-center whitespace-nowrap" onclick="event.stopPropagation()">
                                     <div class="flex items-center justify-center gap-1">
                                         @if($isTrash)
+                                            @if(\App\Services\PermissionService::hasPerm('archive.edit'))
                                             <form method="POST" action="{{ route('archive.restore', $doc->document_id) }}" class="inline">
                                                 @csrf
                                                 <button type="submit" class="w-7 h-7 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg border border-emerald-200 transition text-xs font-bold inline-flex items-center justify-center shadow-2xs" title="استعادة">
                                                     <i class="fa-solid fa-rotate-left"></i>
                                                 </button>
                                             </form>
+                                            @endif
+                                            @if(\App\Services\PermissionService::hasPerm('archive.delete'))
                                             <form method="POST" action="{{ route('archive.force_delete', $doc->document_id) }}" onsubmit="return confirm('تحذير: هل أنت متأكد من الحذف النهائي؟')" class="inline">
                                                 @csrf
                                                 @method('DELETE')
@@ -470,6 +481,7 @@
                                                     <i class="fa-solid fa-xmark"></i>
                                                 </button>
                                             </form>
+                                            @endif
                                         @else
                                             @if($v)
                                                 <a href="{{ route('archive.preview', $v->document_version_id) }}" 
@@ -486,11 +498,14 @@
                                                     </a>
                                                 @endif
                                             @endif
+                                            @if(\App\Services\PermissionService::hasPerm('archive.create'))
                                             <button type="button" onclick="upgradeDocVersion({{ json_encode($doc) }})" 
                                                     class="w-7 h-7 bg-brand-50 hover:bg-brand-100 text-brand-900 rounded-lg border border-brand-200 transition text-xs font-bold inline-flex items-center justify-center shadow-2xs cursor-pointer" 
                                                     title="ترقية أو رفع إصدار">
                                                 <i class="fa-solid fa-cloud-arrow-up text-xs"></i>
                                             </button>
+                                            @endif
+                                            @if(\App\Services\PermissionService::hasPerm('archive.delete'))
                                             <form method="POST" action="{{ route('archive.destroy', $doc->document_id) }}" onsubmit="return confirm('هل تريد نقل هذه الوثيقة إلى سلة المحذوفات؟')" class="inline">
                                                 @csrf
                                                 @method('DELETE')
@@ -498,6 +513,7 @@
                                                     <i class="fa-solid fa-trash-can text-[11px]"></i>
                                                 </button>
                                             </form>
+                                            @endif
                                         @endif
                                     </div>
                                 </td>

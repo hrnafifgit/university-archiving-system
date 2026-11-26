@@ -261,9 +261,12 @@
                                 </td>
                                 <td class="py-2.5 px-3 text-center whitespace-nowrap">
                                     <div class="flex items-center justify-center gap-1.5">
+                                        @if(\App\Services\PermissionService::hasPerm('decisions.edit'))
                                         <button type="button" onclick="editAbsence({{ json_encode($abs) }})" class="p-1 px-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded border border-slate-200 transition text-xs cursor-pointer" title="تعديل الإجازة">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
+                                        @endif
+                                        @if(\App\Services\PermissionService::hasPerm('decisions.delete'))
                                         <form method="POST" action="{{ route('decisions.absences.destroy', $abs->absence_id) }}" class="inline" onsubmit="return confirm('تأكيد حذف حركة الإجازة / التفرغ؟');">
                                             @csrf
                                             @method('DELETE')
@@ -271,6 +274,7 @@
                                                 <i class="fa-solid fa-trash-can"></i>
                                             </button>
                                         </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

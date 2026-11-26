@@ -120,7 +120,7 @@
     <div id="main-workspace-grid" class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 min-h-0">
 
         <!-- لوحة ملف الكادر -->
-        <div id="col-profile-panel" class="lg:col-span-6 bg-white border border-slate-200 rounded-2xl shadow-xs flex flex-col min-h-0 overflow-hidden">
+        <div id="col-profile-panel" class="{{ \App\Services\PermissionService::hasPerm('archive.create') ? 'lg:col-span-6' : 'lg:col-span-12' }} bg-white border border-slate-200 rounded-2xl shadow-xs flex flex-col min-h-0 overflow-hidden">
             
             <!-- تبويبات الملف -->
             <div class="bg-slate-50 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between shrink-0 select-none">
@@ -159,9 +159,11 @@
                             <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
                                 <i class="fa-solid fa-user text-[#14532d]"></i> البيانات الشخصية
                             </h2>
+                            @if(\App\Services\PermissionService::hasPerm('employees.edit'))
                             <button type="button" onclick="openModal('modal-edit-basic')" class="w-7 h-7 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-500 hover:text-brand-900 flex items-center justify-center transition cursor-pointer shadow-2xs" title="تعديل البيانات الشخصية">
                                 <i class="fa-solid fa-pen-to-square text-xs"></i>
                             </button>
+                            @endif
                         </div>
                         
                         <table class="w-full text-right text-sm">
@@ -205,9 +207,11 @@
                             <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
                                 <i class="fa-solid fa-sitemap text-[#14532d]"></i> التسكين الإداري والوظيفي
                             </h2>
+                            @if(\App\Services\PermissionService::hasPerm('employees.edit'))
                             <button type="button" onclick="openModal('modal-new-assignment')" class="w-7 h-7 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-500 hover:text-brand-900 flex items-center justify-center transition cursor-pointer shadow-2xs" title="إضافة تسكين أو حركة وظيفية جديدة">
                                 <i class="fa-solid fa-plus text-xs"></i>
                             </button>
+                            @endif
                         </div>
 
                         <table class="w-full text-right text-sm">
@@ -280,9 +284,11 @@
 
                         <div class="flex items-center gap-2">
                             <input type="text" id="docSearchInput" onkeyup="filterDocsTable(this.value)" placeholder="بحث سريع في الوثائق..." class="px-3.5 py-1.5 text-sm border border-slate-200 rounded-xl focus:border-brand-900 focus:outline-hidden w-52 transition bg-slate-50 focus:bg-white">
+                            @if(\App\Services\PermissionService::hasPerm('archive.create'))
                             <button type="button" onclick="openModal('modal-new-doc')" class="w-8 h-8 rounded-xl bg-brand-900 hover:bg-brand-800 text-white flex items-center justify-center transition shadow-xs cursor-pointer" title="أرشفة وثيقة جديدة">
                                 <i class="fa-solid fa-cloud-arrow-up text-xs"></i>
                             </button>
+                            @endif
                         </div>
                     </div>
 
@@ -359,6 +365,7 @@
                                                             <i class="fa-solid fa-download text-xs"></i>
                                                         </a>
                                                     @endif
+                                                    @if(\App\Services\PermissionService::hasPerm('archive.delete'))
                                                     <form method="POST" action="{{ route('employees.documents.destroy', [$employee->employee_id, $doc->document_id]) }}" class="inline" onsubmit="return confirm('تأكيد حذف هذه الوثيقة؟')">
                                                         @csrf
                                                         @method('DELETE')
@@ -366,6 +373,7 @@
                                                             <i class="fa-solid fa-trash-can text-xs"></i>
                                                         </button>
                                                     </form>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
@@ -390,9 +398,11 @@
                                 <i class="fa-solid fa-graduation-cap text-[#14532d]"></i>
                                 المؤهلات العلمية المسجلة ({{ $employee->qualifications->count() }})
                             </span>
+                            @if(\App\Services\PermissionService::hasPerm('employees.edit'))
                             <button type="button" onclick="openModal('modal-new-qual')" class="w-7 h-7 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-500 hover:text-brand-900 flex items-center justify-center transition cursor-pointer shadow-2xs" title="إضافة مؤهل علمي جديد">
                                 <i class="fa-solid fa-plus text-xs"></i>
                             </button>
+                            @endif
                         </div>
                         <div class="p-4">
                             @if($employee->qualifications->count() > 0)
@@ -420,6 +430,7 @@
                                                 <span class="font-mono text-sm font-bold text-slate-700 ml-1">
                                                     {{ $qual->graduation_date ? $qual->graduation_date->format('Y') : '—' }}
                                                 </span>
+                                                @if(\App\Services\PermissionService::hasPerm('employees.edit'))
                                                 <button type="button" onclick="editQual({{ json_encode($qual) }})" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-brand-900 flex items-center justify-center transition cursor-pointer" title="تعديل المؤهل">
                                                     <i class="fa-solid fa-pen-to-square text-xs"></i>
                                                 </button>
@@ -445,6 +456,7 @@
                                                         </button>
                                                     </form>
                                                 @endif
+                                                @endif
                                             </div>
                                         </div>
                                     @endforeach
@@ -466,9 +478,11 @@
                                 <i class="fa-solid fa-clock-rotate-left text-[#14532d]"></i>
                                 السجل الوظيفي والتاريخي ({{ $employee->employmentRecords->count() }})
                             </span>
+                            @if(\App\Services\PermissionService::hasPerm('employees.edit'))
                             <button type="button" onclick="openModal('modal-new-assignment')" class="w-7 h-7 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-500 hover:text-brand-900 flex items-center justify-center transition cursor-pointer shadow-2xs" title="إضافة حركة في السجل الوظيفي">
                                 <i class="fa-solid fa-plus text-xs"></i>
                             </button>
+                            @endif
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-right text-sm">
@@ -501,9 +515,13 @@
                                                 @endif
                                             </td>
                                             <td class="py-3 px-4 text-center">
+                                                @if(\App\Services\PermissionService::hasPerm('employees.edit'))
                                                 <button type="button" onclick="editAssignment({{ json_encode($hist) }})" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-brand-900 inline-flex items-center justify-center transition cursor-pointer" title="تعديل هذا السجل">
                                                     <i class="fa-solid fa-pen-to-square text-xs"></i>
                                                 </button>
+                                                @else
+                                                <span class="text-slate-300">—</span>
+                                                @endif
                                             </td>
                                         </tr>
                                     @empty
@@ -522,6 +540,7 @@
         </div>
 
         <!-- بطاقة رفع وأرشفة ملف -->
+        @if(\App\Services\PermissionService::hasPerm('archive.create'))
         <div id="col-viewer-panel" class="lg:col-span-6 bg-white border border-slate-200 rounded-2xl shadow-xs flex flex-col min-h-0 overflow-hidden">
             
             <!-- ترويسة بطاقة رفع الملف -->
@@ -691,6 +710,7 @@
             </div>
 
         </div>
+        @endif
 
     </div>
 
