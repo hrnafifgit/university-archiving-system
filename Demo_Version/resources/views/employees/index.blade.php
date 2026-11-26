@@ -54,12 +54,28 @@
         </form>
 
         <!-- الإجراءات والعداد -->
-        <div class="flex items-center gap-3 shrink-0 whitespace-nowrap">
-            <span class="text-sm bg-slate-50 text-slate-700 font-semibold px-4 py-2 rounded-xl border border-slate-200 font-mono shrink-0">
+        <div class="flex items-center gap-2 shrink-0 whitespace-nowrap">
+            <span class="text-xs md:text-sm bg-slate-50 text-slate-700 font-semibold px-3.5 py-2 rounded-xl border border-slate-200 font-mono shrink-0">
                 <span id="header-loaded-count" class="font-bold text-brand-900">{{ min(10, $totalMatched) }}</span> / <span id="header-total-count">{{ $totalMatched }}</span> كادر
             </span>
 
-            <a href="{{ route('employees.create') }}{{ (request('college_id') || request('faculty_id') || request('unit_id') || request('dept_id')) ? '?faculty_id=' . (request('college_id') ?? request('faculty_id')) . '&dept_id=' . (request('unit_id') ?? request('dept_id')) : '' }}" class="bg-brand-900 hover:bg-brand-800 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition flex items-center gap-2 shadow-xs cursor-pointer shrink-0">
+            <!-- زر تصدير Excel -->
+            <a href="{{ route('employees.export.excel', request()->all()) }}" 
+               class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-3.5 py-2.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 shadow-xs cursor-pointer shrink-0" 
+               title="تصدير النتائج المفلترة إلى Excel">
+                <i class="fa-solid fa-file-excel text-xs"></i>
+                <span class="hidden sm:inline">تصدير Excel</span>
+            </a>
+
+            <!-- زر استيراد الكوادر -->
+            <button type="button" onclick="document.getElementById('importEmployeesModal').classList.remove('hidden')" 
+                    class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-2.5 rounded-xl text-xs md:text-sm transition border border-slate-200 flex items-center gap-1.5 shadow-2xs cursor-pointer shrink-0" 
+                    title="استيراد دفعة كوادر من ملف Excel / CSV">
+                <i class="fa-solid fa-file-import text-xs text-brand-900"></i>
+                <span class="hidden sm:inline">استيراد</span>
+            </button>
+
+            <a href="{{ route('employees.create') }}{{ (request('college_id') || request('faculty_id') || request('unit_id') || request('dept_id')) ? '?faculty_id=' . (request('college_id') ?? request('faculty_id')) . '&dept_id=' . (request('unit_id') ?? request('dept_id')) : '' }}" class="bg-brand-900 hover:bg-brand-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs md:text-sm transition flex items-center gap-1.5 shadow-xs cursor-pointer shrink-0">
                 <i class="fa-solid fa-plus text-xs"></i> إضافة كادر
             </a>
         </div>
@@ -256,4 +272,47 @@
 
     window.addEventListener('resize', updateScrollIndicator);
 </script>
+
+<!-- Modal استيراد الكوادر من Excel / CSV -->
+<div id="importEmployeesModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 select-none">
+    <div class="bg-white border border-slate-200 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-scale-up font-cairo">
+        <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+            <span class="font-bold text-sm text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-file-excel text-emerald-700 text-base"></i> استيراد دفعة كوادر من ملف Excel / CSV
+            </span>
+            <button onclick="document.getElementById('importEmployeesModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 font-bold text-xl cursor-pointer transition">&times;</button>
+        </div>
+        <form method="POST" action="{{ route('employees.import.excel') }}" enctype="multipart/form-data" class="p-6 text-sm space-y-4">
+            @csrf
+            
+            <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3.5 text-xs text-emerald-950">
+                <div class="font-bold mb-1 flex items-center gap-1.5 text-emerald-900">
+                    <i class="fa-solid fa-circle-info text-emerald-600"></i> إرشادات الاستيراد:
+                </div>
+                <p class="leading-relaxed text-emerald-800">
+                    يجب أن يكون الملف بصيغة <strong>CSV</strong> ويحتوي على الأعمدة: (الاسم، الرقم الوظيفي، الرقم الوطني، الفئة).
+                </p>
+                <div class="mt-2 pt-2 border-t border-emerald-200/60">
+                    <a href="{{ route('employees.import.template') }}" class="text-brand-900 hover:underline font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-cloud-arrow-down text-xs"></i>
+                        <span>تحميل النموذج المعتمد الجاهز للتعبئة (.csv)</span>
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-semibold mb-1 text-slate-800 text-xs">اختر ملف CSV المعبأ: <span class="text-rose-600">*</span></label>
+                <input type="file" name="import_file" required accept=".csv,text/csv" 
+                       class="w-full bg-slate-50 border border-slate-200 p-2 text-xs file:py-1.5 file:px-3 file:bg-emerald-700 file:text-white file:border-0 file:rounded-lg file:text-xs rounded-xl">
+            </div>
+
+            <div class="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button type="button" onclick="document.getElementById('importEmployeesModal').classList.add('hidden')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition">إلغاء</button>
+                <button type="submit" class="bg-emerald-700 hover:bg-emerald-800 text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer shadow-xs transition">
+                    <i class="fa-solid fa-file-import text-xs"></i> بدء الاستيراد
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection

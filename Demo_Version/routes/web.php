@@ -15,11 +15,15 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // كافة مسارات النظام محمية بواسطة جلسة المصادقة المباشرة
 Route::middleware([EnsureDesktopAuthenticated::class])->group(function () {
     
-    // لوحة العمليات المركزية
+    // لوحة العمليات المركزية والبحث الشامل
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/global-search', [DashboardController::class, 'globalSearch'])->name('global_search');
 
     // دليل وسجلات الكادر (CRUD)
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
+    Route::get('/employees/export/excel', [EmployeeController::class, 'exportExcel'])->name('employees.export.excel');
+    Route::get('/employees/import/template', [EmployeeController::class, 'downloadImportTemplate'])->name('employees.import.template');
+    Route::post('/employees/import/excel', [EmployeeController::class, 'importExcel'])->middleware(EnsureHasPermission::class . ':manage_employees')->name('employees.import.excel');
     Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
     Route::post('/employees', [EmployeeController::class, 'store'])->middleware(EnsureHasPermission::class . ':manage_employees')->name('employees.store');
     Route::get('/employees/{id}', [EmployeeController::class, 'show'])->name('employees.show');
@@ -96,10 +100,16 @@ Route::middleware([EnsureDesktopAuthenticated::class])->group(function () {
 
     // المستودع الرقمي ومحرك بحث الأرشيف الإلكتروني (Digital Archive Explorer)
     Route::get('/archive', [\App\Http\Controllers\ArchiveController::class, 'index'])->name('archive.index');
+    Route::get('/archive/export/excel', [\App\Http\Controllers\ArchiveController::class, 'exportExcel'])->name('archive.export.excel');
     Route::post('/archive/upload', [\App\Http\Controllers\ArchiveController::class, 'storeDirect'])->middleware(EnsureHasPermission::class . ':manage_archive')->name('archive.store');
+    Route::post('/archive/bulk-upload', [\App\Http\Controllers\ArchiveController::class, 'bulkUpload'])->middleware(EnsureHasPermission::class . ':manage_archive')->name('archive.bulk_upload');
     Route::post('/archive/{docId}/versions', [\App\Http\Controllers\ArchiveController::class, 'uploadNewVersion'])->middleware(EnsureHasPermission::class . ':manage_archive')->name('archive.versions.store');
     Route::get('/archive/preview/{versionId}', [\App\Http\Controllers\ArchiveController::class, 'preview'])->name('archive.preview');
     Route::get('/archive/download/{versionId}', [\App\Http\Controllers\ArchiveController::class, 'download'])->name('archive.download');
+    Route::delete('/archive/{id}', [\App\Http\Controllers\ArchiveController::class, 'destroy'])->middleware(EnsureHasPermission::class . ':manage_archive')->name('archive.destroy');
+    Route::post('/archive/{id}/restore', [\App\Http\Controllers\ArchiveController::class, 'restore'])->middleware(EnsureHasPermission::class . ':manage_archive')->name('archive.restore');
+    Route::delete('/archive/{id}/force', [\App\Http\Controllers\ArchiveController::class, 'forceDelete'])->middleware(EnsureHasPermission::class . ':manage_archive')->name('archive.force_delete');
+    Route::get('/archive/{id}/audit-trail', [\App\Http\Controllers\ArchiveController::class, 'auditTrail'])->name('archive.audit_trail');
 
     // الإضافة السريعة للتصنيفات من القوائم المنسدلة (Quick Add Inline Modal Actions - مقيدة بصلاحية الهيكل)
     Route::middleware([EnsureHasPermission::class . ':manage_master_data'])->group(function () {

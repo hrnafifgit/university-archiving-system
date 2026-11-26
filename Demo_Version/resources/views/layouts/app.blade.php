@@ -129,6 +129,17 @@
             <!-- روابط الملاحة الرأسية (تمرير رأسي فقط مع منع أي تمرير أفقي نهائياً) -->
             <div class="flex flex-col flex-1 overflow-y-auto overflow-x-hidden no-scrollbar">
                 <nav class="p-3 space-y-1.5 font-bold text-sm overflow-x-hidden">
+                    
+                    <!-- زر البحث الشامل السريع (Ctrl + K) -->
+                    <button type="button" onclick="openGlobalSearchModal()" 
+                            class="w-full flex items-center justify-between px-3 py-2 bg-slate-100 hover:bg-slate-200/80 text-slate-600 rounded-xl text-xs font-semibold border border-slate-200 transition group mb-2 cursor-pointer select-none">
+                        <span class="flex items-center gap-2">
+                            <i class="fa-solid fa-magnifying-glass text-slate-400 group-hover:text-brand-900 transition text-xs"></i>
+                            <span class="truncate">بحث شامل...</span>
+                        </span>
+                        <kbd class="bg-white border border-slate-300 text-slate-500 px-1.5 py-0.5 rounded text-[10px] font-mono shadow-2xs font-bold">Ctrl K</kbd>
+                    </button>
+
                     <a href="{{ route('dashboard') }}" 
                        class="flex items-center px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap {{ request()->routeIs('dashboard') ? 'bg-brand-900 text-white shadow-xs' : 'text-slate-600 hover:text-brand-900 hover:bg-slate-100' }}" 
                        title="لوحة التحكم">
@@ -507,6 +518,211 @@
             }
             return true;
         };
+
+        // -------------------------------------------------------------
+        // محرك البحث الشامل السريع (Ctrl + K Command Palette)
+        // -------------------------------------------------------------
+        let globalSearchDebounceTimer = null;
+        let activeSearchIndex = -1;
+
+        function openGlobalSearchModal() {
+            const modal = document.getElementById('globalSearchModal');
+            const input = document.getElementById('globalSearchInput');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                if (input) {
+                    input.focus();
+                    input.select();
+                }
+            }, 50);
+        }
+
+        function closeGlobalSearchModal() {
+            const modal = document.getElementById('globalSearchModal');
+            if (modal) modal.classList.add('hidden');
+            activeSearchIndex = -1;
+        }
+
+        // اختصار لوحة المفاتيح Ctrl+K أو Cmd+K
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+                e.preventDefault();
+                const modal = document.getElementById('globalSearchModal');
+                if (modal && !modal.classList.contains('hidden')) {
+                    closeGlobalSearchModal();
+                } else {
+                    openGlobalSearchModal();
+                }
+            } else if (e.key === 'Escape') {
+                closeGlobalSearchModal();
+            }
+        });
+
+        function handleGlobalSearchInput(query) {
+            clearTimeout(globalSearchDebounceTimer);
+            const container = document.getElementById('globalSearchResultsContainer');
+            const loading = document.getElementById('globalSearchLoading');
+            const empty = document.getElementById('globalSearchEmpty');
+
+            const q = query.trim();
+            if (q.length < 2) {
+                container.innerHTML = '';
+                container.classList.add('hidden');
+                loading.classList.add('hidden');
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            loading.classList.remove('hidden');
+            empty.classList.add('hidden');
+
+            globalSearchDebounceTimer = setTimeout(() => {
+                fetch('/global-search?q=' + encodeURIComponent(q))
+                    .then(res => res.json())
+                    .then(data => {
+                        loading.classList.add('hidden');
+                        renderGlobalSearchResults(data, q);
+                    })
+                    .catch(() => {
+                        loading.classList.add('hidden');
+                    });
+            }, 200);
+        }
+
+        function renderGlobalSearchResults(data, q) {
+            const container = document.getElementById('globalSearchResultsContainer');
+            const empty = document.getElementById('globalSearchEmpty');
+            const totalCount = (data.employees?.length || 0) + (data.documents?.length || 0) + (data.units?.length || 0);
+
+            if (totalCount === 0) {
+                container.innerHTML = '';
+                container.classList.add('hidden');
+                empty.classList.remove('hidden');
+                empty.innerHTML = '<i class="fa-solid fa-magnifying-glass text-3xl text-slate-300 mb-2 block"></i><div class="text-xs text-slate-500">لا توجد نتائج مطابقة لـ "' + escapeHtml(q) + '"</div>';
+                return;
+            }
+
+            empty.classList.add('hidden');
+            container.classList.remove('hidden');
+
+            let html = '';
+
+            // 1. الكوادر
+            if (data.employees && data.employees.length) {
+                html += '<div class="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50 border-b border-slate-100 flex items-center gap-1.5"><i class="fa-solid fa-users text-brand-900"></i> الكوادر والموظفون (' + data.employees.length + ')</div>';
+                data.employees.forEach(item => {
+                    html += `
+                        <a href="${item.url}" class="search-result-item flex items-center justify-between p-3 hover:bg-brand-50/50 border-b border-slate-100 transition group cursor-pointer">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-200">
+                                    <i class="fa-solid fa-user text-xs"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-bold text-slate-900 group-hover:text-brand-900 truncate">${item.title}</div>
+                                    <div class="text-[11px] text-slate-500 truncate">${item.meta}</div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] text-slate-400 group-hover:text-brand-900 shrink-0 font-medium"><i class="fa-solid fa-arrow-left"></i></span>
+                        </a>
+                    `;
+                });
+            }
+
+            // 2. الوثائق
+            if (data.documents && data.documents.length) {
+                html += '<div class="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50 border-b border-slate-100 flex items-center gap-1.5 mt-1"><i class="fa-solid fa-folder-tree text-brand-900"></i> الوثائق والمستودع الرقمي (' + data.documents.length + ')</div>';
+                data.documents.forEach(item => {
+                    html += `
+                        <a href="${item.url}" class="search-result-item flex items-center justify-between p-3 hover:bg-brand-50/50 border-b border-slate-100 transition group cursor-pointer">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <div class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0 border border-red-200">
+                                    <i class="fa-regular fa-file-pdf text-xs"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-bold text-slate-900 group-hover:text-brand-900 truncate">${item.title}</div>
+                                    <div class="text-[11px] text-slate-500 truncate">${item.meta}</div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] text-slate-400 group-hover:text-brand-900 shrink-0 font-medium"><i class="fa-solid fa-arrow-left"></i></span>
+                        </a>
+                    `;
+                });
+            }
+
+            // 3. الكليات والأقسام
+            if (data.units && data.units.length) {
+                html += '<div class="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50 border-b border-slate-100 flex items-center gap-1.5 mt-1"><i class="fa-solid fa-university text-brand-900"></i> الكليات والأقسام (' + data.units.length + ')</div>';
+                data.units.forEach(item => {
+                    html += `
+                        <a href="${item.url}" class="search-result-item flex items-center justify-between p-3 hover:bg-brand-50/50 border-b border-slate-100 transition group cursor-pointer">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 border border-blue-200">
+                                    <i class="fa-solid ${item.icon} text-xs"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-bold text-slate-900 group-hover:text-brand-900 truncate">${item.title}</div>
+                                    <div class="text-[11px] text-slate-500 truncate">${item.meta}</div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] text-slate-400 group-hover:text-brand-900 shrink-0 font-medium"><i class="fa-solid fa-arrow-left"></i></span>
+                        </a>
+                    `;
+                });
+            }
+
+            container.innerHTML = html;
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            }[tag] || tag));
+        }
+    </script>
+
+    <!-- Modal نافذة البحث الشامل السريع (Ctrl + K) -->
+    <div id="globalSearchModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-start justify-center pt-16 sm:pt-24 p-4 select-none">
+        <div class="bg-white border border-slate-200 w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden flex flex-col font-cairo">
+            <!-- شريط الإدخال والبحث -->
+            <div class="relative border-b border-slate-100 p-3.5 flex items-center gap-3 bg-slate-50/50">
+                <i class="fa-solid fa-magnifying-glass text-slate-400 text-sm"></i>
+                <input type="text" id="globalSearchInput" oninput="handleGlobalSearchInput(this.value)" 
+                       placeholder="ابحث عن كادر، رقم وظيفي، وثيقة، كلية، أو قسم... (Esc للإغلاق)" 
+                       class="w-full bg-transparent border-0 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-0 font-medium">
+                <button type="button" onclick="closeGlobalSearchModal()" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg text-xs font-mono font-bold transition">
+                    ESC
+                </button>
+            </div>
+
+            <!-- مؤشر التحميل -->
+            <div id="globalSearchLoading" class="hidden py-6 text-center text-slate-400 text-xs">
+                <i class="fa-solid fa-spinner fa-spin text-brand-900 text-lg mb-1 block"></i>
+                جاري البحث في قاعدة البيانات...
+            </div>
+
+            <!-- حاوية النتائج -->
+            <div id="globalSearchResultsContainer" class="hidden max-h-96 overflow-y-auto no-scrollbar divide-y divide-slate-100 text-sm">
+            </div>
+
+            <!-- الحالة الافتراضية الفارغة -->
+            <div id="globalSearchEmpty" class="py-10 text-center text-slate-400">
+                <i class="fa-solid fa-magnifying-glass text-3xl text-slate-300 mb-2 block"></i>
+                <div class="text-xs font-medium">ابدأ بكتابة حرفين على الأقل للبحث السريع في النظام</div>
+                <div class="text-[10px] text-slate-400 mt-1 font-mono">الكوادر • الوثائق • الكليات والأقسام</div>
+            </div>
+
+            <!-- تذييل إرشادي -->
+            <div class="bg-slate-50 border-t border-slate-100 px-4 py-2 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+                <span>جامعة إب - محرك البحث الفوري</span>
+                <span>اضغط <kbd class="bg-white border border-slate-300 px-1 rounded text-[10px]">Ctrl+K</kbd> للفتح بأي وقت</span>
+            </div>
+        </div>
+    </div>
     </script>
 
     @yield('scripts')

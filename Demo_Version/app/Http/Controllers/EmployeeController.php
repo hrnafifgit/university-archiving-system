@@ -531,4 +531,256 @@ class EmployeeController extends Controller
 
         return redirect()->route('employees.index')->with('success', 'تم أرشفة وتعطيل سجل الموظف بنجاح!');
     }
+
+    /**
+     * تصدير بيانات الكوادر المفلترة إلى Excel / CSV مرمز بـ UTF-8 BOM
+     */
+    public function exportExcel(Request $request)
+    {
+        $query = Employee::with([
+            'currentEmployment.organizationalUnit.parent',
+            'currentEmployment.academicRank',
+            'currentEmployment.jobGrade',
+            'currentEmployment.employmentStatus',
+            'currentEmployment.jobTitle',
+            'currentEmployment.category',
+        ])->where('is_active_record', true);
+
+        if ($request->filled('search')) {
+            $s = trim($request->search);
+            $query->where(function ($q) use ($s) {
+                $q->where('full_name_ar', 'ilike', "%{$s}%")
+                  ->orWhere('employee_number', 'ilike', "%{$s}%")
+                  ->orWhere('national_id', 'ilike', "%{$s}%");
+            });
+        }
+
+        if ($request->filled('college_id')) {
+            $collegeId = $request->college_id;
+            $query->whereHas('currentEmployment.organizationalUnit', function ($q) use ($collegeId) {
+                $q->where('organizational_unit_id', $collegeId)
+                  ->orWhere('parent_unit_id', $collegeId);
+            });
+        }
+
+        if ($request->filled('dept_id')) {
+            $deptId = $request->dept_id;
+            $query->whereHas('currentEmployment', function ($q) use ($deptId) {
+                $q->where('organizational_unit_id', $deptId);
+            });
+        }
+
+        if ($request->filled('category_id')) {
+            $query->whereHas('currentEmployment', function ($q) use ($request) {
+                $q->where('employee_category_id', $request->category_id);
+            });
+        }
+
+        if ($request->filled('tab')) {
+            if ($request->tab == 'academic') {
+                $query->whereHas('currentEmployment', fn($q) => $q->where('employee_category_id', 1));
+            } elseif ($request->tab == 'admin') {
+                $query->whereHas('currentEmployment', fn($q) => $q->whereIn('employee_category_id', [2, 3, 4]));
+            } elseif ($request->tab == 'hourly') {
+                $query->whereHas('currentEmployment', fn($q) => $q->where('employee_category_id', 7));
+            }
+        }
+
+        $employees = $query->orderBy('full_name_ar')->get();
+        $fileName = 'دليل_كوادر_جامعة_إب_' . date('Y-m-d_H-i') . '.csv';
+
+        return response()->streamDownload(function () use ($employees) {
+            $handle = fopen('php://output', 'w');
+            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM for Excel
+
+            fputcsv($handle, [
+                'الرقم الوظيفي',
+                'الاسم الرباعي',
+                'الرقم الوطني',
+                'فئة الكادر',
+                'الرتبة الأكاديمية',
+                'المسمى الوظيفي',
+                'الجهة / الكلية',
+                'القسم العلمي',
+                'الحالة الوظيفية',
+                'الهاتف',
+                'البريد الإلكتروني',
+                'تاريخ الميلاد'
+            ]);
+
+            foreach ($employees as $emp) {
+                $empRecord = $emp->currentEmployment ?? $emp->latestEmployment;
+                $unit = $empRecord?->organizationalUnit;
+                $collegeName = $unit?->parent ? $unit->parent->unit_name_ar : ($unit?->unit_name_ar ?? 'جامعة إب');
+                $deptName = $unit?->parent ? $unit->unit_name_ar : '—';
+
+                fputcsv($handle, [
+                    $emp->employee_number,
+                    $emp->full_name_ar,
+                    $emp->national_id ?? '—',
+                    $empRecord?->category?->category_name_ar ?? 'عام',
+                    $empRecord?->academicRank?->rank_name_ar ?? '—',
+                    $empRecord?->jobTitle?->title_name_ar ?? '—',
+                    $collegeName,
+                    $deptName,
+                    $empRecord?->employmentStatus?->status_name_ar ?? 'مستمر',
+                    $emp->phone_number ?? '—',
+                    $emp->email ?? '—',
+                    $emp->birth_date ? $emp->birth_date->format('Y-m-d') : '—',
+                ]);
+            }
+
+            fclose($handle);
+        }, $fileName, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
+        ]);
+    }
+
+    /**
+     * تحميل نموذج استيراد الكوادر الفارغ (CSV Template)
+     */
+    public function downloadImportTemplate()
+    {
+        $fileName = 'نموذج_استيراد_الكوادر.csv';
+
+        return response()->streamDownload(function () {
+            $handle = fopen('php://output', 'w');
+            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            fputcsv($handle, [
+                'full_name_ar',
+                'employee_number',
+                'national_id',
+                'gender',
+                'category_name',
+                'rank_name',
+                'phone_number',
+                'email'
+            ]);
+
+            // صفوف توضيحية
+            fputcsv($handle, [
+                'د. محمد أحمد علي القاضي',
+                '100055',
+                '1500000055',
+                'M',
+                'أكاديمي',
+                'أستاذ مشارك',
+                '777000111',
+                'm.qadi@ibbuniv.edu.ye'
+            ]);
+
+            fputcsv($handle, [
+                'أحمد صالح حميد',
+                '200088',
+                '1500000088',
+                'M',
+                'إداري',
+                '—',
+                '777222333',
+                'a.saleh@ibbuniv.edu.ye'
+            ]);
+
+            fclose($handle);
+        }, $fileName, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
+        ]);
+    }
+
+    /**
+     * استيراد دفعة موظفين من ملف CSV
+     */
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|file|mimes:csv,txt|max:10240',
+        ], [
+            'import_file.required' => 'يرجى اختيار ملف CSV للاستيراد.',
+            'import_file.mimes'    => 'يجب أن يكون الملف بصيغة CSV.',
+            'import_file.max'      => 'الحد الأقصى لحجم الملف هو 10 ميجابايت.',
+        ]);
+
+        $file = $request->file('import_file');
+        $handle = fopen($file->getRealPath(), 'r');
+        if (!$handle) {
+            return back()->with('error', 'تعذر فتح وقراءة الملف المحدد.');
+        }
+
+        // قراءة الهيدر وتخطي BOM
+        $bom = fread($handle, 3);
+        if ($bom !== chr(0xEF).chr(0xBB).chr(0xBF)) {
+            rewind($handle);
+        }
+
+        $header = fgetcsv($handle);
+        if (!$header || count($header) < 2) {
+            fclose($handle);
+            return back()->with('error', 'هيكل الملف غير صالح. يرجى استخدام النموذج المعتمد.');
+        }
+
+        $importedCount = 0;
+        $defaultUnit = \App\Models\OrganizationalUnit::first();
+
+        DB::beginTransaction();
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                if (empty($row[0]) || empty($row[1])) {
+                    continue; // سطر فارغ
+                }
+
+                $fullName = trim($row[0]);
+                $empNumber = trim($row[1]);
+                $nationalId = isset($row[2]) ? trim($row[2]) : null;
+                $gender = isset($row[3]) && in_array(strtoupper(trim($row[3])), ['F', 'FEMALE', 'أنثى']) ? 'F' : 'M';
+                $phone = isset($row[6]) ? trim($row[6]) : null;
+                $email = isset($row[7]) ? trim($row[7]) : null;
+
+                // التحقق من عدم التكرار
+                $employee = Employee::where('employee_number', $empNumber)
+                    ->orWhere(function($q) use ($nationalId) {
+                        if ($nationalId) $q->where('national_id', $nationalId);
+                    })->first();
+
+                if (!$employee) {
+                    $employee = Employee::create([
+                        'employee_id' => (string) Str::uuid(),
+                        'employee_number' => $empNumber,
+                        'full_name_ar' => $fullName,
+                        'national_id' => $nationalId,
+                        'gender' => $gender,
+                        'phone_number' => $phone,
+                        'email' => $email,
+                        'is_active_record' => true,
+                    ]);
+
+                    // إضافة سجل تسكين أساسي
+                    if ($defaultUnit) {
+                        \App\Models\EmploymentRecord::create([
+                            'employment_record_id' => (string) Str::uuid(),
+                            'employee_id' => $employee->employee_id,
+                            'organizational_unit_id' => $defaultUnit->organizational_unit_id,
+                            'employee_category_id' => 1,
+                            'employment_status_id' => 1,
+                            'start_date' => now()->toDateString(),
+                            'is_current' => true,
+                        ]);
+                    }
+
+                    $importedCount++;
+                }
+            }
+
+            DB::commit();
+            fclose($handle);
+            Cache::forget('dashboard_core_metrics');
+
+            return back()->with('success', "تم بنجاح استيراد وتسجيل ({$importedCount}) كادراً جديداً في النظام!");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            fclose($handle);
+            return back()->with('error', 'حدث خطأ أثناء معالجة بيانات الملف: ' . $e->getMessage());
+        }
+    }
 }
