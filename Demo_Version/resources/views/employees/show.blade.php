@@ -62,14 +62,15 @@
         <div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">
             
             <!-- أوضاع العرض: مزدوج، ملف فقط، بطاقة الرفع -->
+            @if(\App\Services\PermissionService::hasPerm('archive.create'))
             <div class="inline-flex items-center bg-slate-100 border border-slate-200 rounded-xl p-1 text-sm font-semibold">
                 <button type="button" onclick="setViewMode('split')" id="btn-mode-split" 
-                        class="w-9 h-9 rounded-lg transition bg-white text-brand-900 shadow-xs cursor-pointer flex items-center justify-center" 
+                        class="w-9 h-9 rounded-lg transition text-slate-500 hover:text-slate-900 cursor-pointer flex items-center justify-center" 
                         title="عرض مزدوج (ملف الكادر وبطاقة رفع الملف)">
                     <i class="fa-solid fa-table-columns text-sm"></i>
                 </button>
                 <button type="button" onclick="setViewMode('profile')" id="btn-mode-profile" 
-                        class="w-9 h-9 rounded-lg transition text-slate-500 hover:text-slate-900 cursor-pointer flex items-center justify-center" 
+                        class="w-9 h-9 rounded-lg transition bg-white text-brand-900 shadow-xs cursor-pointer flex items-center justify-center" 
                         title="ملف الكادر فقط">
                     <i class="fa-solid fa-id-card text-sm"></i>
                 </button>
@@ -82,12 +83,12 @@
 
             <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
 
-            @if(\App\Services\PermissionService::hasPerm('archive.create'))
-            <!-- أرشفة وثيقة جديدة -->
-            <button type="button" onclick="focusUploadCard()" 
-                    class="w-9 h-9 rounded-xl bg-[#14532d] hover:bg-[#166534] text-white flex items-center justify-center transition shadow-xs cursor-pointer" 
-                    title="بطاقة رفع وأرشفة ملف">
+            <!-- زر إظهار / إخفاء بطاقة رفع وأرشفة ملف -->
+            <button type="button" onclick="toggleUploadCard()" id="btn-toggle-upload-card"
+                    class="px-3 h-9 rounded-xl bg-[#14532d] hover:bg-[#166534] text-white font-bold text-xs flex items-center gap-1.5 transition shadow-xs cursor-pointer" 
+                    title="إظهار / إخفاء بطاقة رفع وأرشفة ملف">
                 <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
+                <span class="hidden sm:inline">رفع وأرشفة ملف</span>
             </button>
             @endif
 
@@ -120,7 +121,7 @@
     <div id="main-workspace-grid" class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 min-h-0">
 
         <!-- لوحة ملف الكادر -->
-        <div id="col-profile-panel" class="{{ \App\Services\PermissionService::hasPerm('archive.create') ? 'lg:col-span-6' : 'lg:col-span-12' }} bg-white border border-slate-200 rounded-2xl shadow-xs flex flex-col min-h-0 overflow-hidden">
+        <div id="col-profile-panel" class="lg:col-span-12 bg-white border border-slate-200 rounded-2xl shadow-xs flex flex-col min-h-0 overflow-hidden">
             
             <!-- تبويبات الملف -->
             <div class="bg-slate-50 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between shrink-0 select-none">
@@ -539,9 +540,9 @@
 
         </div>
 
-        <!-- بطاقة رفع وأرشفة ملف -->
+        <!-- بطاقة رفع وأرشفة ملف (مخفية افتراضياً وتظهر عند النقر على زر رفع وأرشفة ملف) -->
         @if(\App\Services\PermissionService::hasPerm('archive.create'))
-        <div id="col-viewer-panel" class="lg:col-span-6 bg-white border border-slate-200 rounded-2xl shadow-xs flex flex-col min-h-0 overflow-hidden">
+        <div id="col-viewer-panel" class="hidden lg:col-span-6 bg-white border border-slate-200 rounded-2xl shadow-xs flex flex-col min-h-0 overflow-hidden">
             
             <!-- ترويسة بطاقة رفع الملف -->
             <div class="bg-[#14532d] text-white p-3.5 px-5 flex items-center justify-between shrink-0 select-none">
@@ -554,9 +555,14 @@
                         <p class="text-[11px] text-emerald-100">إضافة وحفظ وثيقة رسمية جديدة إلى أرشيف الكادر</p>
                     </div>
                 </div>
-                <span class="text-xs font-mono font-bold bg-white/15 px-3 py-1 rounded-xl text-emerald-50 border border-white/20">
-                    {{ $archivedDocs->count() }} وثائق مؤرشفة
-                </span>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-mono font-bold bg-white/15 px-3 py-1 rounded-xl text-emerald-50 border border-white/20">
+                        {{ $archivedDocs->count() }} وثائق مؤرشفة
+                    </span>
+                    <button type="button" onclick="setViewMode('profile')" class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer" title="إخفاء البطاقة">
+                        <i class="fa-solid fa-xmark text-xs"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- جسم البطاقة: استمارة الرفع وسجل الإيداع -->
@@ -784,6 +790,17 @@
             }
             document.getElementById('upload_card_file_label').innerHTML = 
                 '<span class="text-emerald-800 font-bold"><i class="fa-solid fa-circle-check text-emerald-600"></i> تم اختيار: ' + file.name + ' (' + sizeMb + ' MB)</span>';
+        }
+    }
+
+    // إظهار أو إخفاء بطاقة رفع وأرشفة الملف
+    function toggleUploadCard() {
+        const viewerPanel = document.getElementById('col-viewer-panel');
+        if (!viewerPanel) return;
+        if (viewerPanel.classList.contains('hidden')) {
+            focusUploadCard();
+        } else {
+            setViewMode('profile');
         }
     }
 
