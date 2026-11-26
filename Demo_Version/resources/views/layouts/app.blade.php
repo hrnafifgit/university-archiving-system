@@ -181,6 +181,20 @@
                         <i class="fa-solid fa-sitemap ml-3 text-base {{ request()->routeIs('master_data.*') ? 'text-white' : 'text-slate-400' }}"></i>
                         <span>الهيكل</span>
                     </a>
+
+                    <a href="{{ route('workflow.index') }}" 
+                       class="flex items-center px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap {{ request()->routeIs('workflow.*') ? 'bg-brand-900 text-white shadow-xs' : 'text-slate-600 hover:text-brand-900 hover:bg-slate-100' }}" 
+                       title="مسار الاعتماد والتأكيد المتسلسل">
+                        <i class="fa-solid fa-clipboard-check ml-3 text-base {{ request()->routeIs('workflow.*') ? 'text-white' : 'text-slate-400' }}"></i>
+                        <span>الاعتمادات</span>
+                    </a>
+
+                    <a href="{{ route('security.roles.index') }}" 
+                       class="flex items-center px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap {{ request()->routeIs('security.*') ? 'bg-brand-900 text-white shadow-xs' : 'text-slate-600 hover:text-brand-900 hover:bg-slate-100' }}" 
+                       title="الأدوار والصلاحيات التفصيلية">
+                        <i class="fa-solid fa-user-shield ml-3 text-base {{ request()->routeIs('security.*') ? 'text-white' : 'text-slate-400' }}"></i>
+                        <span>الصلاحيات</span>
+                    </a>
                 </nav>
             </div>
 
@@ -193,9 +207,9 @@
                         </div>
                         <div class="overflow-hidden leading-tight">
                             <p class="text-xs font-bold text-slate-800 truncate font-mono">{{ session('logged_username', 'admin') }}</p>
-                            <span class="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                متصل
+                            <span class="text-[10px] text-emerald-700 font-bold flex items-center gap-1 truncate">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+                                <span class="truncate">{{ session('logged_role_name', 'مدير نظام') }}</span>
                             </span>
                         </div>
                     </div>
@@ -518,7 +532,6 @@
             }
             return true;
         };
-
         // -------------------------------------------------------------
         // محرك البحث الشامل السريع (Ctrl + K Command Palette)
         // -------------------------------------------------------------

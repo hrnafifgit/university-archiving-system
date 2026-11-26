@@ -23,14 +23,14 @@ class EnsureHasPermission
         }
 
         $roleName = (string) Session::get('logged_role_name', '');
+        $username = strtolower((string) Session::get('logged_username', ''));
         
-        // مدير النظام ومسؤولو شؤون الكادر يمتلكون الصلاحيات الكاملة
-        if (empty($roleName) || str_contains($roleName, 'مدير') || str_contains(strtolower($roleName), 'admin') || str_contains($roleName, 'Super') || str_contains($roleName, 'مسؤول')) {
+        // مدير النظام فقط يمتلك الصلاحية المطلقة، بينما باقي الأدوار (مثل مدير الإدارة ورئيس القسم) تخضع للمصفوفة
+        if (empty($roleName) || $username === 'admin' || $roleName === 'مدير نظام' || str_contains($roleName, 'مدير النظام') || str_contains(strtolower($roleName), 'super admin')) {
             return $next($request);
         }
 
-        $permissions = Session::get('logged_permissions', []);
-        if (in_array($permission, $permissions, true)) {
+        if (\App\Services\PermissionService::hasPerm($permission)) {
             return $next($request);
         }
 
@@ -41,6 +41,6 @@ class EnsureHasPermission
             ], 403);
         }
 
-        return back()->with('error', "ليس لديك الصلاحية الكافية لإجراء هذه العملية ({$permission}). يرجى مراجعة إدارة النظام.");
+        return redirect()->route('dashboard')->with('error', "ليس لديك الصلاحية الكافية لإجراء هذه العملية ({$permission}).");
     }
 }

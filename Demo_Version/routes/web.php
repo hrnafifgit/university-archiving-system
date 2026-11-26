@@ -121,4 +121,17 @@ Route::middleware([EnsureDesktopAuthenticated::class])->group(function () {
         Route::post('/quick-add/qual-level', [\App\Http\Controllers\QuickAddController::class, 'storeQualLevel'])->name('quick.add.quallevel');
     });
 
+    // ==========================================================
+    // إدارة الأدوار والصلاحيات التفصيلية + مسار الاعتماد المتسلسل
+    // ==========================================================
+    Route::get('/security/roles', [\App\Http\Controllers\RolePermissionController::class, 'index'])->name('security.roles.index');
+    Route::post('/security/roles', [\App\Http\Controllers\RolePermissionController::class, 'updateMatrix'])->name('security.roles.update');
+    Route::post('/security/roles/create', [\App\Http\Controllers\RolePermissionController::class, 'storeRole'])->name('security.roles.store');
+    Route::post('/security/users/assign', [\App\Http\Controllers\RolePermissionController::class, 'assignEmployeeUser'])->name('security.users.assign');
+    Route::post('/security/switch-role', [\App\Http\Controllers\RolePermissionController::class, 'switchRole'])->name('security.switch_role');
+
+    Route::get('/workflow', [\App\Http\Controllers\ApprovalWorkflowController::class, 'index'])->name('workflow.index');
+    Route::post('/workflow', [\App\Http\Controllers\ApprovalWorkflowController::class, 'store'])->name('workflow.store');
+    Route::post('/workflow/{id}/act', [\App\Http\Controllers\ApprovalWorkflowController::class, 'act'])->name('workflow.act');
+
 });

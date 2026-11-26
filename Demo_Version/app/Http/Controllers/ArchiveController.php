@@ -6,6 +6,7 @@ use App\Models\Document;
 use App\Models\DocumentType;
 use App\Models\DocumentVersion;
 use App\Models\Employee;
+use App\Models\OrganizationalUnit;
 use App\Services\AuditLogService;
 use App\Services\DocumentStorageService;
 use Illuminate\Http\Request;
@@ -86,6 +87,8 @@ class ArchiveController extends Controller
         $documents = $query->orderByDesc('created_at')->paginate($perPage)->withQueryString();
 
         $documentTypes = DocumentType::orderBy('type_name_ar')->get();
+        $colleges = \App\Models\OrganizationalUnit::whereIn('unit_type', ['faculty', 'college', 'center', 'administration'])->orderBy('unit_name_ar')->get();
+        $departments = \App\Models\OrganizationalUnit::where('unit_type', 'department')->orderBy('unit_name_ar')->get();
         $employees = Employee::orderBy('full_name_ar')->limit(150)->get(['employee_id', 'full_name_ar', 'employee_number']);
         
         $totalDocsCount = Document::count();
@@ -98,13 +101,11 @@ class ArchiveController extends Controller
         $totalVersionsCount = DocumentVersion::count();
         $totalStorageBytes = DocumentVersion::sum('file_size_bytes') ?: 0;
 
-        // جلب الكليات والأقسام لفلترة الأرشيف
-        $colleges = \App\Models\OrganizationalUnit::whereIn('unit_type', ['faculty', 'college', 'center', 'administration'])->orderBy('unit_name_ar')->get();
-        $departments = \App\Models\OrganizationalUnit::where('unit_type', 'department')->orderBy('unit_name_ar')->get();
-
         return view('archive.index', compact(
             'documents',
             'documentTypes',
+            'colleges',
+            'departments',
             'employees',
             'totalDocsCount',
             'digitalDocsCount',
@@ -113,9 +114,7 @@ class ArchiveController extends Controller
             'trashedDocsCount',
             'totalVersionsCount',
             'totalStorageBytes',
-            'activeUnit',
-            'colleges',
-            'departments'
+            'activeUnit'
         ));
     }
 

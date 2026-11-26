@@ -52,69 +52,59 @@
             </div>
             @endif
 
-            <!-- 0. واجهة اختيار وتقسيم مسار ونوع الكادر (أكاديمي / إداري / متقاعدين بالساعات) -->
-            <div class="bg-gradient-to-r from-emerald-950 via-[#14532d] to-slate-900 rounded-xl p-3.5 text-white shadow-sm select-none border border-emerald-900/50">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-                    <div>
-                        <span class="text-[11px] text-emerald-300 font-bold block mb-0.5">
-                            <i class="fa-solid fa-layer-group text-xs ml-1"></i> مسار ونوع الكادر
-                        </span>
-                        <h2 class="text-xs sm:text-sm font-black text-white">اختر نوع الكادر لتخصيص هيكل واستمارة الإدخال تلقائياً:</h2>
-                    </div>
-                    <span class="text-[10px] bg-white/10 px-2.5 py-1 rounded-lg text-emerald-200 border border-white/10 font-bold self-start sm:self-auto flex items-center gap-1.5">
-                        <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> تتكيف الحقول تلقائياً وفقاً لهيكل الكادر
-                    </span>
+            <!-- 0. اختيار نوع الكادر (تصميم رسمي نظيف) -->
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 select-none">
+                <div class="flex items-center gap-2 text-xs font-black text-slate-800">
+                    <i class="fa-solid fa-user-tag text-[#14532d]"></i>
+                    <span>نوع الكادر:</span>
                 </div>
 
                 <input type="hidden" name="cadre_type" id="hidden_cadre_type" value="{{ old('cadre_type', 'academic') }}">
 
-                <!-- بطاقات الاختيار الثلاث التفاعلية -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
-                    
-                    <!-- 1. كادر أكاديمي -->
-                    <div onclick="switchCadreType('academic')" id="card-cadre-academic" 
-                         class="cadre-select-card cursor-pointer flex items-center gap-2.5 p-3 rounded-xl border-2 transition-all bg-white/15 border-emerald-400 text-white shadow-xs">
-                        <div class="w-9 h-9 rounded-lg bg-emerald-700 flex items-center justify-center shrink-0 text-white text-base shadow-2xs">
-                            <i class="fa-solid fa-graduation-cap"></i>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                            <div class="font-black text-xs sm:text-sm">كادر أكاديمي</div>
-                            <div class="text-[10px] text-emerald-200 truncate">هيئة تدريس، كليات وأقسام علمية، رتب</div>
-                        </div>
-                        <i class="fa-solid fa-circle-check cadre-check text-emerald-400 text-base"></i>
-                    </div>
+                <div class="grid grid-cols-3 gap-2 flex-1 max-w-2xl text-xs">
+                    <button type="button" onclick="switchCadreType('academic')" id="card-cadre-academic"
+                            class="cadre-select-card cursor-pointer flex items-center justify-center gap-2 px-3 py-2 rounded-xl border font-bold transition-all bg-[#14532d] border-[#14532d] text-white shadow-2xs">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <span>كادر أكاديمي</span>
+                    </button>
 
-                    <!-- 2. كادر إداري -->
-                    <div onclick="switchCadreType('admin')" id="card-cadre-admin" 
-                         class="cadre-select-card cursor-pointer flex items-center gap-2.5 p-3 rounded-xl border-2 transition-all bg-white/5 border-white/10 text-slate-300 hover:bg-white/10">
-                        <div class="w-9 h-9 rounded-lg bg-blue-900/70 flex items-center justify-center shrink-0 text-blue-200 text-base shadow-2xs">
-                            <i class="fa-solid fa-briefcase"></i>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                            <div class="font-black text-xs sm:text-sm text-white">كادر إداري</div>
-                            <div class="text-[10px] text-slate-300 truncate">إدارات، مسميات وظيفية، درجات مالية</div>
-                        </div>
-                        <i class="fa-solid fa-circle-check cadre-check hidden text-blue-400 text-base"></i>
-                    </div>
+                    <button type="button" onclick="switchCadreType('admin')" id="card-cadre-admin"
+                            class="cadre-select-card cursor-pointer flex items-center justify-center gap-2 px-3 py-2 rounded-xl border font-bold transition-all bg-white border-slate-200 text-slate-700 hover:bg-slate-100">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <span>كادر إداري</span>
+                    </button>
 
-                    <!-- 3. متقاعدين بالساعات -->
-                    <div onclick="switchCadreType('hourly')" id="card-cadre-hourly" 
-                         class="cadre-select-card cursor-pointer flex items-center gap-2.5 p-3 rounded-xl border-2 transition-all bg-white/5 border-white/10 text-slate-300 hover:bg-white/10">
-                        <div class="w-9 h-9 rounded-lg bg-amber-900/70 flex items-center justify-center shrink-0 text-amber-200 text-base shadow-2xs">
-                            <i class="fa-solid fa-clock-rotate-left"></i>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                            <div class="font-black text-xs sm:text-sm text-white">متقاعدين بالساعات</div>
-                            <div class="text-[10px] text-slate-300 truncate">تدريس بالساعات، نصاب، أجر، عام جامعي</div>
-                        </div>
-                        <i class="fa-solid fa-circle-check cadre-check hidden text-amber-400 text-base"></i>
-                    </div>
-
+                    <button type="button" onclick="switchCadreType('hourly')" id="card-cadre-hourly"
+                            class="cadre-select-card cursor-pointer flex items-center justify-center gap-2 px-3 py-2 rounded-xl border font-bold transition-all bg-white border-slate-200 text-slate-700 hover:bg-slate-100">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>متعاقد بالساعات</span>
+                    </button>
                 </div>
             </div>
 
+            <!-- شريط المراحل الأفقي (Horizontal 5-Step Stepper) -->
+            <div class="bg-white border border-slate-200 rounded-xl p-2 px-3 grid grid-cols-5 gap-1.5 select-none">
+                @php
+                    $wizardSteps = [
+                        1 => ['label' => 'البيانات الأساسية', 'icon' => 'fa-id-card'],
+                        2 => ['label' => 'التسكين والتكليف', 'icon' => 'fa-sitemap'],
+                        3 => ['label' => 'الراتب والتعيين', 'icon' => 'fa-money-check-dollar'],
+                        4 => ['label' => 'القرار والمؤهل', 'icon' => 'fa-graduation-cap'],
+                        5 => ['label' => 'الأرشيف الرقمي', 'icon' => 'fa-file-pdf'],
+                    ];
+                @endphp
+                @foreach($wizardSteps as $sNum => $sInfo)
+                    <button type="button" onclick="goToWizardStep({{ $sNum }})" id="wizard-tab-{{ $sNum }}"
+                            class="wizard-tab-btn flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition cursor-pointer border {{ $sNum === 1 ? 'bg-[#14532d] text-white border-[#14532d] shadow-2xs' : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100' }}">
+                        <span class="w-5 h-5 rounded-full text-[10px] font-mono flex items-center justify-center shrink-0 wizard-step-num {{ $sNum === 1 ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700' }}">{{ $sNum }}</span>
+                        <i class="fa-solid {{ $sInfo['icon'] }} text-[11px] hidden sm:inline"></i>
+                        <span class="truncate">{{ $sInfo['label'] }}</span>
+                    </button>
+                @endforeach
+            </div>
+
             <!-- القسم 1: البيانات الشخصية والأساسية -->
-            <div class="bg-slate-50/50 border border-slate-200/90 rounded-lg p-3">
+            <div id="wizard-step-1" class="wizard-step-panel bg-slate-50/50 border border-slate-200/90 rounded-xl p-4">
                 <div class="flex items-center gap-2 pb-1.5 mb-2.5 border-b border-slate-200 text-xs font-bold text-slate-800">
                     <i class="fa-solid fa-id-card text-primary text-xs"></i>
                     <span>1. البيانات الشخصية والأساسية</span>
@@ -183,7 +173,7 @@
             </div>
 
             <!-- القسم 2: التسكين والتكليف بالهيكل الجامعي -->
-            <div class="bg-slate-50/50 border border-slate-200/90 rounded-lg p-3">
+            <div id="wizard-step-2" class="wizard-step-panel hidden bg-slate-50/50 border border-slate-200/90 rounded-xl p-4">
                 <div class="flex items-center gap-2 pb-1.5 mb-2.5 border-b border-slate-200 text-xs font-bold text-slate-800">
                     <i class="fa-solid fa-sitemap text-primary text-xs"></i>
                     <span id="sec2-title-text">2. التسكين الأكاديمي والتكليف بالقسم العلمي</span>
@@ -319,7 +309,7 @@
             </div>
 
             <!-- القسم 3: بيانات كشف الراتب وتاريخ التعيين -->
-            <div class="bg-slate-50/50 border border-slate-200/90 rounded-lg p-3">
+            <div id="wizard-step-3" class="wizard-step-panel hidden bg-slate-50/50 border border-slate-200/90 rounded-xl p-4">
                 <div class="flex items-center gap-2 pb-1.5 mb-2.5 border-b border-slate-200 text-xs font-bold text-slate-800">
                     <i class="fa-solid fa-file-invoice-dollar text-primary text-xs"></i>
                     <span>3. بيانات كشف الراتب وتاريخ التعيين</span>
@@ -370,7 +360,7 @@
             </div>
 
             <!-- القسم 4: القرار والمؤهل الأكاديمي -->
-            <div class="bg-slate-50/50 border border-slate-200/90 rounded-lg p-3">
+            <div id="wizard-step-4" class="wizard-step-panel hidden bg-slate-50/50 border border-slate-200/90 rounded-xl p-4">
                 <div class="flex items-center gap-2 pb-1.5 mb-2.5 border-b border-slate-200 text-xs font-bold text-slate-800">
                     <i class="fa-solid fa-stamp text-primary text-xs"></i>
                     <span>4. القرار والمؤهل الأكاديمي</span>
@@ -421,7 +411,7 @@
             </div>
 
             <!-- القسم 5: وثيقة الأرشيف الرقمي (PDF) -->
-            <div class="bg-slate-50/50 border border-slate-200/90 rounded-lg p-3">
+            <div id="wizard-step-5" class="wizard-step-panel hidden bg-slate-50/50 border border-slate-200/90 rounded-xl p-4">
                 <div class="flex items-center gap-2 pb-1.5 mb-2.5 border-b border-slate-200 text-xs font-bold text-slate-800">
                     <i class="fa-solid fa-file-pdf text-primary text-xs"></i>
                     <span>5. وثيقة الأرشيف الرقمي (PDF)</span>
@@ -458,12 +448,39 @@
 
         </form>
 
-        <!-- مؤشر التمرير الهادئ (رمز ^ معكوس / chevron-down) للدلالة على توفر حقول إضافية -->
-        <button type="button" id="scroll-form-indicator" onclick="scrollFormDown()" 
-                class="hidden absolute bottom-3 left-1/2 -translate-x-1/2 z-30 transition-all duration-300 bg-white/95 hover:bg-white text-slate-600 hover:text-primary border border-slate-200/90 rounded-full w-8 h-8 shadow-sm flex items-center justify-center cursor-pointer select-none"
-                title="توجد حقول إضافية بالأسفل (انقر أو مرر للتمرير لأسفل)">
-            <i class="fa-solid fa-chevron-down text-primary text-[11px] animate-subtle-bounce"></i>
-        </button>
+        <!-- شريط التقدم وأزرار التنقل بالأسهم (Sticky Wizard Footer) -->
+        <div class="bg-slate-50 border-t border-slate-200 px-5 py-3 flex items-center justify-between gap-4 shrink-0 select-none">
+            <button type="button" id="btnWizardPrev" onclick="prevWizardStep()"
+                    class="hidden px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold text-xs transition flex items-center gap-2 cursor-pointer shadow-2xs">
+                <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                <span>السابق</span>
+            </button>
+            <div id="btnWizardPrevSpacer" class="w-20"></div>
+
+            <!-- شريط نسبة الإنجاز -->
+            <div class="flex-1 max-w-md flex flex-col gap-1">
+                <div class="flex items-center justify-between text-[11px] font-bold">
+                    <span class="text-slate-600" id="wizardStepText">الخطوة 1 من 5</span>
+                    <span class="font-mono text-[#14532d]" id="wizardPercentText">20%</span>
+                </div>
+                <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                    <div id="wizardProgressBar" class="h-full bg-[#14532d] rounded-full transition-all duration-300" style="width: 20%"></div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button type="button" id="btnWizardNext" onclick="nextWizardStep()"
+                        class="px-5 py-2 rounded-xl bg-[#14532d] hover:bg-[#166534] text-white font-bold text-xs transition flex items-center gap-2 cursor-pointer shadow-xs">
+                    <span>التالي</span>
+                    <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                </button>
+                <button type="submit" form="main-staff-form" id="btnWizardSubmit"
+                        class="hidden px-5 py-2 rounded-xl bg-[#14532d] hover:bg-[#166534] text-white font-bold text-xs transition flex items-center gap-2 cursor-pointer shadow-xs">
+                    <i class="fa-solid fa-check text-[11px]"></i>
+                    <span>حفظ السجل</span>
+                </button>
+            </div>
+        </div>
 
     </div>
 
@@ -487,15 +504,12 @@
         Object.keys(cards).forEach(key => {
             const card = cards[key];
             if (!card) return;
-            const check = card.querySelector('.cadre-check');
             if (key === type) {
-                card.classList.remove('bg-white/5', 'border-white/10', 'text-slate-300');
-                card.classList.add('bg-white/15', 'border-emerald-400', 'text-white', 'shadow-xs');
-                if (check) check.classList.remove('hidden');
+                card.classList.remove('bg-white', 'border-slate-200', 'text-slate-700', 'hover:bg-slate-100');
+                card.classList.add('bg-[#14532d]', 'border-[#14532d]', 'text-white', 'shadow-2xs');
             } else {
-                card.classList.remove('bg-white/15', 'border-emerald-400', 'text-white', 'shadow-xs');
-                card.classList.add('bg-white/5', 'border-white/10', 'text-slate-300');
-                if (check) check.classList.add('hidden');
+                card.classList.remove('bg-[#14532d]', 'border-[#14532d]', 'text-white', 'shadow-2xs');
+                card.classList.add('bg-white', 'border-slate-200', 'text-slate-700', 'hover:bg-slate-100');
             }
         });
 
@@ -769,5 +783,131 @@
             }
         });
     });
+
+    // منطق المعالج الأفقي ذي الخطوات الخمس (5-Step Horizontal Wizard)
+    let currentWizardStep = 1;
+    const totalWizardSteps = 5;
+
+    function validateWizardStep(stepNum) {
+        const panel = document.getElementById('wizard-step-' + stepNum);
+        if (!panel) return true;
+        const requiredFields = panel.querySelectorAll('input[required], select[required], textarea[required]');
+        for (const field of requiredFields) {
+            // تجاهل الحقول المخفية تبعاً لنوع الكادر
+            if (field.closest('.hidden')) continue;
+            if (!field.checkValidity()) {
+                field.reportValidity();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function goToWizardStep(stepNum, skipValidation = false) {
+        if (stepNum < 1 || stepNum > totalWizardSteps) return;
+        if (!skipValidation && stepNum > currentWizardStep) {
+            for (let s = currentWizardStep; s < stepNum; s++) {
+                if (!validateWizardStep(s)) {
+                    if (s !== currentWizardStep) goToWizardStep(s, true);
+                    return;
+                }
+            }
+        }
+
+        currentWizardStep = stepNum;
+
+        // إظهار المرحلة المطلوبة وإخفاء البقية تماماً بدون سكرول
+        document.querySelectorAll('.wizard-step-panel').forEach((panel, idx) => {
+            if (idx + 1 === stepNum) {
+                panel.classList.remove('hidden');
+            } else {
+                panel.classList.add('hidden');
+            }
+        });
+
+        // تحديث شريط التبويبات الأفقي في الأعلى
+        for (let i = 1; i <= totalWizardSteps; i++) {
+            const tab = document.getElementById('wizard-tab-' + i);
+            if (!tab) continue;
+            const numSpan = tab.querySelector('.wizard-step-num');
+            tab.classList.remove('bg-[#14532d]', 'text-white', 'border-[#14532d]', 'shadow-2xs', 'bg-emerald-50', 'text-[#14532d]', 'border-emerald-300', 'bg-slate-50', 'text-slate-500', 'border-slate-200');
+            if (numSpan) {
+                numSpan.classList.remove('bg-white/20', 'text-white', 'bg-[#14532d]', 'bg-slate-200', 'text-slate-700');
+            }
+
+            if (i === stepNum) {
+                tab.classList.add('bg-[#14532d]', 'text-white', 'border-[#14532d]', 'shadow-2xs');
+                if (numSpan) {
+                    numSpan.innerText = i;
+                    numSpan.classList.add('bg-white/20', 'text-white');
+                }
+            } else if (i < stepNum) {
+                tab.classList.add('bg-emerald-50', 'text-[#14532d]', 'border-emerald-300');
+                if (numSpan) {
+                    numSpan.innerHTML = '<i class="fa-solid fa-check text-[9px]"></i>';
+                    numSpan.classList.add('bg-[#14532d]', 'text-white');
+                }
+            } else {
+                tab.classList.add('bg-slate-50', 'text-slate-500', 'border-slate-200');
+                if (numSpan) {
+                    numSpan.innerText = i;
+                    numSpan.classList.add('bg-slate-200', 'text-slate-700');
+                }
+            }
+        }
+
+        // تحديث شريط التقدم والأزرار السفلية
+        const pct = Math.round((stepNum / totalWizardSteps) * 100);
+        const bar = document.getElementById('wizardProgressBar');
+        const stepTxt = document.getElementById('wizardStepText');
+        const pctTxt = document.getElementById('wizardPercentText');
+        if (bar) bar.style.width = pct + '%';
+        if (stepTxt) stepTxt.innerText = `الخطوة ${stepNum} من ${totalWizardSteps}`;
+        if (pctTxt) pctTxt.innerText = pct + '%';
+
+        const btnPrev = document.getElementById('btnWizardPrev');
+        const prevSpacer = document.getElementById('btnWizardPrevSpacer');
+        const btnNext = document.getElementById('btnWizardNext');
+        const btnSubmit = document.getElementById('btnWizardSubmit');
+
+        if (btnPrev && prevSpacer) {
+            if (stepNum === 1) {
+                btnPrev.classList.add('hidden');
+                prevSpacer.classList.remove('hidden');
+            } else {
+                btnPrev.classList.remove('hidden');
+                prevSpacer.classList.add('hidden');
+            }
+        }
+
+        if (btnNext && btnSubmit) {
+            if (stepNum === totalWizardSteps) {
+                btnNext.classList.add('hidden');
+                btnSubmit.classList.remove('hidden');
+            } else {
+                btnNext.classList.remove('hidden');
+                btnSubmit.classList.add('hidden');
+            }
+        }
+    }
+
+    function nextWizardStep() {
+        goToWizardStep(currentWizardStep + 1);
+    }
+
+    function prevWizardStep() {
+        goToWizardStep(currentWizardStep - 1, true);
+    }
+
+    // في حال وجود حقل مطلوب غير مكتمل عند محاولة الحفظ المباشر من الأعلى، الانتقال تلقائياً لخطوته
+    document.getElementById('main-staff-form')?.addEventListener('invalid', function(e) {
+        const panel = e.target.closest('.wizard-step-panel');
+        if (panel && panel.id) {
+            const sNum = parseInt(panel.id.replace('wizard-step-', ''), 10);
+            if (!isNaN(sNum) && sNum !== currentWizardStep) {
+                goToWizardStep(sNum, true);
+            }
+        }
+    }, true);
 </script>
 @endsection

@@ -37,9 +37,17 @@
             <!-- 4. تقارير الإحصائيات -->
             <a href="{{ route('reports.index', ['type' => 'matrices', 'matrix' => 'eh2']) }}"
                class="px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2 {{ $reportType === 'matrices' ? 'bg-[#14532d] text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}"
-               title="تقارير الإحصائيات والمصفوفات البيانية">
+               title="المصفوفات الإحصائية التفصيلية">
+                <i class="fa-solid fa-table-cells text-sm"></i>
+                <span>المصفوفات الإحصائية</span>
+            </a>
+
+            <!-- 5. لوحة الإحصائيات البيانية -->
+            <a href="{{ route('reports.index', ['type' => 'analytics']) }}"
+               class="px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2 {{ $reportType === 'analytics' ? 'bg-[#14532d] text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}"
+               title="لوحة الرسوم البيانية والإحصائيات">
                 <i class="fa-solid fa-chart-pie text-sm"></i>
-                <span>تقارير الإحصائيات</span>
+                <span>لوحة الإحصائيات</span>
             </a>
         </div>
 
@@ -75,6 +83,8 @@
         @include('reports.partials.custom_builder')
     @elseif($reportType === 'matrices')
         @include('reports.partials.matrices')
+    @elseif($reportType === 'analytics')
+        @include('reports.partials.analytics')
     @endif
 
 </div>

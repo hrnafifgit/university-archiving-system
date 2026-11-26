@@ -6,6 +6,7 @@ use App\Models\AcademicRank;
 use App\Models\Employee;
 use App\Models\EmploymentStatus;
 use App\Models\OrganizationalUnit;
+use App\Services\AnalyticsService;
 use App\Services\ReportMatrixService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,10 +15,12 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class ReportController extends Controller
 {
     protected ReportMatrixService $matrixService;
+    protected AnalyticsService $analyticsService;
 
-    public function __construct(ReportMatrixService $matrixService)
+    public function __construct(ReportMatrixService $matrixService, AnalyticsService $analyticsService)
     {
         $this->matrixService = $matrixService;
+        $this->analyticsService = $analyticsService;
     }
 
     /**
@@ -385,6 +388,13 @@ class ReportController extends Controller
             }
         }
 
+        // 5. لوحة الإحصائيات البيانية التفاعلية (Analytics Dashboard)
+        $analyticsCadre = $request->query('cadre', 'all');
+        $analyticsData = null;
+        if ($reportType === 'analytics') {
+            $analyticsData = $this->analyticsService->getAnalyticsData($analyticsCadre);
+        }
+
         // قوائم الحالات المرجعية للفلاتر
         $distinctPayrollStatuses = ['مستمر', 'منقطع', 'ايفاد', 'تفرغ علمي', 'اجازه بدون راتب', 'بالغي احد الاجلين', 'متوفي', 'اختلالات 2017', 'غير محدد'];
         $distinctPayrollGrades = ['نائب وزير', 'استاذ', 'استاذ مشارك', 'استاذ مساعد', 'مدرس', 'معيد', 'باحث', 'غير محدد'];
@@ -393,6 +403,8 @@ class ReportController extends Controller
         return view('reports.index', compact(
             'reportType',
             'matrixCode',
+            'analyticsCadre',
+            'analyticsData',
             'employee',
             'employeeList',
             'qualificationsByLevel',
