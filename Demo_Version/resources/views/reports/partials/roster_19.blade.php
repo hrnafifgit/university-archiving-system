@@ -7,8 +7,8 @@
                 <!-- 1. الكلية -->
                 <div>
                     <label class="block text-[10px] font-bold text-slate-700 mb-1">الكلية / المركز:</label>
-                    <select name="faculty_id" class="w-full border border-slate-200 p-1.5 bg-white focus:outline-none focus:border-[#14532d] text-xs rounded-lg">
-                        <option value="">-- كافة الكليات --</option>
+                    <select name="faculty_id" id="roster_faculty_id" onchange="filterDepartmentsByFaculty(this.value)" class="w-full border border-slate-200 p-1.5 bg-white focus:outline-none focus:border-[#14532d] text-xs rounded-lg font-bold">
+                        <option value="">-- كافة الكليات والمراكز --</option>
                         @foreach($faculties as $f)
                             <option value="{{ $f->organizational_unit_id }}" {{ request('faculty_id') == $f->organizational_unit_id ? 'selected' : '' }}>{{ $f->unit_name_ar }}</option>
                         @endforeach
@@ -18,10 +18,14 @@
                 <!-- 2. القسم -->
                 <div>
                     <label class="block text-[10px] font-bold text-slate-700 mb-1">القسم العلمي:</label>
-                    <select name="department_id" class="w-full border border-slate-200 p-1.5 bg-white focus:outline-none focus:border-[#14532d] text-xs rounded-lg">
+                    <select name="department_id" id="roster_department_id" class="w-full border border-slate-200 p-1.5 bg-white focus:outline-none focus:border-[#14532d] text-xs rounded-lg font-bold">
                         <option value="">-- كافة الأقسام --</option>
                         @foreach($departments as $d)
-                            <option value="{{ $d->organizational_unit_id }}" {{ request('department_id') == $d->organizational_unit_id ? 'selected' : '' }}>{{ $d->unit_name_ar }}</option>
+                            <option value="{{ $d->organizational_unit_id }}" 
+                                    data-faculty-id="{{ $d->parent_unit_id }}" 
+                                    {{ request('department_id') == $d->organizational_unit_id ? 'selected' : '' }}>
+                                {{ $d->unit_name_ar }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -86,13 +90,16 @@
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="اكتب للبحث..." class="w-full border border-slate-200 p-1.5 bg-white focus:outline-none focus:border-[#14532d] text-xs rounded-lg">
                 </div>
 
-                <!-- أزرار التصفية والتصفير -->
-                <div class="flex items-end gap-1.5">
+                <!-- أزرار التصفية والتصفير والتصدير -->
+                <div class="flex items-end gap-1.5 flex-wrap">
                     <button type="submit" class="bg-[#14532d] hover:bg-[#166534] text-white px-4 py-1.5 font-bold text-xs rounded-lg transition flex items-center gap-1.5 cursor-pointer shadow-xs">
                         <i class="fa-solid fa-filter text-emerald-200 text-[10px]"></i> تصفية
                     </button>
                     <a href="{{ route('reports.index', ['type' => 'roster_19']) }}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 font-bold text-xs rounded-lg transition border border-slate-200">
                         تصفير
+                    </a>
+                    <a href="{{ route('reports.export', array_merge(request()->query(), ['type' => 'roster_19'])) }}" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-1.5 font-bold text-xs rounded-lg transition flex items-center gap-1.5 cursor-pointer shadow-xs border border-emerald-800" title="تصدير الكشف الحالي إلى ملف إكسل منسق">
+                        <i class="fa-solid fa-file-excel text-emerald-100 text-xs"></i> تصدير إكسل
                     </a>
                 </div>
             </form>
@@ -159,10 +166,10 @@
                             <tbody class="divide-y divide-slate-200">
                                 @forelse($rosterEmployees as $idx => $emp)
                                     @php
-                                        $empRec = $emp->currentEmployment;
+                                        $empRec = $emp->active_employment ?? $emp->currentEmployment ?? $emp->latestEmployment ?? $emp->employmentRecords->sortByDesc('start_date')->first();
                                         $ou = $empRec?->organizationalUnit;
-                                        $faculty = $ou?->parent ?? $ou;
-                                        $dept = ($ou && $ou->parent_unit_id) ? $ou : null;
+                                        $faculty = ($ou && $ou->parent && $ou->parent->unit_type !== 'university') ? $ou->parent : $ou;
+                                        $dept = ($ou && $ou->parent_unit_id && $ou->parent_unit_id !== $ou->organizational_unit_id) ? $ou : null;
                                     @endphp
                                     <tr class="hover:bg-slate-50 {{ $idx % 2 == 1 ? 'bg-slate-50/60' : '' }}">
                                         <td class="p-1 border border-slate-300 text-center font-mono font-bold">{{ $idx + 1 }}</td>
@@ -180,14 +187,14 @@
                                         <td class="p-1 border border-slate-300">{{ $empRec?->payroll_job_title ?? 'غير محدد' }}</td>
                                         <td class="p-1 border border-slate-300 text-center">{{ $empRec?->payroll_job_grade ?? 'غير محدد' }}</td>
                                         <td class="p-1 border border-slate-300 text-center font-mono">{{ $empRec?->first_appointment_date ? $empRec->first_appointment_date->format('Y-m-d') : '-' }}</td>
-                                        <td class="p-1 border border-slate-300 text-slate-600">غير محدد</td>
+                                        <td class="p-1 border border-slate-300 text-slate-600">{{ $empRec?->initial_appointing_entity ?? 'جامعة إب' }}</td>
                                         <td class="p-1 border border-slate-300 text-center font-mono">{{ $empRec?->academic_appointment_date ? $empRec->academic_appointment_date->format('Y-m-d') : '-' }}</td>
-                                        <td class="p-1 border border-slate-300 font-medium">{{ $empRec?->qualification_at_appointment ?? 'دكتوراه' }}</td>
-                                        <td class="p-1 border border-slate-300 text-center">{{ $empRec?->initial_rank ?? 'معيد' }}</td>
-                                        <td class="p-1 border border-slate-300 font-bold">{{ $faculty?->unit_name_ar ?? 'جامعة إب' }}</td>
-                                        <td class="p-1 border border-slate-300">{{ $dept?->unit_name_ar ?? 'عام' }}</td>
-                                        <td class="p-1 border border-slate-300 text-center font-bold text-primary">{{ $empRec?->academicRank?->rank_name_ar ?? '-' }}</td>
-                                        <td class="p-1 border border-slate-300 text-center font-bold text-emerald-800">{{ $empRec?->employmentStatus?->status_name_ar ?? 'موجود' }}</td>
+                                        <td class="p-1 border border-slate-300 font-medium">{{ $empRec?->qualification_at_appointment ?? ($emp->qualifications->first()?->level?->level_name_ar ?? '—') }}</td>
+                                        <td class="p-1 border border-slate-300 text-center">{{ $empRec?->initial_rank ?? '—' }}</td>
+                                        <td class="p-1 border border-slate-300 font-bold">{{ $emp->college_name }}</td>
+                                        <td class="p-1 border border-slate-300">{{ $emp->department_name }}</td>
+                                        <td class="p-1 border border-slate-300 text-center font-bold text-primary">{{ $emp->rank_name }}</td>
+                                        <td class="p-1 border border-slate-300 text-center font-bold text-emerald-800">{{ $emp->status_name }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -204,3 +211,56 @@
             </div>
 
         </div>
+
+        <!-- سكريبت الفلترة الحركية للأقسام التابعة للكلية المحددة فقط -->
+        <script>
+            (function() {
+                const facultySelect = document.getElementById('roster_faculty_id');
+                const deptSelect = document.getElementById('roster_department_id');
+                if (!facultySelect || !deptSelect) return;
+
+                // الاحتفاظ بكافة الأقسام المرجعية مع معرفات كلياتها
+                const allDepartments = Array.from(deptSelect.options)
+                    .filter(opt => opt.value !== '')
+                    .map(opt => ({
+                        value: opt.value,
+                        text: opt.text,
+                        facultyId: opt.getAttribute('data-faculty-id') || ''
+                    }));
+
+                window.filterDepartmentsByFaculty = function(selectedFacultyId, preserveSelected = false) {
+                    const currentSelectedDept = preserveSelected ? deptSelect.value : '';
+
+                    deptSelect.innerHTML = '';
+
+                    const defaultOpt = document.createElement('option');
+                    defaultOpt.value = '';
+                    defaultOpt.textContent = selectedFacultyId ? '-- كافة أقسام الكلية المحددة --' : '-- كافة الأقسام --';
+                    deptSelect.appendChild(defaultOpt);
+
+                    let hasMatched = false;
+                    allDepartments.forEach(d => {
+                        if (!selectedFacultyId || d.facultyId === selectedFacultyId) {
+                            const opt = document.createElement('option');
+                            opt.value = d.value;
+                            opt.textContent = d.text;
+                            opt.setAttribute('data-faculty-id', d.facultyId);
+                            if (d.value === currentSelectedDept) {
+                                opt.selected = true;
+                                hasMatched = true;
+                            }
+                            deptSelect.appendChild(opt);
+                        }
+                    });
+
+                    if (!hasMatched && preserveSelected && currentSelectedDept) {
+                        deptSelect.value = '';
+                    }
+                };
+
+                // تشغيل تلقائي عند التحميل إذا كانت هناك كلية محددة في الفلتر الحالي
+                if (facultySelect.value) {
+                    window.filterDepartmentsByFaculty(facultySelect.value, true);
+                }
+            })();
+        </script>

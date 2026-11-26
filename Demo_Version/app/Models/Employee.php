@@ -81,6 +81,130 @@ class Employee extends Model
     }
 
     /**
+     * اسم الكلية أو الجهة الرئيسية التابع لها الموظف
+     */
+    public function getCollegeNameAttribute(): string
+    {
+        $active = $this->active_employment;
+        $unit = $active?->organizationalUnit;
+        if (!$unit) {
+            return 'جامعة إب';
+        }
+
+        // إذا كانت الوحدة نفسها كلية أو مركز أو إدارة رئيسية
+        if (in_array($unit->unit_type, ['faculty', 'college', 'center', 'administration'])) {
+            return $unit->unit_name_ar;
+        }
+
+        // إذا كان قسماً أو مكتباً يتبع كلية
+        if ($unit->parent && $unit->parent->unit_type !== 'university') {
+            return $unit->parent->unit_name_ar;
+        }
+
+        return $unit->unit_name_ar ?? 'جامعة إب';
+    }
+
+    /**
+     * اسم القسم الأكاديمي أو الإداري
+     */
+    public function getDepartmentNameAttribute(): string
+    {
+        $active = $this->active_employment;
+        $unit = $active?->organizationalUnit;
+        if (!$unit) {
+            return '—';
+        }
+
+        // إذا كان قسماً يتبع كلية
+        if ($unit->parent && $unit->parent->unit_type !== 'university') {
+            return $unit->unit_name_ar;
+        }
+
+        if (in_array($unit->unit_type, ['faculty', 'college', 'center', 'administration'])) {
+            return 'عمادة / إدارة الكلية';
+        }
+
+        return $unit->unit_name_ar ?? '—';
+    }
+
+    /**
+     * الرتبة العلمية الحالية
+     */
+    public function getRankNameAttribute(): string
+    {
+        $active = $this->active_employment;
+        return $active?->academicRank?->rank_name_ar ?? '—';
+    }
+
+    /**
+     * الدرجة المالية / الوظيفية
+     */
+    public function getGradeNameAttribute(): string
+    {
+        $active = $this->active_employment;
+        return $active?->jobGrade?->grade_name_ar ?? ($active?->payroll_job_grade ?? '—');
+    }
+
+    /**
+     * الحالة / الموقف الوظيفي
+     */
+    public function getStatusNameAttribute(): string
+    {
+        $active = $this->active_employment;
+        return $active?->employmentStatus?->status_name_ar ?? '—';
+    }
+
+    /**
+     * المسمى الوظيفي
+     */
+    public function getJobTitleNameAttribute(): string
+    {
+        $active = $this->active_employment;
+        return $active?->jobTitle?->title_name_ar ?? ($active?->payroll_job_title ?? '—');
+    }
+
+    /**
+     * حالة المرتب والوظيفة بكشف الراتب
+     */
+    public function getPayrollStatusNameAttribute(): string
+    {
+        $active = $this->active_employment;
+        return $active?->payroll_status ?? ($active?->payroll_job_title ?? '—');
+    }
+
+    /**
+     * تاريخ التعيين المنسق
+     */
+    public function getAppointmentDateFormattedAttribute(): string
+    {
+        $active = $this->active_employment;
+        $date = $active?->first_appointment_date ?? $active?->academic_appointment_date ?? $active?->start_date;
+        return $date ? $date->format('Y-m-d') : '—';
+    }
+
+    /**
+     * بطاقة ملخص بيانات الكادر للشريط الخفيف المنبثق عند مرور المؤشر
+     */
+    public function getQuickSummaryDataAttribute(): array
+    {
+        return [
+            'id' => $this->employee_id,
+            'name' => $this->full_name_ar,
+            'number' => $this->employee_number ?? '—',
+            'national_id' => $this->national_id ?? '—',
+            'college' => $this->college_name,
+            'department' => $this->department_name,
+            'rank' => $this->rank_name,
+            'grade' => $this->grade_name,
+            'status' => $this->status_name,
+            'job_title' => $this->job_title_name,
+            'payroll_status' => $this->payroll_status_name,
+            'appointment_date' => $this->appointment_date_formatted,
+            'profile_url' => route('employees.show', $this->employee_id),
+        ];
+    }
+
+    /**
      * المؤهلات الأكاديمية التراكمية
      */
     public function qualifications(): HasMany

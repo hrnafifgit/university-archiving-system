@@ -33,8 +33,78 @@
               class="flex-1 overflow-y-auto no-scrollbar p-3.5 space-y-3">
             @csrf
 
+            @if(session('error') || (isset($errors) && $errors->any()))
+            <div class="p-3 px-4 bg-rose-50 border border-rose-200 text-rose-900 rounded-xl text-xs font-bold space-y-1 shadow-2xs">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-circle-exclamation text-rose-600 text-sm"></i>
+                        <span>{{ session('error') ?? 'تعذر حفظ السجل، يرجى مراجعة الأخطاء التالية:' }}</span>
+                    </div>
+                    <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-slate-400 hover:text-slate-600">✕</button>
+                </div>
+                @if(isset($errors) && $errors->any())
+                    <ul class="list-disc list-inside text-[11px] font-medium pr-6 space-y-0.5 text-rose-800">
+                        @foreach($errors->all() as $err)
+                            <li>{{ $err }}</li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
+            @endif
+
+            <!-- 0. اختيار نوع الكادر (تصميم رسمي نظيف) -->
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 select-none">
+                <div class="flex items-center gap-2 text-xs font-black text-slate-800">
+                    <i class="fa-solid fa-user-tag text-[#14532d]"></i>
+                    <span>نوع الكادر:</span>
+                </div>
+
+                <input type="hidden" name="cadre_type" id="hidden_cadre_type" value="{{ old('cadre_type', 'academic') }}">
+
+                <div class="grid grid-cols-3 gap-2 flex-1 max-w-2xl text-xs">
+                    <button type="button" onclick="switchCadreType('academic')" id="card-cadre-academic"
+                            class="cadre-select-card cursor-pointer flex items-center justify-center gap-2 px-3 py-2 rounded-xl border font-bold transition-all bg-[#14532d] border-[#14532d] text-white shadow-2xs">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <span>كادر أكاديمي</span>
+                    </button>
+
+                    <button type="button" onclick="switchCadreType('admin')" id="card-cadre-admin"
+                            class="cadre-select-card cursor-pointer flex items-center justify-center gap-2 px-3 py-2 rounded-xl border font-bold transition-all bg-white border-slate-200 text-slate-700 hover:bg-slate-100">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <span>كادر إداري</span>
+                    </button>
+
+                    <button type="button" onclick="switchCadreType('hourly')" id="card-cadre-hourly"
+                            class="cadre-select-card cursor-pointer flex items-center justify-center gap-2 px-3 py-2 rounded-xl border font-bold transition-all bg-white border-slate-200 text-slate-700 hover:bg-slate-100">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>متعاقد بالساعات</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- شريط المراحل الأفقي (Horizontal 5-Step Stepper) -->
+            <div class="bg-white border border-slate-200 rounded-xl p-2 px-3 grid grid-cols-5 gap-1.5 select-none">
+                @php
+                    $wizardSteps = [
+                        1 => ['label' => 'البيانات الأساسية', 'icon' => 'fa-id-card'],
+                        2 => ['label' => 'التسكين والتكليف', 'icon' => 'fa-sitemap'],
+                        3 => ['label' => 'الراتب والتعيين', 'icon' => 'fa-money-check-dollar'],
+                        4 => ['label' => 'القرار والمؤهل', 'icon' => 'fa-graduation-cap'],
+                        5 => ['label' => 'الأرشيف الرقمي', 'icon' => 'fa-file-pdf'],
+                    ];
+                @endphp
+                @foreach($wizardSteps as $sNum => $sInfo)
+                    <button type="button" onclick="goToWizardStep({{ $sNum }})" id="wizard-tab-{{ $sNum }}"
+                            class="wizard-tab-btn flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition cursor-pointer border {{ $sNum === 1 ? 'bg-[#14532d] text-white border-[#14532d] shadow-2xs' : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100' }}">
+                        <span class="w-5 h-5 rounded-full text-[10px] font-mono flex items-center justify-center shrink-0 wizard-step-num {{ $sNum === 1 ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700' }}">{{ $sNum }}</span>
+                        <i class="fa-solid {{ $sInfo['icon'] }} text-[11px] hidden sm:inline"></i>
+                        <span class="truncate">{{ $sInfo['label'] }}</span>
+                    </button>
+                @endforeach
+            </div>
+
             <!-- القسم 1: البيانات الشخصية والأساسية -->
-            <div class="bg-slate-50/50 border border-slate-200/90 rounded-lg p-3">
+            <div id="wizard-step-1" class="wizard-step-panel bg-slate-50/50 border border-slate-200/90 rounded-xl p-4">
                 <div class="flex items-center gap-2 pb-1.5 mb-2.5 border-b border-slate-200 text-xs font-bold text-slate-800">
                     <i class="fa-solid fa-id-card text-primary text-xs"></i>
                     <span>1. البيانات الشخصية والأساسية</span>
@@ -91,25 +161,29 @@
                     </div>
 
                     <div class="lg:col-span-2">
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">الصورة الشخصية الرسمية (JPG/PNG)</label>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-[11px] font-bold text-slate-700">الصورة الشخصية الرسمية (JPG/PNG)</label>
+                            <span class="text-[10px] text-slate-400">الحد الأقصى: 10MB</span>
+                        </div>
                         <input type="file" name="photo_file" accept="image/*" 
+                               onchange="validateFileSize(this, 10)"
                                class="w-full bg-white border border-slate-300 rounded-md px-2 py-1 text-xs text-slate-500 file:ml-2 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-[11px] file:font-bold file:bg-primary file:text-white file:cursor-pointer shadow-2xs">
                     </div>
                 </div>
             </div>
 
             <!-- القسم 2: التسكين والتكليف بالهيكل الجامعي -->
-            <div class="bg-slate-50/50 border border-slate-200/90 rounded-lg p-3">
+            <div id="wizard-step-2" class="wizard-step-panel hidden bg-slate-50/50 border border-slate-200/90 rounded-xl p-4">
                 <div class="flex items-center gap-2 pb-1.5 mb-2.5 border-b border-slate-200 text-xs font-bold text-slate-800">
                     <i class="fa-solid fa-sitemap text-primary text-xs"></i>
-                    <span>2. التسكين والتكليف بالهيكل الجامعي</span>
+                    <span id="sec2-title-text">2. التسكين الأكاديمي والتكليف بالقسم العلمي</span>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs">
                     <div>
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">الفئة الوظيفية <span class="text-rose-600">*</span></label>
-                        <select name="employee_category_id" required class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
+                        <select name="employee_category_id" id="desktop_category_select" required class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
                             @foreach($categories as $cat)
-                                <option value="{{ $cat->employee_category_id }}" {{ old('employee_category_id') == $cat->employee_category_id ? 'selected' : '' }}>
+                                <option value="{{ $cat->employee_category_id }}" {{ old('employee_category_id', 1) == $cat->employee_category_id ? 'selected' : '' }}>
                                     {{ $cat->category_name_ar }}
                                 </option>
                             @endforeach
@@ -118,11 +192,11 @@
 
                     <!-- الكلية / المركز -->
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">الكلية / المركز <span class="text-rose-600">*</span></label>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1" id="label-faculty">الكلية / المركز <span class="text-rose-600">*</span></label>
                         <select id="desktop_faculty_select" data-quick-type="faculty" data-quick-title="إضافة كلية / مركز" data-quick-label="اسم الكلية أو المركز الجديد:" onchange="handleQuickAddChange(this); filterFacultyDepartments();" class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
                             <option value="">-- اختر الكلية أو المركز --</option>
                             @foreach($colleges as $col)
-                                <option value="{{ $col->organizational_unit_id }}">{{ $col->unit_name_ar }}</option>
+                                <option value="{{ $col->organizational_unit_id }}" {{ (request('faculty_id') == $col->organizational_unit_id || old('faculty_id') == $col->organizational_unit_id) ? 'selected' : '' }}>{{ $col->unit_name_ar }}</option>
                             @endforeach
                             <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة كلية / مركز جديد...</option>
                         </select>
@@ -130,12 +204,12 @@
 
                     <!-- القسم / الوحدة -->
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">القسم / الوحدة <span class="text-rose-600">*</span></label>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1" id="label-dept">القسم / الوحدة <span class="text-rose-600">*</span></label>
                         <select name="organizational_unit_id" id="desktop_dept_select" data-quick-type="department" data-quick-title="إضافة قسم علمي" data-quick-label="اسم القسم العلمي الجديد:" onchange="handleQuickAddChange(this)" required class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
                             <option value="">-- اختر القسم أولاً --</option>
                             @foreach($colleges as $col)
                                 @foreach($col->children as $dept)
-                                    <option value="{{ $dept->organizational_unit_id }}" data-parent="{{ $col->organizational_unit_id }}">
+                                    <option value="{{ $dept->organizational_unit_id }}" data-parent="{{ $col->organizational_unit_id }}" {{ (request('dept_id') == $dept->organizational_unit_id || old('organizational_unit_id') == $dept->organizational_unit_id) ? 'selected' : '' }}>
                                         {{ $dept->unit_name_ar }} ({{ $col->unit_code }})
                                     </option>
                                 @endforeach
@@ -157,8 +231,8 @@
                         </select>
                     </div>
 
-                    <!-- الرتبة الأكاديمية -->
-                    <div>
+                    <!-- الرتبة الأكاديمية (أكاديمي ومتقاعدين) -->
+                    <div class="cadre-field-academic cadre-field-hourly">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">الرتبة الأكاديمية</label>
                         <select name="academic_rank_id" id="desktop_rank_select" data-quick-type="rank" data-quick-title="إضافة رتبة أكاديمية" data-quick-label="اسم الرتبة العلمية الجديدة:" onchange="handleQuickAddChange(this)" class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
                             <option value="">-- بدون رتبة --</option>
@@ -169,6 +243,41 @@
                             @endforeach
                             <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة رتبة أكاديمية جديدة...</option>
                         </select>
+                    </div>
+
+                    <!-- المسمى الوظيفي الإداري (كادر إداري) -->
+                    <div class="cadre-field-admin hidden">
+                        <label class="block text-[11px] font-bold text-blue-900 mb-1">المسمى الوظيفي الإداري <span class="text-rose-600">*</span></label>
+                        <input type="text" name="admin_job_title" id="admin_job_title" value="{{ old('admin_job_title') }}" placeholder="مدير إدارة، رئيس قسم، أخصائي شؤون موظفين..." 
+                               class="w-full bg-white border border-blue-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
+                    </div>
+
+                    <!-- نصاب الساعات (متقاعدين بالساعات) -->
+                    <div class="cadre-field-hourly hidden">
+                        <label class="block text-[11px] font-bold text-amber-900 mb-1">نصاب الساعات المعتمدة <span class="text-rose-600">*</span></label>
+                        <input type="number" step="0.5" min="1" max="50" name="hourly_hours" value="{{ old('hourly_hours') }}" placeholder="مثال: 12 ساعة أسبوعياً" 
+                               class="w-full bg-white border border-amber-300 rounded-md px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                    </div>
+
+                    <!-- أجر الساعة (متقاعدين بالساعات) -->
+                    <div class="cadre-field-hourly hidden">
+                        <label class="block text-[11px] font-bold text-amber-900 mb-1">أجر الساعة المعتمد (ريال)</label>
+                        <input type="number" step="100" min="0" name="hourly_rate" value="{{ old('hourly_rate') }}" placeholder="مثال: 5000" 
+                               class="w-full bg-white border border-amber-300 rounded-md px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                    </div>
+
+                    <!-- العام الجامعي والفصل (متقاعدين بالساعات) -->
+                    <div class="cadre-field-hourly hidden">
+                        <label class="block text-[11px] font-bold text-amber-900 mb-1">العام الجامعي والفصل</label>
+                        <input type="text" name="academic_year" value="{{ old('academic_year', '2024-2025 / الفصل الأول') }}" placeholder="2024-2025 / الفصل الأول" 
+                               class="w-full bg-white border border-amber-300 rounded-md px-2.5 py-1.5 text-xs font-bold text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                    </div>
+
+                    <!-- جهة التقاعد الأصلية (متقاعدين بالساعات) -->
+                    <div class="cadre-field-hourly hidden">
+                        <label class="block text-[11px] font-bold text-amber-900 mb-1">جهة التقاعد الأصلية</label>
+                        <input type="text" name="retirement_source" value="{{ old('retirement_source') }}" placeholder="مثال: جامعة إب (متقاعد)، جامعة صنعاء..." 
+                               class="w-full bg-white border border-amber-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
                     </div>
 
                     <!-- الدرجة الوظيفية -->
@@ -193,14 +302,14 @@
 
                     <div>
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">أساس التعيين</label>
-                        <input type="text" name="appointment_basis" value="{{ old('appointment_basis', 'تثبيت رسمي') }}" 
+                        <input type="text" name="appointment_basis" id="appointment_basis_input" value="{{ old('appointment_basis', 'تثبيت رسمي') }}" 
                                class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
                     </div>
                 </div>
             </div>
 
             <!-- القسم 3: بيانات كشف الراتب وتاريخ التعيين -->
-            <div class="bg-slate-50/50 border border-slate-200/90 rounded-lg p-3">
+            <div id="wizard-step-3" class="wizard-step-panel hidden bg-slate-50/50 border border-slate-200/90 rounded-xl p-4">
                 <div class="flex items-center gap-2 pb-1.5 mb-2.5 border-b border-slate-200 text-xs font-bold text-slate-800">
                     <i class="fa-solid fa-file-invoice-dollar text-primary text-xs"></i>
                     <span>3. بيانات كشف الراتب وتاريخ التعيين</span>
@@ -236,13 +345,13 @@
                                class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs font-mono text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
                     </div>
 
-                    <div>
+                    <div class="cadre-field-academic">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">تاريخ التعيين بالجامعة أكاديمي</label>
                         <input type="date" name="academic_appointment_date" value="{{ old('academic_appointment_date') }}" 
                                class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs font-mono text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
                     </div>
 
-                    <div>
+                    <div class="cadre-field-academic">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">الدرجة المعين فيها أول مرة</label>
                         <input type="text" name="initial_rank" value="{{ old('initial_rank') }}" placeholder="معيد، أستاذ مساعد..." 
                                class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
@@ -251,7 +360,7 @@
             </div>
 
             <!-- القسم 4: القرار والمؤهل الأكاديمي -->
-            <div class="bg-slate-50/50 border border-slate-200/90 rounded-lg p-3">
+            <div id="wizard-step-4" class="wizard-step-panel hidden bg-slate-50/50 border border-slate-200/90 rounded-xl p-4">
                 <div class="flex items-center gap-2 pb-1.5 mb-2.5 border-b border-slate-200 text-xs font-bold text-slate-800">
                     <i class="fa-solid fa-stamp text-primary text-xs"></i>
                     <span>4. القرار والمؤهل الأكاديمي</span>
@@ -267,9 +376,12 @@
                     </div>
 
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">رقم القرار</label>
-                        <input type="text" name="decision_number" value="{{ old('decision_number') }}" placeholder="مثال: ق/2024/142" 
-                               class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs font-mono text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-[11px] font-bold text-slate-700">رقم القرار</label>
+                            <span class="text-[9px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">ترقيم تلقائي</span>
+                        </div>
+                        <input type="text" name="decision_number" value="{{ old('decision_number', $nextDecisionNumber) }}" placeholder="رقم القرار الإداري (تلقائي)" 
+                               class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
                     </div>
 
                     <!-- مستوى المؤهل -->
@@ -299,7 +411,7 @@
             </div>
 
             <!-- القسم 5: وثيقة الأرشيف الرقمي (PDF) -->
-            <div class="bg-slate-50/50 border border-slate-200/90 rounded-lg p-3">
+            <div id="wizard-step-5" class="wizard-step-panel hidden bg-slate-50/50 border border-slate-200/90 rounded-xl p-4">
                 <div class="flex items-center gap-2 pb-1.5 mb-2.5 border-b border-slate-200 text-xs font-bold text-slate-800">
                     <i class="fa-solid fa-file-pdf text-primary text-xs"></i>
                     <span>5. وثيقة الأرشيف الرقمي (PDF)</span>
@@ -323,8 +435,12 @@
                     </div>
 
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">ملف PDF (حتى 20MB)</label>
-                        <input type="file" name="document_file" accept="application/pdf" 
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-[11px] font-bold text-slate-700">ملف الوثيقة (PDF أو صورة)</label>
+                            <span class="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">الحد الأقصى: 25MB</span>
+                        </div>
+                        <input type="file" name="document_file" accept="application/pdf,image/*" 
+                               onchange="validateFileSize(this, 25)"
                                class="w-full bg-white border border-slate-300 rounded-md px-2 py-1 text-xs text-slate-500 file:ml-2 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-[11px] file:font-bold file:bg-primary file:text-white file:cursor-pointer shadow-2xs">
                     </div>
                 </div>
@@ -332,12 +448,39 @@
 
         </form>
 
-        <!-- مؤشر التمرير الهادئ (رمز ^ معكوس / chevron-down) للدلالة على توفر حقول إضافية -->
-        <button type="button" id="scroll-form-indicator" onclick="scrollFormDown()" 
-                class="hidden absolute bottom-3 left-1/2 -translate-x-1/2 z-30 transition-all duration-300 bg-white/95 hover:bg-white text-slate-600 hover:text-primary border border-slate-200/90 rounded-full w-8 h-8 shadow-sm flex items-center justify-center cursor-pointer select-none"
-                title="توجد حقول إضافية بالأسفل (انقر أو مرر للتمرير لأسفل)">
-            <i class="fa-solid fa-chevron-down text-primary text-[11px] animate-subtle-bounce"></i>
-        </button>
+        <!-- شريط التقدم وأزرار التنقل بالأسهم (Sticky Wizard Footer) -->
+        <div class="bg-slate-50 border-t border-slate-200 px-5 py-3 flex items-center justify-between gap-4 shrink-0 select-none">
+            <button type="button" id="btnWizardPrev" onclick="prevWizardStep()"
+                    class="hidden px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold text-xs transition flex items-center gap-2 cursor-pointer shadow-2xs">
+                <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                <span>السابق</span>
+            </button>
+            <div id="btnWizardPrevSpacer" class="w-20"></div>
+
+            <!-- شريط نسبة الإنجاز -->
+            <div class="flex-1 max-w-md flex flex-col gap-1">
+                <div class="flex items-center justify-between text-[11px] font-bold">
+                    <span class="text-slate-600" id="wizardStepText">الخطوة 1 من 5</span>
+                    <span class="font-mono text-[#14532d]" id="wizardPercentText">20%</span>
+                </div>
+                <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                    <div id="wizardProgressBar" class="h-full bg-[#14532d] rounded-full transition-all duration-300" style="width: 20%"></div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button type="button" id="btnWizardNext" onclick="nextWizardStep()"
+                        class="px-5 py-2 rounded-xl bg-[#14532d] hover:bg-[#166534] text-white font-bold text-xs transition flex items-center gap-2 cursor-pointer shadow-xs">
+                    <span>التالي</span>
+                    <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                </button>
+                <button type="submit" form="main-staff-form" id="btnWizardSubmit"
+                        class="hidden px-5 py-2 rounded-xl bg-[#14532d] hover:bg-[#166534] text-white font-bold text-xs transition flex items-center gap-2 cursor-pointer shadow-xs">
+                    <i class="fa-solid fa-check text-[11px]"></i>
+                    <span>حفظ السجل</span>
+                </button>
+            </div>
+        </div>
 
     </div>
 
@@ -346,6 +489,91 @@
 
 @section('scripts')
 <script>
+    // التبديل التفاعلي بين أنواع ومسارات الكادر (أكاديمي / إداري / متقاعدين بالساعات)
+    function switchCadreType(type) {
+        const hiddenInput = document.getElementById('hidden_cadre_type');
+        if (hiddenInput) hiddenInput.value = type;
+
+        // بطاقات الاختيار
+        const cards = {
+            academic: document.getElementById('card-cadre-academic'),
+            admin: document.getElementById('card-cadre-admin'),
+            hourly: document.getElementById('card-cadre-hourly')
+        };
+
+        Object.keys(cards).forEach(key => {
+            const card = cards[key];
+            if (!card) return;
+            if (key === type) {
+                card.classList.remove('bg-white', 'border-slate-200', 'text-slate-700', 'hover:bg-slate-100');
+                card.classList.add('bg-[#14532d]', 'border-[#14532d]', 'text-white', 'shadow-2xs');
+            } else {
+                card.classList.remove('bg-[#14532d]', 'border-[#14532d]', 'text-white', 'shadow-2xs');
+                card.classList.add('bg-white', 'border-slate-200', 'text-slate-700', 'hover:bg-slate-100');
+            }
+        });
+
+        // إظهار وإخفاء الحقول المخصصة لكل هيكل
+        document.querySelectorAll('.cadre-field-academic').forEach(el => {
+            if (type === 'academic' || type === 'hourly') {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        });
+
+        document.querySelectorAll('.cadre-field-admin').forEach(el => {
+            if (type === 'admin') {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        });
+
+        document.querySelectorAll('.cadre-field-hourly').forEach(el => {
+            if (type === 'hourly') {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        });
+
+        // تحديث عناوين الأقسام والتسميات
+        const sec2Title = document.getElementById('sec2-title-text');
+        const facLabel = document.getElementById('label-faculty');
+        const deptLabel = document.getElementById('label-dept');
+        const catSelect = document.getElementById('desktop_category_select');
+        const basisInput = document.getElementById('appointment_basis_input');
+
+        if (type === 'academic') {
+            if (sec2Title) sec2Title.textContent = '2. التسكين الأكاديمي والتكليف بالقسم العلمي';
+            if (facLabel) facLabel.innerHTML = 'الكلية / المركز الأكاديمي <span class="text-rose-600">*</span>';
+            if (deptLabel) deptLabel.innerHTML = 'القسم العلمي <span class="text-rose-600">*</span>';
+            if (catSelect) catSelect.value = '1';
+            if (basisInput && (!basisInput.value || basisInput.value.includes('ساعات') || basisInput.value.includes('إداري'))) {
+                basisInput.value = 'تثبيت رسمي';
+            }
+        } else if (type === 'admin') {
+            if (sec2Title) sec2Title.textContent = '2. التسكين والتعيين بالهيكل الإداري';
+            if (facLabel) facLabel.innerHTML = 'الجهة / الكلية / الإدارة العامة <span class="text-rose-600">*</span>';
+            if (deptLabel) deptLabel.innerHTML = 'الإدارة / القسم التابع <span class="text-rose-600">*</span>';
+            if (catSelect) catSelect.value = '2';
+            if (basisInput && (!basisInput.value || basisInput.value.includes('ساعات') || basisInput.value.includes('أكاديمي'))) {
+                basisInput.value = 'تثبيت إداري رسمي';
+            }
+        } else if (type === 'hourly') {
+            if (sec2Title) sec2Title.textContent = '2. بيانات الاستعانة والتدريس بالساعات (متقاعد)';
+            if (facLabel) facLabel.innerHTML = 'الكلية المستعينة <span class="text-rose-600">*</span>';
+            if (deptLabel) deptLabel.innerHTML = 'القسم العلمي المستعين <span class="text-rose-600">*</span>';
+            if (catSelect) catSelect.value = '7';
+            if (basisInput) basisInput.value = 'تدريس بالساعات الإضافية';
+        }
+
+        if (typeof updateFormScrollIndicator === 'function') {
+            updateFormScrollIndicator();
+        }
+    }
+
     // معالجة اختيار "+ إضافة جديد..." من القائمة المنسدلة مباشرة
     function handleQuickAddChange(selectEl) {
         if (selectEl.value === '__add_new__') {
@@ -372,7 +600,7 @@
         }
     }
 
-    function filterFacultyDepartments() {
+    function filterFacultyDepartments(selectedDeptId = null) {
         let facultySelect = document.getElementById('desktop_faculty_select');
         let facultyId = facultySelect ? facultySelect.value : '';
         if (facultyId === '__add_new__') return;
@@ -380,7 +608,7 @@
         let deptSelect = document.getElementById('desktop_dept_select');
         let options = deptSelect.querySelectorAll('option');
 
-        let firstMatch = false;
+        let matched = false;
         options.forEach(opt => {
             if (!opt.value) return;
             if (opt.value === '__add_new__') {
@@ -389,15 +617,53 @@
             }
             if (!facultyId || opt.getAttribute('data-parent') === facultyId) {
                 opt.style.display = 'block';
-                if (!firstMatch) {
+                if (selectedDeptId && opt.value === selectedDeptId) {
                     opt.selected = true;
-                    firstMatch = true;
+                    matched = true;
+                } else if (!selectedDeptId && !matched && !deptSelect.value) {
+                    opt.selected = true;
+                    matched = true;
                 }
             } else {
                 opt.style.display = 'none';
             }
         });
+
+        if (selectedDeptId) {
+            deptSelect.value = selectedDeptId;
+        }
     }
+
+    // التهيئة التلقائية عند الدخول بروابط محددة الكلية والقسم مسبقاً ونوع الكادر
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentCadre = document.getElementById('hidden_cadre_type')?.value || 'academic';
+        switchCadreType(currentCadre);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const reqFacultyId = urlParams.get('faculty_id');
+        const reqDeptId = urlParams.get('dept_id');
+
+        if (reqDeptId) {
+            const deptSelect = document.getElementById('desktop_dept_select');
+            const deptOpt = deptSelect ? deptSelect.querySelector(`option[value="${reqDeptId}"]`) : null;
+            const parentFacId = deptOpt ? deptOpt.getAttribute('data-parent') : reqFacultyId;
+            const facSelect = document.getElementById('desktop_faculty_select');
+
+            if (facSelect && parentFacId) {
+                facSelect.value = parentFacId;
+                filterFacultyDepartments(reqDeptId);
+            }
+            if (deptSelect) {
+                deptSelect.value = reqDeptId;
+            }
+        } else if (reqFacultyId) {
+            const facSelect = document.getElementById('desktop_faculty_select');
+            if (facSelect) {
+                facSelect.value = reqFacultyId;
+                filterFacultyDepartments();
+            }
+        }
+    });
 
     // التمرير السلس للأسفل عبر المؤشر العائم
     function scrollFormDown() {
@@ -517,5 +783,131 @@
             }
         });
     });
+
+    // منطق المعالج الأفقي ذي الخطوات الخمس (5-Step Horizontal Wizard)
+    let currentWizardStep = 1;
+    const totalWizardSteps = 5;
+
+    function validateWizardStep(stepNum) {
+        const panel = document.getElementById('wizard-step-' + stepNum);
+        if (!panel) return true;
+        const requiredFields = panel.querySelectorAll('input[required], select[required], textarea[required]');
+        for (const field of requiredFields) {
+            // تجاهل الحقول المخفية تبعاً لنوع الكادر
+            if (field.closest('.hidden')) continue;
+            if (!field.checkValidity()) {
+                field.reportValidity();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function goToWizardStep(stepNum, skipValidation = false) {
+        if (stepNum < 1 || stepNum > totalWizardSteps) return;
+        if (!skipValidation && stepNum > currentWizardStep) {
+            for (let s = currentWizardStep; s < stepNum; s++) {
+                if (!validateWizardStep(s)) {
+                    if (s !== currentWizardStep) goToWizardStep(s, true);
+                    return;
+                }
+            }
+        }
+
+        currentWizardStep = stepNum;
+
+        // إظهار المرحلة المطلوبة وإخفاء البقية تماماً بدون سكرول
+        document.querySelectorAll('.wizard-step-panel').forEach((panel, idx) => {
+            if (idx + 1 === stepNum) {
+                panel.classList.remove('hidden');
+            } else {
+                panel.classList.add('hidden');
+            }
+        });
+
+        // تحديث شريط التبويبات الأفقي في الأعلى
+        for (let i = 1; i <= totalWizardSteps; i++) {
+            const tab = document.getElementById('wizard-tab-' + i);
+            if (!tab) continue;
+            const numSpan = tab.querySelector('.wizard-step-num');
+            tab.classList.remove('bg-[#14532d]', 'text-white', 'border-[#14532d]', 'shadow-2xs', 'bg-emerald-50', 'text-[#14532d]', 'border-emerald-300', 'bg-slate-50', 'text-slate-500', 'border-slate-200');
+            if (numSpan) {
+                numSpan.classList.remove('bg-white/20', 'text-white', 'bg-[#14532d]', 'bg-slate-200', 'text-slate-700');
+            }
+
+            if (i === stepNum) {
+                tab.classList.add('bg-[#14532d]', 'text-white', 'border-[#14532d]', 'shadow-2xs');
+                if (numSpan) {
+                    numSpan.innerText = i;
+                    numSpan.classList.add('bg-white/20', 'text-white');
+                }
+            } else if (i < stepNum) {
+                tab.classList.add('bg-emerald-50', 'text-[#14532d]', 'border-emerald-300');
+                if (numSpan) {
+                    numSpan.innerHTML = '<i class="fa-solid fa-check text-[9px]"></i>';
+                    numSpan.classList.add('bg-[#14532d]', 'text-white');
+                }
+            } else {
+                tab.classList.add('bg-slate-50', 'text-slate-500', 'border-slate-200');
+                if (numSpan) {
+                    numSpan.innerText = i;
+                    numSpan.classList.add('bg-slate-200', 'text-slate-700');
+                }
+            }
+        }
+
+        // تحديث شريط التقدم والأزرار السفلية
+        const pct = Math.round((stepNum / totalWizardSteps) * 100);
+        const bar = document.getElementById('wizardProgressBar');
+        const stepTxt = document.getElementById('wizardStepText');
+        const pctTxt = document.getElementById('wizardPercentText');
+        if (bar) bar.style.width = pct + '%';
+        if (stepTxt) stepTxt.innerText = `الخطوة ${stepNum} من ${totalWizardSteps}`;
+        if (pctTxt) pctTxt.innerText = pct + '%';
+
+        const btnPrev = document.getElementById('btnWizardPrev');
+        const prevSpacer = document.getElementById('btnWizardPrevSpacer');
+        const btnNext = document.getElementById('btnWizardNext');
+        const btnSubmit = document.getElementById('btnWizardSubmit');
+
+        if (btnPrev && prevSpacer) {
+            if (stepNum === 1) {
+                btnPrev.classList.add('hidden');
+                prevSpacer.classList.remove('hidden');
+            } else {
+                btnPrev.classList.remove('hidden');
+                prevSpacer.classList.add('hidden');
+            }
+        }
+
+        if (btnNext && btnSubmit) {
+            if (stepNum === totalWizardSteps) {
+                btnNext.classList.add('hidden');
+                btnSubmit.classList.remove('hidden');
+            } else {
+                btnNext.classList.remove('hidden');
+                btnSubmit.classList.add('hidden');
+            }
+        }
+    }
+
+    function nextWizardStep() {
+        goToWizardStep(currentWizardStep + 1);
+    }
+
+    function prevWizardStep() {
+        goToWizardStep(currentWizardStep - 1, true);
+    }
+
+    // في حال وجود حقل مطلوب غير مكتمل عند محاولة الحفظ المباشر من الأعلى، الانتقال تلقائياً لخطوته
+    document.getElementById('main-staff-form')?.addEventListener('invalid', function(e) {
+        const panel = e.target.closest('.wizard-step-panel');
+        if (panel && panel.id) {
+            const sNum = parseInt(panel.id.replace('wizard-step-', ''), 10);
+            if (!isNaN(sNum) && sNum !== currentWizardStep) {
+                goToWizardStep(sNum, true);
+            }
+        }
+    }, true);
 </script>
 @endsection

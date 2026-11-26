@@ -45,14 +45,28 @@ class MasterDataController extends Controller
             ->orderBy('unit_name_ar')
             ->get();
 
+        // علاقات الكادر المشتركة لتحسين الأداء وتفادي استعلامات N+1
+        $empRelations = [
+            'employmentRecords.employee.currentEmployment.organizationalUnit.parent',
+            'employmentRecords.employee.currentEmployment.academicRank',
+            'employmentRecords.employee.currentEmployment.jobGrade',
+            'employmentRecords.employee.currentEmployment.employmentStatus',
+            'employmentRecords.employee.currentEmployment.jobTitle',
+            'employmentRecords.employee.latestEmployment.organizationalUnit.parent',
+            'employmentRecords.employee.latestEmployment.academicRank',
+            'employmentRecords.employee.latestEmployment.jobGrade',
+            'employmentRecords.employee.latestEmployment.employmentStatus',
+            'employmentRecords.employee.latestEmployment.jobTitle',
+        ];
+
         // 2. الرتب العلمية
-        $ranks = AcademicRank::with(['employmentRecords.employee'])->orderBy('rank_order')->get();
+        $ranks = AcademicRank::with($empRelations)->orderBy('rank_order')->get();
 
         // 3. درجات الخدمة المدنية
-        $grades = JobGrade::with(['employmentRecords.employee'])->orderBy('grade_code')->get();
+        $grades = JobGrade::with($empRelations)->orderBy('grade_code')->get();
 
         // 4. الحالات الوظيفية
-        $statuses = EmploymentStatus::with(['employmentRecords.employee'])->orderBy('status_name_ar')->get();
+        $statuses = EmploymentStatus::with($empRelations)->orderBy('status_name_ar')->get();
 
         // 5. أنواع الوثائق
         $documentTypes = DocumentType::with(['documents.currentVersion', 'documents.employee'])->orderBy('type_name_ar')->get();
@@ -61,7 +75,19 @@ class MasterDataController extends Controller
         $decisionTypes = DecisionType::with(['decisions.employee'])->orderBy('type_name_ar')->get();
 
         // 7. المسميات الوظيفية
-        $jobTitles = JobTitle::orderBy('title_name_ar')->get();
+        if (JobTitle::count() === 0) {
+            $distinctTitles = EmploymentRecord::whereNotNull('payroll_job_title')
+                ->where('payroll_job_title', '!=', '')
+                ->pluck('payroll_job_title')
+                ->unique();
+            foreach ($distinctTitles as $t) {
+                if ($trimmed = trim($t)) {
+                    $jtRecord = JobTitle::firstOrCreate(['title_name_ar' => $trimmed], ['is_active' => true]);
+                    EmploymentRecord::where('payroll_job_title', $t)->whereNull('job_title_id')->update(['job_title_id' => $jtRecord->job_title_id]);
+                }
+            }
+        }
+        $jobTitles = JobTitle::with($empRelations)->orderBy('title_name_ar')->get();
 
         // 8. الجامعات والدول
         $universities = University::with(['country', 'qualifications.employee'])->orderBy('university_name_ar')->get();
@@ -647,5 +673,110 @@ class MasterDataController extends Controller
 
         return redirect()->route('master_data.index', ['tab' => 'universities'])
             ->with('success', 'تم حذف الجامعة بنجاح.');
+    }
+
+    /**
+     * إحصائيات تفصيلية كاملة للكلية أو القسم أو المركز (Unit Statistics API)
+     */
+    public function getUnitStats(Request $request, $id)
+    {
+        $unit = OrganizationalUnit::with([
+            'children.employmentRecords.employee.currentEmployment.academicRank',
+            'children.employmentRecords.employee.currentEmployment.employmentStatus',
+            'children.employmentRecords.employee.currentEmployment.category',
+            'children.employmentRecords.employee.documents',
+            'employmentRecords.employee.currentEmployment.academicRank',
+            'employmentRecords.employee.currentEmployment.employmentStatus',
+            'employmentRecords.employee.currentEmployment.category',
+            'employmentRecords.employee.documents',
+            'parent'
+        ])->findOrFail($id);
+
+        $isFaculty = in_array($unit->unit_type, ['faculty', 'college', 'center', 'administration']);
+
+        // جميع سجلات الكادر المرتبطة بالجهة أو بأقسامها التابعة
+        $allRecords = $unit->employmentRecords;
+        if ($isFaculty) {
+            $allRecords = $allRecords->merge($unit->children->flatMap->employmentRecords);
+        }
+
+        $employees = $allRecords->map(fn($r) => $r->employee)->filter()->unique('employee_id');
+        $documents = $allRecords->flatMap(fn($r) => $r->employee?->documents ?? collect())->unique('document_id');
+
+        // قائمة الأقسام مع إحصائيات كل قسم
+        $departments = [];
+        if ($isFaculty) {
+            foreach ($unit->children as $child) {
+                $cEmployees = $child->employmentRecords->map(fn($r) => $r->employee)->filter()->unique('employee_id');
+                $cDocs = $child->employmentRecords->flatMap(fn($r) => $r->employee?->documents ?? collect())->unique('document_id');
+                $departments[] = [
+                    'id' => $child->organizational_unit_id,
+                    'name' => $child->unit_name_ar,
+                    'code' => $child->unit_code ?? '—',
+                    'staff_count' => $cEmployees->count(),
+                    'docs_count' => $cDocs->count(),
+                ];
+            }
+        }
+
+        // توزيع الرتب الأكاديمية
+        $ranksBreakdown = [];
+        foreach ($employees as $emp) {
+            $rankName = $emp->currentEmployment?->academicRank?->rank_name_ar ?? 'بدون رتبة محددة';
+            $ranksBreakdown[$rankName] = ($ranksBreakdown[$rankName] ?? 0) + 1;
+        }
+
+        // توزيع الحالات الوظيفية
+        $statusBreakdown = [];
+        foreach ($employees as $emp) {
+            $statusName = $emp->currentEmployment?->employmentStatus?->status_name_ar ?? 'غير محدد';
+            $statusBreakdown[$statusName] = ($statusBreakdown[$statusName] ?? 0) + 1;
+        }
+
+        // توزيع الفئات الوظيفية
+        $categoryBreakdown = [];
+        foreach ($employees as $emp) {
+            $catName = $emp->currentEmployment?->category?->category_name_ar ?? 'غير مصنف';
+            $categoryBreakdown[$catName] = ($categoryBreakdown[$catName] ?? 0) + 1;
+        }
+
+        // إحصائيات النوع الاجتماعي
+        $maleCount = $employees->where('gender', 'male')->count();
+        $femaleCount = $employees->where('gender', 'female')->count();
+
+        // إحصاء كادر على رأس العمل
+        $activeStaffCount = 0;
+        foreach ($employees as $emp) {
+            $stName = $emp->currentEmployment?->employmentStatus?->status_name_ar ?? '';
+            if (str_contains($stName, 'على رأس') || str_contains($stName, 'مباشر') || str_contains($stName, 'نشط')) {
+                $activeStaffCount++;
+            }
+        }
+        if ($activeStaffCount === 0 && $employees->count() > 0) {
+            $activeStaffCount = $employees->count();
+        }
+
+        return response()->json([
+            'unit' => [
+                'id' => $unit->organizational_unit_id,
+                'name' => $unit->unit_name_ar,
+                'code' => $unit->unit_code ?? '—',
+                'type' => $unit->unit_type,
+                'parent_name' => $unit->parent?->unit_name_ar ?? 'جامعة إب',
+                'is_faculty' => $isFaculty,
+            ],
+            'stats' => [
+                'departments_count' => count($departments),
+                'staff_count' => $employees->count(),
+                'active_staff_count' => $activeStaffCount,
+                'documents_count' => $documents->count(),
+                'male_count' => $maleCount,
+                'female_count' => $femaleCount,
+                'ranks' => $ranksBreakdown,
+                'statuses' => $statusBreakdown,
+                'categories' => $categoryBreakdown,
+                'departments' => $departments,
+            ]
+        ]);
     }
 }

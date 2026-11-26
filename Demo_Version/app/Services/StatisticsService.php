@@ -601,6 +601,8 @@ class StatisticsService
             ->map(fn($p) => ['name' => $p->name, 'count' => (int)$p->count])
             ->toArray();
 
+        $payQuery = $this->capMatrixRows($payQuery, 8);
+
         $matrixPayroll = [
             'chart_title' => 'احصائية بحسب الحالة ك راتب',
             'header_label' => 'الحالة بكشف الراتب',
@@ -625,10 +627,12 @@ class StatisticsService
                 DB::raw('COUNT(DISTINCT e.employee_id) as count')
             )
             ->groupBy('ql.qualification_level_id', 'ql.level_name_ar', 'ql.level_order')
-            ->orderBy('ql.level_order')
+            ->orderByDesc('count')
             ->get()
             ->map(fn($q) => ['name' => $q->name, 'count' => (int)$q->count])
             ->toArray();
+
+        $qualQuery = $this->capMatrixRows($qualQuery, 10);
 
         $matrixQualifications = [
             'chart_title' => 'احصائية بحسب المؤهل العلمي',
@@ -673,6 +677,8 @@ class StatisticsService
             ->map(fn($s) => ['name' => $s->name, 'count' => (int)$s->count])
             ->toArray();
 
+        $acadQuery = $this->capMatrixRows($acadQuery, 10);
+
         $matrixAcademicStatus = [
             'chart_title' => 'احصائية بحسب الحالة ش اكاديمية',
             'header_label' => 'الحالة شؤون اكاديمية',
@@ -693,5 +699,31 @@ class StatisticsService
             'qualifications' => $matrixQualifications,
             'academicStatus' => $matrixAcademicStatus,
         ];
+    }
+
+    /**
+     * Filter out zero-count entries and cap horizontal bar series to top N + "أخرى"
+     * so dashboard charts remain clean and readable without label overlapping.
+     */
+    private function capMatrixRows(array $rows, int $limit = 10): array
+    {
+        $nonZero = array_values(array_filter($rows, fn($r) => ($r['count'] ?? 0) > 0));
+        if (empty($nonZero)) {
+            return array_slice($rows, 0, $limit);
+        }
+
+        usort($nonZero, fn($a, $b) => $b['count'] <=> $a['count']);
+
+        if (count($nonZero) <= $limit) {
+            return $nonZero;
+        }
+
+        $top = array_slice($nonZero, 0, $limit);
+        $otherSum = array_sum(array_column(array_slice($nonZero, $limit), 'count'));
+        if ($otherSum > 0) {
+            $top[] = ['name' => 'أخرى', 'count' => $otherSum];
+        }
+
+        return $top;
     }
 }

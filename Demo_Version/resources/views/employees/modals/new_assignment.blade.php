@@ -13,6 +13,7 @@
                 <div>
                     <label class="block text-[11px] font-bold text-slate-700 mb-1">الفئة الوظيفية <span class="text-rose-600">*</span></label>
                     <select name="employee_category_id" required class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold focus:bg-white focus:border-[#14532d]">
+                        <option value="" disabled selected>-- اختر الفئة الوظيفية --</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat->employee_category_id }}">{{ $cat->category_name_ar }}</option>
                         @endforeach
@@ -27,6 +28,7 @@
                         </button>
                     </div>
                     <select name="organizational_unit_id" id="assignment_unit_select" required class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold focus:bg-white focus:border-[#14532d]">
+                        <option value="" disabled selected>-- اختر الكلية والقسم التابع له --</option>
                         @foreach($colleges as $col)
                             <optgroup label="{{ $col->unit_name_ar }}">
                                 @foreach($col->children as $dept)
@@ -45,6 +47,7 @@
                         </button>
                     </div>
                     <select name="employment_status_id" id="assignment_status_select" required class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold focus:bg-white focus:border-[#14532d]">
+                        <option value="" disabled selected>-- اختر الموقف / الحالة الوظيفية --</option>
                         @foreach($statuses as $st)
                             <option value="{{ $st->employment_status_id }}">{{ $st->status_name_ar }}</option>
                         @endforeach
@@ -83,17 +86,23 @@
 
                 <div>
                     <label class="block text-[11px] font-bold text-slate-700 mb-1">تاريخ سريان التكليف <span class="text-rose-600">*</span></label>
-                    <input type="date" name="start_date" required value="{{ date('Y-m-d') }}" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono font-bold focus:bg-white focus:border-[#14532d]">
+                    <input type="date" name="start_date" required value="" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono font-bold focus:bg-white focus:border-[#14532d]">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-700 mb-1">رقم القرار المنظم</label>
-                    <input type="text" name="decision_number" placeholder="مثال: (204) لسنة 2026م" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono focus:bg-white focus:border-[#14532d]">
+                    @php
+                        $nextAssDecNum = (\App\Models\EmployeeDecision::selectRaw("COALESCE(MAX(CAST(REGEXP_REPLACE(decision_number, '[^0-9]', '', 'g') AS INTEGER)), 202) as max_num")->value('max_num') ?? 202) + 1;
+                    @endphp
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-[11px] font-bold text-slate-700">رقم القرار المنظم</label>
+                        <span class="text-[9px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">ترقيم تلقائي</span>
+                    </div>
+                    <input type="text" name="decision_number" value="{{ $nextAssDecNum }}" placeholder="رقم القرار الإداري (تلقائي)" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono focus:bg-white focus:border-[#14532d]">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-700 mb-1">أساس التكليف</label>
-                    <input type="text" name="appointment_basis" value="قرار إداري نافذ" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:bg-white focus:border-[#14532d]">
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">أساس وسبب التكليف <span class="text-rose-600">*</span></label>
+                    <input type="text" name="appointment_basis" required value="" placeholder="مثال: ترقية علمية، نقل إداري، تكليف رسمي..." class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:bg-white focus:border-[#14532d]">
                 </div>
 
                 <!-- حقول كشف الراتب والرقابة المالية -->
@@ -104,7 +113,7 @@
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[10px] font-bold text-slate-600 mb-0.5">الحالة بكشف الراتب</label>
-                            <input type="text" name="payroll_status" value="على رأس العمل" placeholder="على رأس العمل..." class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2 py-1 text-xs focus:bg-white">
+                            <input type="text" name="payroll_status" value="" placeholder="مثال: على رأس العمل، مستمر..." class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2 py-1 text-xs focus:bg-white">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-slate-600 mb-0.5">الوظيفة بكشف الراتب</label>

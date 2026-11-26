@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'الملف الموحد وعارض الأرشيف المكتبي — ' . $employee->full_name_ar)
+@section('title', 'الملف الوظيفي والأرشيف الإلكتروني — ' . $employee->full_name_ar)
 
 @section('content')
 <div class="flex-1 flex flex-col gap-2 min-h-0">
@@ -11,49 +11,48 @@
             ->sortByDesc('created_at');
         $firstDoc = $archivedDocs->first(fn($d) => $d->currentVersion && $d->currentVersion->file_size_bytes > 0) ?? $archivedDocs->first();
         $firstVersion = $firstDoc?->currentVersion;
-        $curr = $employee->currentEmployment ?? $employee->employmentRecords->first();
+        $curr = $employee->active_employment ?? $employee->currentEmployment ?? $employee->employmentRecords->sortByDesc('start_date')->first();
     @endphp
 
-    <!-- شريط ترويسة الكادر المريح الواسع -->
-    <div class="bg-white border border-slate-200 rounded-2xl shadow-xs p-5 px-6 flex flex-wrap lg:flex-nowrap items-center justify-between gap-4 shrink-0 select-none">
+    <!-- شريط ترويسة الكادر القياسي -->
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-xs p-3.5 px-5 flex flex-wrap lg:flex-nowrap items-center justify-between gap-4 shrink-0 select-none">
         
         <!-- هوية الكادر -->
-        <div class="flex items-center gap-4 min-w-0">
-            <div class="w-14 h-14 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 font-bold text-base shrink-0 shadow-xs">
+        <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-12 h-12 rounded-xl overflow-hidden bg-emerald-50/70 border border-emerald-200/80 flex items-center justify-center text-[#14532d] shrink-0 shadow-2xs">
                 @if($employee->photo_document_id && $employee->photoDocument?->currentVersion)
                     <img src="{{ route('archive.preview', $employee->photoDocument->currentVersion->document_version_id) }}" class="w-full h-full object-cover" alt="{{ $employee->full_name_ar }}">
                 @elseif($employee->gender == 'female')
-                    <i class="fa-solid fa-user text-[#14532d] text-xl"></i>
+                    <i class="fa-solid fa-user text-lg"></i>
                 @else
-                    <i class="fa-solid fa-user-tie text-[#14532d] text-xl"></i>
+                    <i class="fa-solid fa-user-tie text-lg"></i>
                 @endif
             </div>
 
             <div class="min-w-0">
-                <div class="flex items-center gap-2.5 flex-wrap">
-                    <h1 class="text-xl font-black text-slate-900 tracking-tight truncate">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h1 class="text-lg font-black text-slate-900 tracking-tight truncate">
                         {{ $employee->full_name_ar }}
                     </h1>
                     
-                    @if($curr?->academicRank)
-                        <span class="text-xs text-slate-700 bg-slate-100 border border-slate-200 px-3 py-1 rounded-xl font-bold">
-                            {{ $curr->academicRank->rank_name_ar }}
-                        </span>
-                    @endif
-
-                    <span class="text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-xl font-bold">
+                    <span class="inline-flex items-center gap-1.5 text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full font-bold">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                         {{ $curr?->employmentStatus?->status_name_ar ?? 'على رأس العمل' }}
                     </span>
                 </div>
 
-                <div class="flex items-center gap-3 text-sm text-slate-600 flex-wrap mt-1">
-                    <span>الرقم الوظيفي: <strong class="font-mono text-slate-900 font-bold">{{ $employee->employee_number ?? '—' }}</strong></span>
-                    <span class="text-slate-300">•</span>
-                    <span>الرقم الوطني: <strong class="font-mono text-slate-900 font-bold">{{ $employee->national_id ?? '—' }}</strong></span>
-                    <span class="text-slate-300">•</span>
-                    <span class="text-slate-800 font-bold truncate max-w-[320px]">
-                        {{ $curr?->organizationalUnit?->unit_name_ar ?? 'غير مسكن' }}
+                <div class="flex items-center gap-2.5 text-xs text-slate-600 mt-1">
+                    <span class="inline-flex items-center gap-1.5 font-mono font-bold text-slate-800 bg-slate-100/80 px-2 py-0.5 rounded-md border border-slate-200/70" title="الرقم الوظيفي">
+                        <i class="fa-solid fa-id-badge text-slate-400 text-[11px]"></i>
+                        <span>{{ $employee->employee_number ?? '—' }}</span>
                     </span>
+
+                    @if($curr?->academicRank)
+                        <span class="inline-flex items-center gap-1.5 font-bold text-slate-700 bg-slate-100/80 px-2.5 py-0.5 rounded-md border border-slate-200/70" title="الرتبة العلمية">
+                            <i class="fa-solid fa-award text-amber-600 text-[11px]"></i>
+                            <span>{{ $curr->academicRank->rank_name_ar }}</span>
+                        </span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -61,11 +60,11 @@
         <!-- أزرار التحكم وأوضاع العرض (أيقونات معبرة ومألوفة بتصميم مدمج) -->
         <div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">
             
-            <!-- أوضاع العرض: مزدوج، ملف فقط، وثيقة فقط -->
+            <!-- أوضاع العرض: مزدوج، ملف فقط، بطاقة الرفع -->
             <div class="inline-flex items-center bg-slate-100 border border-slate-200 rounded-xl p-1 text-sm font-semibold">
                 <button type="button" onclick="setViewMode('split')" id="btn-mode-split" 
                         class="w-9 h-9 rounded-lg transition bg-white text-brand-900 shadow-xs cursor-pointer flex items-center justify-center" 
-                        title="عرض مزدوج (ملف الكادر وعارض الوثيقة)">
+                        title="عرض مزدوج (ملف الكادر وبطاقة رفع الملف)">
                     <i class="fa-solid fa-table-columns text-sm"></i>
                 </button>
                 <button type="button" onclick="setViewMode('profile')" id="btn-mode-profile" 
@@ -75,17 +74,17 @@
                 </button>
                 <button type="button" onclick="setViewMode('viewer')" id="btn-mode-viewer" 
                         class="w-9 h-9 rounded-lg transition text-slate-500 hover:text-slate-900 cursor-pointer flex items-center justify-center" 
-                        title="عارض الوثيقة فقط">
-                    <i class="fa-solid fa-file-pdf text-sm"></i>
+                        title="بطاقة رفع الملف فقط">
+                    <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
                 </button>
             </div>
 
             <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
 
             <!-- أرشفة وثيقة جديدة -->
-            <button type="button" onclick="openModal('modal-new-doc')" 
-                    class="w-9 h-9 rounded-xl bg-brand-900 hover:bg-brand-800 text-white flex items-center justify-center transition shadow-xs cursor-pointer" 
-                    title="أرشفة وثيقة رسمية جديدة">
+            <button type="button" onclick="focusUploadCard()" 
+                    class="w-9 h-9 rounded-xl bg-[#14532d] hover:bg-[#166534] text-white flex items-center justify-center transition shadow-xs cursor-pointer" 
+                    title="بطاقة رفع وأرشفة ملف">
                 <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
             </button>
 
@@ -119,26 +118,26 @@
         <div id="col-profile-panel" class="lg:col-span-6 bg-white border border-slate-200 rounded-2xl shadow-xs flex flex-col min-h-0 overflow-hidden">
             
             <!-- تبويبات الملف -->
-            <div class="bg-slate-50 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between shrink-0 select-none">
-                <div class="flex items-center gap-2 overflow-x-auto">
-                    <button type="button" onclick="switchProfileTab('tab-summary')" id="nav-tab-summary" class="profile-tab-btn active px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2 bg-[#14532d] text-white shadow-xs cursor-pointer">
+            <div class="bg-slate-50 border-b border-slate-200 px-3 py-2 flex items-center justify-between shrink-0 select-none">
+                <div class="flex items-center gap-1.5 w-full overflow-x-auto no-scrollbar">
+                    <button type="button" onclick="switchProfileTab('tab-summary')" id="nav-tab-summary" class="profile-tab-btn active px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-[#14532d] text-white shadow-xs cursor-pointer whitespace-nowrap">
                         <i class="fa-solid fa-id-card"></i>
-                        <span>البيانات الأساسية</span>
+                        <span>البيانات</span>
                     </button>
-                    <button type="button" onclick="switchProfileTab('tab-docs')" id="nav-tab-docs" class="profile-tab-btn px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-2 bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 cursor-pointer">
+                    <button type="button" onclick="switchProfileTab('tab-docs')" id="nav-tab-docs" class="profile-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 cursor-pointer whitespace-nowrap">
                         <i class="fa-solid fa-folder-closed text-slate-400"></i>
-                        <span>الوثائق والأرشيف</span>
-                        <span class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded-lg text-xs font-mono font-bold">{{ $archivedDocs->count() }}</span>
+                        <span>الوثائق</span>
+                        <span class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold">{{ $archivedDocs->count() }}</span>
                     </button>
-                    <button type="button" onclick="switchProfileTab('tab-quals')" id="nav-tab-quals" class="profile-tab-btn px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-2 bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 cursor-pointer">
+                    <button type="button" onclick="switchProfileTab('tab-quals')" id="nav-tab-quals" class="profile-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 cursor-pointer whitespace-nowrap">
                         <i class="fa-solid fa-graduation-cap text-slate-400"></i>
-                        <span>المؤهلات العلمية</span>
-                        <span class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded-lg text-xs font-mono font-bold">{{ $employee->qualifications->count() }}</span>
+                        <span>المؤهلات</span>
+                        <span class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold">{{ $employee->qualifications->count() }}</span>
                     </button>
-                    <button type="button" onclick="switchProfileTab('tab-history')" id="nav-tab-history" class="profile-tab-btn px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-2 bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 cursor-pointer">
+                    <button type="button" onclick="switchProfileTab('tab-history')" id="nav-tab-history" class="profile-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 cursor-pointer whitespace-nowrap">
                         <i class="fa-solid fa-clock-rotate-left text-slate-400"></i>
-                        <span>السجل الوظيفي</span>
-                        <span class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded-lg text-xs font-mono font-bold">{{ $employee->employmentRecords->count() }}</span>
+                        <span>السجل</span>
+                        <span class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold">{{ $employee->employmentRecords->count() }}</span>
                     </button>
                 </div>
             </div>
@@ -160,35 +159,35 @@
                             </button>
                         </div>
                         
-                        <table class="w-full text-right text-sm">
+                        <table class="w-full text-right text-xs">
                             <tbody class="divide-y divide-slate-100">
-                                <tr class="hover:bg-slate-50/50">
-                                    <td class="py-3 px-4 w-1/4 text-slate-600 font-semibold">الاسم</td>
-                                    <td class="py-3 px-4 w-1/4 font-bold text-slate-900">{{ $employee->full_name_ar }}</td>
-                                    <td class="py-3 px-4 w-1/4 text-slate-600 font-semibold">الرقم الوظيفي</td>
-                                    <td class="py-3 px-4 w-1/4 font-mono font-bold text-brand-900">{{ $employee->employee_number ?? '—' }}</td>
+                                <tr class="hover:bg-slate-50/40">
+                                    <td class="py-2.5 px-3.5 bg-slate-50/70 text-slate-500 font-semibold whitespace-nowrap w-24">الاسم</td>
+                                    <td class="py-2.5 px-3.5 font-bold text-slate-900">{{ $employee->full_name_ar }}</td>
+                                    <td class="py-2.5 px-3.5 bg-slate-50/70 text-slate-500 font-semibold whitespace-nowrap w-24">الرقم الوظيفي</td>
+                                    <td class="py-2.5 px-3.5 font-mono font-bold text-[#14532d]">{{ $employee->employee_number ?? '—' }}</td>
                                 </tr>
-                                <tr class="hover:bg-slate-50/50">
-                                    <td class="py-3 px-4 w-1/4 text-slate-600 font-semibold">الرقم الوطني</td>
-                                    <td class="py-3 px-4 w-1/4 font-mono text-slate-900 font-bold">{{ $employee->national_id ?? '—' }}</td>
-                                    <td class="py-3 px-4 w-1/4 text-slate-600 font-semibold">النوع</td>
-                                    <td class="py-3 px-4 w-1/4 text-slate-900 font-bold">{{ $employee->gender == 'female' ? 'أنثى' : 'ذكر' }}</td>
+                                <tr class="hover:bg-slate-50/40">
+                                    <td class="py-2.5 px-3.5 bg-slate-50/70 text-slate-500 font-semibold whitespace-nowrap">الرقم الوطني</td>
+                                    <td class="py-2.5 px-3.5 font-mono text-slate-900 font-bold">{{ $employee->national_id ?? '—' }}</td>
+                                    <td class="py-2.5 px-3.5 bg-slate-50/70 text-slate-500 font-semibold whitespace-nowrap">النوع</td>
+                                    <td class="py-2.5 px-3.5 text-slate-900 font-bold">{{ $employee->gender == 'female' ? 'أنثى' : 'ذكر' }}</td>
                                 </tr>
-                                <tr class="hover:bg-slate-50/50">
-                                    <td class="py-3 px-4 w-1/4 text-slate-600 font-semibold">الميلاد</td>
-                                    <td class="py-3 px-4 w-1/4 text-slate-900 font-medium">
+                                <tr class="hover:bg-slate-50/40">
+                                    <td class="py-2.5 px-3.5 bg-slate-50/70 text-slate-500 font-semibold whitespace-nowrap">الميلاد</td>
+                                    <td class="py-2.5 px-3.5 text-slate-900 font-medium whitespace-nowrap">
                                         {{ $employee->date_of_birth ? $employee->date_of_birth->format('Y-m-d') : '—' }}
-                                        @if($employee->place_of_birth) <span class="text-slate-500 font-normal">({{ $employee->place_of_birth }})</span> @endif
+                                        @if($employee->place_of_birth) <span class="text-slate-400">({{ $employee->place_of_birth }})</span> @endif
                                     </td>
-                                    <td class="py-3 px-4 w-1/4 text-slate-600 font-semibold">الهاتف</td>
-                                    <td class="py-3 px-4 w-1/4 font-mono text-slate-900 font-medium">{{ $employee->phone_number ?? '—' }}</td>
+                                    <td class="py-2.5 px-3.5 bg-slate-50/70 text-slate-500 font-semibold whitespace-nowrap">الهاتف</td>
+                                    <td class="py-2.5 px-3.5 font-mono text-slate-900 font-medium">{{ $employee->phone_number ?? '—' }}</td>
                                 </tr>
-                                <tr class="hover:bg-slate-50/50">
-                                    <td class="py-3 px-4 w-1/4 text-slate-600 font-semibold">البريد</td>
-                                    <td class="py-3 px-4 w-1/4 font-mono text-slate-700" colspan="{{ $employee->address ? 1 : 3 }}">{{ $employee->email ?? '—' }}</td>
+                                <tr class="hover:bg-slate-50/40">
+                                    <td class="py-2.5 px-3.5 bg-slate-50/70 text-slate-500 font-semibold whitespace-nowrap">البريد</td>
+                                    <td class="py-2.5 px-3.5 font-mono text-slate-700" colspan="{{ $employee->address ? 1 : 3 }}">{{ $employee->email ?? '—' }}</td>
                                     @if($employee->address)
-                                        <td class="py-3 px-4 w-1/4 text-slate-600 font-semibold">العنوان</td>
-                                        <td class="py-3 px-4 w-1/4 text-slate-900 font-medium">{{ $employee->address }}</td>
+                                        <td class="py-2.5 px-3.5 bg-slate-50/70 text-slate-500 font-semibold whitespace-nowrap">العنوان</td>
+                                        <td class="py-2.5 px-3.5 text-slate-900 font-medium">{{ $employee->address }}</td>
                                     @endif
                                 </tr>
                             </tbody>
@@ -197,57 +196,57 @@
 
                     <!-- التسكين الإداري -->
                     <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-xs">
-                        <div class="bg-slate-50/80 border-b border-slate-200 px-5 py-3 flex items-center justify-between">
-                            <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-                                <i class="fa-solid fa-sitemap text-[#14532d]"></i> التسكين الإداري والوظيفي
+                        <div class="bg-slate-50/80 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
+                            <h2 class="text-xs font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-sitemap text-[#14532d]"></i> التسكين الإداري
                             </h2>
-                            <button type="button" onclick="openModal('modal-new-assignment')" class="w-7 h-7 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-500 hover:text-brand-900 flex items-center justify-center transition cursor-pointer shadow-2xs" title="إضافة تسكين أو حركة وظيفية جديدة">
+                            <button type="button" onclick="openModal('modal-new-assignment')" class="w-7 h-7 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-500 hover:text-[#14532d] flex items-center justify-center transition cursor-pointer shadow-2xs" title="إضافة حركة وظيفية">
                                 <i class="fa-solid fa-plus text-xs"></i>
                             </button>
                         </div>
 
-                        <table class="w-full text-right text-sm">
+                        <table class="w-full text-right text-xs">
                             <tbody class="divide-y divide-slate-100">
-                                <tr class="hover:bg-slate-50/50">
-                                    <td class="py-3 px-4 w-1/4 text-slate-600 font-semibold">الجهة</td>
-                                    <td class="py-3 px-4 w-1/4 font-bold text-slate-900">
+                                <tr class="hover:bg-slate-50/40">
+                                    <td class="py-2.5 px-3.5 bg-slate-50/70 text-slate-500 font-semibold whitespace-nowrap w-24">الجهة</td>
+                                    <td class="py-2.5 px-3.5 font-bold text-slate-900">
                                         {{ $curr?->organizationalUnit?->parent?->unit_name_ar ?? $curr?->organizationalUnit?->unit_name_ar ?? '—' }}
                                     </td>
-                                    <td class="py-3 px-4 w-1/4 text-slate-600 font-semibold">القسم</td>
-                                    <td class="py-3 px-4 w-1/4 font-bold text-slate-900">
+                                    <td class="py-2.5 px-3.5 bg-slate-50/70 text-slate-500 font-semibold whitespace-nowrap w-24">القسم</td>
+                                    <td class="py-2.5 px-3.5 font-bold text-slate-900">
                                         {{ $curr?->organizationalUnit?->unit_name_ar ?? '—' }}
                                     </td>
                                 </tr>
-                                <tr class="hover:bg-slate-50/50">
-                                    <td class="py-3 px-4 w-1/4 text-slate-600 font-semibold">الرتبة</td>
-                                    <td class="py-3 px-4 w-1/4 font-bold text-brand-900">
+                                <tr class="hover:bg-slate-50/40">
+                                    <td class="py-2.5 px-3.5 bg-slate-50/70 text-slate-500 font-semibold whitespace-nowrap">الرتبة</td>
+                                    <td class="py-2.5 px-3.5 font-bold text-[#14532d]">
                                         {{ $curr?->academicRank?->rank_name_ar ?? '—' }}
                                     </td>
-                                    <td class="py-3 px-4 w-1/4 text-slate-600 font-semibold">الدرجة</td>
-                                    <td class="py-3 px-4 w-1/4 font-bold text-slate-800">
+                                    <td class="py-2.5 px-3.5 bg-slate-50/70 text-slate-500 font-semibold whitespace-nowrap">الدرجة</td>
+                                    <td class="py-2.5 px-3.5 font-bold text-slate-800">
                                         {{ $curr?->jobGrade?->grade_name_ar ?? ($curr?->payroll_job_grade ?? '—') }}
                                     </td>
                                 </tr>
-                                <tr class="hover:bg-slate-50/50">
-                                    <td class="py-3 px-4 w-1/4 text-slate-600 font-semibold">الفئة</td>
-                                    <td class="py-3 px-4 w-1/4 font-medium text-slate-800">
+                                <tr class="hover:bg-slate-50/40">
+                                    <td class="py-2.5 px-3.5 bg-slate-50/70 text-slate-500 font-semibold whitespace-nowrap">الفئة</td>
+                                    <td class="py-2.5 px-3.5 font-medium text-slate-800">
                                         {{ $curr?->category?->category_name_ar ?? 'كادر أكاديمي' }}
                                     </td>
-                                    <td class="py-3 px-4 w-1/4 text-slate-600 font-semibold">الحالة</td>
-                                    <td class="py-3 px-4 w-1/4 font-bold text-emerald-800">
+                                    <td class="py-2.5 px-3.5 bg-slate-50/70 text-slate-500 font-semibold whitespace-nowrap">الحالة</td>
+                                    <td class="py-2.5 px-3.5 font-bold text-emerald-800">
                                         {{ $curr?->employmentStatus?->status_name_ar ?? 'على رأس العمل' }}
                                         @if($curr?->appointment_basis)
-                                            <span class="text-slate-400 font-normal mr-1 text-xs">({{ $curr->appointment_basis }})</span>
+                                            <span class="text-slate-400 font-normal mr-1">({{ $curr->appointment_basis }})</span>
                                         @endif
                                     </td>
                                 </tr>
-                                <tr class="hover:bg-slate-50/50">
-                                    <td class="py-3 px-4 w-1/4 text-slate-600 font-semibold">المباشرة</td>
-                                    <td class="py-3 px-4 w-1/4 font-mono font-bold text-slate-900">
+                                <tr class="hover:bg-slate-50/40">
+                                    <td class="py-2.5 px-3.5 bg-slate-50/70 text-slate-500 font-semibold whitespace-nowrap">المباشرة</td>
+                                    <td class="py-2.5 px-3.5 font-mono font-bold text-slate-900">
                                         {{ $curr?->start_date ? $curr->start_date->format('Y-m-d') : '—' }}
                                     </td>
-                                    <td class="py-3 px-4 w-1/4 text-slate-600 font-semibold">التعيين الأكاديمي</td>
-                                    <td class="py-3 px-4 w-1/4 font-mono font-bold text-slate-900">
+                                    <td class="py-2.5 px-3.5 bg-slate-50/70 text-slate-500 font-semibold whitespace-nowrap">التعيين</td>
+                                    <td class="py-2.5 px-3.5 font-mono font-bold text-slate-900">
                                         {{ $curr?->academic_appointment_date ? $curr->academic_appointment_date->format('Y-m-d') : '—' }}
                                     </td>
                                 </tr>
@@ -310,7 +309,14 @@
                                             <td class="py-3 px-4">
                                                 <div class="font-bold text-slate-900 flex items-center gap-2">
                                                     <i class="fa-solid fa-file-pdf text-[#14532d] text-base"></i>
-                                                    <span>{{ $doc->document_title }}</span>
+                                                    @if($hasFile)
+                                                        <a href="{{ $previewUrl }}" target="_blank" class="hover:text-brand-900 hover:underline flex items-center gap-1.5 transition text-slate-900 font-bold" title="انقر لفتح وعرض الوثيقة في نافذة مستقلة">
+                                                            <span>{{ $doc->document_title }}</span>
+                                                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+                                                        </a>
+                                                    @else
+                                                        <span>{{ $doc->document_title }}</span>
+                                                    @endif
                                                     @if($doc->is_confidential)
                                                         <span class="text-xs text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-lg font-bold">سري</span>
                                                     @endif
@@ -339,12 +345,11 @@
                                             <td class="py-3 px-4 text-center">
                                                 <div class="inline-flex items-center gap-1.5 justify-center">
                                                     @if($hasFile)
-                                                        <button type="button" 
-                                                                onclick="previewDocFromTable('{{ $previewUrl }}', '{{ addslashes($doc->document_title) }}', '{{ $downloadUrl }}', '{{ $doc->document_id }}')" 
-                                                                class="w-7 h-7 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 flex items-center justify-center transition cursor-pointer" 
-                                                                title="معاينة في العارض">
-                                                            <i class="fa-solid fa-eye text-xs"></i>
-                                                        </button>
+                                                        <a href="{{ $previewUrl }}" target="_blank" 
+                                                           class="w-7 h-7 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 flex items-center justify-center transition cursor-pointer shadow-2xs" 
+                                                           title="فتح وعرض في صفحة مستقلة">
+                                                            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                                                        </a>
                                                         <a href="{{ $downloadUrl }}" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-brand-900 flex items-center justify-center transition" title="تنزيل الملف">
                                                             <i class="fa-solid fa-download text-xs"></i>
                                                         </a>
@@ -413,13 +418,28 @@
                                                 <button type="button" onclick="editQual({{ json_encode($qual) }})" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-brand-900 flex items-center justify-center transition cursor-pointer" title="تعديل المؤهل">
                                                     <i class="fa-solid fa-pen-to-square text-xs"></i>
                                                 </button>
-                                                <form method="POST" action="{{ route('employees.qualifications.destroy', [$employee->employee_id, $qual->qualification_id]) }}" onsubmit="return confirm('تأكيد حذف هذا المؤهل؟')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-rose-50 text-slate-400 hover:text-rose-600 flex items-center justify-center transition cursor-pointer" title="حذف المؤهل">
-                                                        <i class="fa-solid fa-trash-can text-xs"></i>
+                                                @php
+                                                    $qualOrder = $qual->level?->level_order ?? 0;
+                                                    $higherQual = $employee->qualifications->first(function($q) use ($qual, $qualOrder) {
+                                                        return $q->qualification_id !== $qual->qualification_id && ($q->level?->level_order ?? 0) > $qualOrder;
+                                                    });
+                                                @endphp
+                                                @if($higherQual)
+                                                    <button type="button" 
+                                                            onclick="alert('لا يمكن حذف مؤهل ({{ addslashes($qual->degree_title) }}) نظراً لوجود مؤهل أعلى منه ممنوح للكادر ({{ addslashes($higherQual->level?->level_name_ar ?? $higherQual->degree_title) }}). يجب حذف المؤهل الأعلى أولاً.')" 
+                                                            class="w-7 h-7 rounded-lg bg-slate-100 text-slate-400 cursor-not-allowed flex items-center justify-center transition" 
+                                                            title="لا يمكن حذف هذا المؤهل لوجود مؤهل أعلى منه ممنوح للكادر">
+                                                        <i class="fa-solid fa-lock text-xs text-slate-400"></i>
                                                     </button>
-                                                </form>
+                                                @else
+                                                    <form method="POST" action="{{ route('employees.qualifications.destroy', [$employee->employee_id, $qual->qualification_id]) }}" onsubmit="return confirm('تأكيد حذف هذا المؤهل؟')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-rose-50 text-slate-400 hover:text-rose-600 flex items-center justify-center transition cursor-pointer" title="حذف المؤهل">
+                                                            <i class="fa-solid fa-trash-can text-xs"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             </div>
                                         </div>
                                     @endforeach
@@ -496,78 +516,173 @@
 
         </div>
 
-        <!-- لوحة عارض الوثائق -->
-        <div id="col-viewer-panel" class="lg:col-span-6 bg-white border border-slate-200 rounded-2xl shadow-xs flex flex-col min-h-0 overflow-hidden allow-zoom" data-allow-zoom="true">
+        <!-- بطاقة رفع وثيقة -->
+        <div id="col-viewer-panel" class="lg:col-span-6 bg-white border border-slate-200 rounded-2xl shadow-xs flex flex-col min-h-0 overflow-hidden">
             
-            <!-- ترويسة عارض الوثائق -->
-            <div class="bg-[#14532d] text-white p-2.5 px-4 flex items-center justify-between shrink-0 select-none">
-                <span class="font-bold text-xs flex items-center gap-2">
-                    <i class="fa-solid fa-file-pdf text-emerald-200"></i>
-                    <span>عارض الوثائق الرسمي</span>
-                    <span class="text-[11px] font-mono font-medium text-emerald-100">({{ $archivedDocs->count() }})</span>
-                </span>
-                <button type="button" onclick="openModal('modal-new-doc')" class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer border border-white/20 shadow-xs" title="أرشفة وثيقة جديدة">
-                    <i class="fa-solid fa-cloud-arrow-up text-xs"></i>
-                </button>
-            </div>
-
-            <!-- شريط أزرار تبويبات الوثائق -->
-            <div class="bg-slate-50 border-b border-slate-200 p-1.5 flex gap-1.5 overflow-x-auto shrink-0 select-none">
-                @forelse($archivedDocs as $i => $doc)
-                    @if($doc->currentVersion)
-                        @php 
-                            $isActive = ($doc->document_id === $firstDoc?->document_id); 
-                            $v = $doc->currentVersion;
-                            $hasFile = $v && $v->file_size_bytes > 0;
-                        @endphp
-                        <button type="button" 
-                                data-doc-id="{{ $doc->document_id }}"
-                                onclick="loadDesktopPdfViewer('{{ route('archive.preview', $v->document_version_id ?? $v->version_id) }}', '{{ addslashes($doc->document_title) }}', '{{ route('archive.download', $v->document_version_id ?? $v->version_id) }}', this, '{{ $doc->document_id }}')"
-                                class="viewer-tab-btn px-3 py-1 rounded-lg text-xs transition flex items-center gap-1.5 cursor-pointer max-w-[150px] shrink-0 truncate {{ $isActive ? 'bg-[#14532d] text-white font-bold shadow-xs' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 font-medium' }}" 
-                                title="{{ $doc->document_title }}">
-                            <span class="truncate">{{ $doc->document_title }}</span>
-                        </button>
-                    @endif
-                @empty
-                    <span class="text-xs text-slate-400 p-1">لا توجد وثائق مؤرشفة.</span>
-                @endforelse
-            </div>
-
-            <!-- شريط تحكم عارض الوثيقة وإطار العرض -->
-            @if($firstDoc && $firstVersion)
-                <div id="desktop-pdf-bar" class="bg-white border-b border-slate-200 px-3 py-1.5 text-xs text-slate-800 flex justify-between items-center shrink-0">
-                    <span id="desktop-pdf-title" class="truncate font-bold max-w-[60%]" title="{{ $firstDoc->document_title }}">
-                        {{ $firstDoc->document_title }}
-                    </span>
-                    <div class="flex items-center gap-1.5 shrink-0">
-                        <a id="desktop-pdf-download" href="{{ route('archive.download', $firstVersion->document_version_id ?? $firstVersion->version_id) }}" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-brand-900 flex items-center justify-center transition" title="تنزيل الملف الرقمي">
-                            <i class="fa-solid fa-download text-xs"></i>
-                        </a>
-                        <a id="desktop-pdf-link" href="{{ route('archive.preview', $firstVersion->document_version_id ?? $firstVersion->version_id) }}" target="_blank" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-brand-900 flex items-center justify-center transition" title="فتح في نافذة مستقلة">
-                            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
-                        </a>
-                        <form id="viewer-delete-form" method="POST" action="{{ route('employees.documents.destroy', [$employee->employee_id, $firstDoc->document_id]) }}" class="inline" onsubmit="return confirm('تأكيد حذف هذه الوثيقة؟')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-rose-50 text-slate-400 hover:text-rose-600 flex items-center justify-center transition cursor-pointer" title="حذف الوثيقة">
-                                <i class="fa-solid fa-trash-can text-xs"></i>
-                            </button>
-                        </form>
+            <!-- ترويسة بطاقة رفع الملف -->
+            <div class="bg-[#14532d] text-white p-3 px-5 flex items-center justify-between shrink-0 select-none">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-emerald-200 border border-white/15">
+                        <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
                     </div>
+                    <h2 class="font-bold text-sm">رفع وثيقة</h2>
                 </div>
-                <iframe id="desktop-pdf-frame" 
-                        src="{{ route('archive.preview', $firstVersion->document_version_id ?? $firstVersion->version_id) }}" 
-                        class="w-full flex-1 bg-slate-100 border-0 min-h-0" 
-                        title="عارض الوثائق">
-                </iframe>
-            @else
-                <div class="flex-1 flex flex-col items-center justify-center text-slate-400 p-8 text-center text-xs space-y-3 bg-slate-50/50">
-                    <p class="font-bold text-slate-700 text-sm">لا توجد وثائق مؤرشفة</p>
-                    <button type="button" onclick="openModal('modal-new-doc')" class="text-xs bg-primary hover:bg-primary-dark text-white font-bold px-3 py-1.5 rounded-md shadow-xs flex items-center gap-1.5 transition cursor-pointer">
-                        <i class="fa-solid fa-plus"></i> إضافة وثيقة
+                <span class="text-xs font-mono font-bold bg-white/15 px-2.5 py-1 rounded-xl text-emerald-50 border border-white/20 flex items-center gap-1.5">
+                    <i class="fa-solid fa-folder-open text-[10px]"></i>
+                    <span>{{ $archivedDocs->count() }}</span>
+                </span>
+            </div>
+
+            <!-- جسم البطاقة -->
+            <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
+                
+                <!-- استمارة رفع الوثيقة -->
+                <form id="uploadCardForm" method="POST" action="{{ route('employees.documents.store', $employee->employee_id) }}" enctype="multipart/form-data" class="space-y-3.5">
+                    @csrf
+
+                    <!-- اختيار نوع الوثيقة -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                <i class="fa-solid fa-tag text-[#14532d]"></i>
+                                <span>نوع الوثيقة</span>
+                                <span class="text-rose-600 font-bold">*</span>
+                            </label>
+                            <button type="button" onclick="openQuickAdd('doc_type', 'upload_card_doc_type', 'نوع الوثيقة الجديد:', 'إضافة نوع')" class="text-[#14532d] hover:bg-emerald-100 px-2 py-0.5 bg-emerald-50 rounded-lg text-[11px] font-bold flex items-center gap-1 transition cursor-pointer border border-emerald-200" title="إضافة نوع جديد">
+                                <i class="fa-solid fa-plus text-[10px]"></i> جديد
+                            </button>
+                        </div>
+                        <select name="document_type_id" id="upload_card_doc_type" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-800 focus:bg-white focus:border-[#14532d] focus:outline-hidden transition">
+                            <option value="" disabled selected>اختر نوع الوثيقة...</option>
+                            @foreach($docTypes as $dtp)
+                                <option value="{{ $dtp->document_type_id }}">{{ $dtp->type_name_ar }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- عنوان الوثيقة -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
+                            <i class="fa-solid fa-heading text-[#14532d]"></i>
+                            <span>عنوان الوثيقة</span>
+                            <span class="text-rose-600 font-bold">*</span>
+                        </label>
+                        <input type="text" name="document_title" id="upload_card_doc_title" required placeholder="أدخل العنوان..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-800 focus:bg-white focus:border-[#14532d] focus:outline-hidden transition">
+                    </div>
+
+                    <!-- شبكة رقم الوثيقة وتاريخها -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
+                                <i class="fa-solid fa-hashtag text-slate-400"></i>
+                                <span>رقم الوثيقة</span>
+                            </label>
+                            <input type="text" name="document_number" placeholder="رقم المرجع..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-800 focus:bg-white focus:border-[#14532d] focus:outline-hidden transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
+                                <i class="fa-regular fa-calendar text-slate-400"></i>
+                                <span>تاريخ الإصدار</span>
+                            </label>
+                            <input type="date" name="document_date" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-1.5 text-xs font-mono text-slate-800 focus:bg-white focus:border-[#14532d] focus:outline-hidden transition">
+                        </div>
+                    </div>
+
+                    <!-- منطقة رفع الملف -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                <i class="fa-solid fa-paperclip text-[#14532d]"></i>
+                                <span>الملف</span>
+                                <span class="text-rose-600 font-bold">*</span>
+                            </label>
+                            <span class="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200">25MB</span>
+                        </div>
+
+                        <div class="relative border-2 border-dashed border-emerald-300 hover:border-[#14532d] rounded-2xl p-4 text-center bg-emerald-50/20 hover:bg-emerald-50/40 transition cursor-pointer group" onclick="document.getElementById('upload_card_file_input').click()">
+                            <input type="file" name="document_file" id="upload_card_file_input" required accept="application/pdf,image/*" 
+                                   onchange="handleCardFileSelect(this)" 
+                                   class="hidden">
+                            <div class="flex flex-col items-center justify-center space-y-1.5 pointer-events-none">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-100/70 text-[#14532d] flex items-center justify-center text-lg group-hover:scale-105 transition shadow-2xs">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-800" id="upload_card_file_label">اسحب الملف هنا أو انقر للاختيار</p>
+                                    <p class="text-[10px] text-slate-400 font-mono mt-0.5">PDF • PNG • JPG</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- زر الحفظ -->
+                    <button type="submit" id="btnSubmitCardUpload" class="w-full bg-[#14532d] hover:bg-[#166534] text-white font-bold py-2.5 px-5 rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer text-xs">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>حفظ وأرشفة</span>
                     </button>
+                </form>
+
+                <!-- آخر الوثائق -->
+                <div class="border-t border-slate-200 pt-3.5 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                            <i class="fa-solid fa-clock-rotate-left text-slate-400"></i>
+                            آخر الوثائق
+                        </span>
+                        <button type="button" onclick="switchProfileTab('tab-docs')" class="text-xs font-bold text-[#14532d] hover:underline flex items-center gap-1 cursor-pointer">
+                            <span>عرض الكل</span>
+                            <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                        </button>
+                    </div>
+
+                    @if($archivedDocs->isNotEmpty())
+                        <div class="space-y-2">
+                            @foreach($archivedDocs->take(4) as $doc)
+                                @php
+                                    $v = $doc->currentVersion;
+                                    $hasFile = $v && $v->file_size_bytes > 0;
+                                    $previewUrl = $v ? route('archive.preview', $v->document_version_id ?? $v->version_id) : '#';
+                                    $fileSize = $hasFile ? ($v->file_size_bytes >= 1048576 ? number_format($v->file_size_bytes / 1048576, 1) . ' MB' : number_format($v->file_size_bytes / 1024, 0) . ' KB') : null;
+                                @endphp
+                                <div class="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-3 transition">
+                                    <div class="flex items-center gap-2.5 min-w-0">
+                                        <div class="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200 text-[#14532d] flex items-center justify-center shrink-0">
+                                            <i class="fa-solid fa-file-pdf text-sm"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <a href="{{ $previewUrl }}" target="_blank" class="text-xs font-bold text-slate-900 hover:text-[#14532d] hover:underline truncate block" title="فتح الوثيقة في صفحة مستقلة">
+                                                {{ $doc->document_title }}
+                                            </a>
+                                            <div class="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
+                                                <span>{{ $doc->documentType?->type_name_ar ?? 'عام' }}</span>
+                                                @if($fileSize)
+                                                    <span>•</span>
+                                                    <span class="font-mono">{{ $fileSize }}</span>
+                                                @endif
+                                                @if($doc->created_at)
+                                                    <span>•</span>
+                                                    <span class="font-mono">{{ $doc->created_at->format('Y-m-d') }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    @if($hasFile)
+                                        <a href="{{ $previewUrl }}" target="_blank" class="w-8 h-8 rounded-lg bg-white border border-slate-200 hover:bg-emerald-50 text-slate-600 hover:text-emerald-800 flex items-center justify-center shrink-0 transition shadow-2xs cursor-pointer" title="فتح وعرض في صفحة مستقلة">
+                                            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                                        </a>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="p-4 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center text-xs text-slate-400">
+                            لا توجد وثائق مؤرشفة لهذا الكادر بعد. ارفع أول وثيقة عبر النموذج أعلاه.
+                        </div>
+                    @endif
                 </div>
-            @endif
+
+            </div>
 
         </div>
 
@@ -604,29 +719,55 @@
         // إعادة ضبط أزرار التبديل
         [btnSplit, btnProfile, btnViewer].forEach(b => {
             if (b) {
-                b.className = 'px-2.5 py-1 rounded transition text-slate-600 hover:text-slate-900 cursor-pointer flex items-center gap-1.5';
+                b.className = 'w-9 h-9 rounded-lg transition text-slate-500 hover:text-slate-900 cursor-pointer flex items-center justify-center';
             }
         });
 
         if (mode === 'profile') {
-            // كادر كامل
+            // ملف الكادر فقط
             profilePanel.classList.remove('lg:col-span-6', 'hidden');
             profilePanel.classList.add('lg:col-span-12');
             viewerPanel.classList.add('hidden');
-            if (btnProfile) btnProfile.className = 'px-2.5 py-1 rounded transition bg-white text-slate-900 shadow-xs font-bold cursor-pointer flex items-center gap-1.5';
+            if (btnProfile) btnProfile.className = 'w-9 h-9 rounded-lg transition bg-white text-slate-900 shadow-xs font-bold cursor-pointer flex items-center justify-center';
         } else if (mode === 'viewer') {
-            // وثيقة كاملة
+            // بطاقة رفع الملف فقط
             profilePanel.classList.add('hidden');
             viewerPanel.classList.remove('lg:col-span-6', 'hidden');
             viewerPanel.classList.add('lg:col-span-12');
-            if (btnViewer) btnViewer.className = 'px-2.5 py-1 rounded transition bg-white text-slate-900 shadow-xs font-bold cursor-pointer flex items-center gap-1.5';
+            if (btnViewer) btnViewer.className = 'w-9 h-9 rounded-lg transition bg-white text-slate-900 shadow-xs font-bold cursor-pointer flex items-center justify-center';
         } else {
-            // عرض مزدوج متوازن 50 / 50
+            // عرض متوازن مزدوج (ملف الكادر وبطاقة الرفع)
             profilePanel.classList.remove('hidden', 'lg:col-span-12');
             profilePanel.classList.add('lg:col-span-6');
             viewerPanel.classList.remove('hidden', 'lg:col-span-12');
             viewerPanel.classList.add('lg:col-span-6');
-            if (btnSplit) btnSplit.className = 'px-2.5 py-1 rounded transition bg-white text-slate-900 shadow-xs font-bold cursor-pointer flex items-center gap-1.5';
+            if (btnSplit) btnSplit.className = 'w-9 h-9 rounded-lg transition bg-white text-slate-900 shadow-xs font-bold cursor-pointer flex items-center justify-center';
+        }
+    }
+
+    // إظهار اسم وحجم الملف المختار في بطاقة الرفع
+    function handleCardFileSelect(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            if (file.size > 25 * 1024 * 1024) {
+                alert('تنبيه: حجم الملف المختار (' + sizeMb + ' MB) يتجاوز الحد الأقصى المسموح به (25 MB).');
+                input.value = '';
+                document.getElementById('upload_card_file_label').textContent = 'انقر هنا لاختيار الملف من جهازك أو اسحبه وأفلته هنا';
+                return;
+            }
+            document.getElementById('upload_card_file_label').innerHTML = 
+                '<span class="text-emerald-800 font-bold"><i class="fa-solid fa-circle-check text-emerald-600"></i> تم اختيار: ' + file.name + ' (' + sizeMb + ' MB)</span>';
+        }
+    }
+
+    // الانتقال المباشر لبطاقة الرفع
+    function focusUploadCard() {
+        setViewMode('split');
+        const titleInput = document.getElementById('upload_card_doc_title');
+        if (titleInput) {
+            titleInput.focus();
+            titleInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }
 
@@ -673,57 +814,16 @@
         });
     }
 
-    // تحميل وتحديث عارض الوثائق
-    function loadDesktopPdfViewer(previewUrl, title, downloadUrl, tabEl, docId) {
-        const frame = document.getElementById('desktop-pdf-frame');
-        const titleEl = document.getElementById('desktop-pdf-title');
-        const linkEl = document.getElementById('desktop-pdf-link');
-        const downloadEl = document.getElementById('desktop-pdf-download');
-        const deleteForm = document.getElementById('viewer-delete-form');
-
-        if (frame) frame.src = previewUrl;
-        if (titleEl) {
-            titleEl.innerHTML = '<i class="fa-solid fa-file-pdf text-rose-600 shrink-0"></i> <span class="truncate font-bold">' + title + '</span>';
-            titleEl.title = title;
-        }
-        if (linkEl) linkEl.href = previewUrl;
-        if (downloadEl) downloadEl.href = downloadUrl;
-        if (deleteForm && docId) {
-            deleteForm.action = '/employees/{{ $employee->employee_id }}/documents/' + docId;
-            deleteForm.classList.remove('hidden');
-        }
-
-        // إدارة الحالة النشطة للأزرار (Active Tab styling)
-        if (tabEl) {
-            document.querySelectorAll('.viewer-tab-btn').forEach(el => {
-                el.classList.remove('bg-primary', 'text-white', 'shadow-xs');
-                el.classList.add('bg-white', 'text-slate-700', 'border', 'border-slate-200');
-                const dot = el.querySelector('.w-1\\.5.h-1\\.5');
-                if (dot) {
-                    dot.classList.remove('bg-white');
-                    dot.classList.add('bg-emerald-500');
-                }
-            });
-
-            tabEl.classList.remove('bg-white', 'text-slate-700', 'border', 'border-slate-200');
-            tabEl.classList.add('bg-primary', 'text-white', 'shadow-xs');
-            const activeDot = tabEl.querySelector('.w-1\\.5.h-1\\.5');
-            if (activeDot) {
-                activeDot.classList.remove('bg-emerald-500');
-                activeDot.classList.add('bg-white');
-            }
+    // فتح الوثيقة في صفحة مستقلة
+    function loadDesktopPdfViewer(previewUrl) {
+        if (previewUrl && previewUrl !== '#') {
+            window.open(previewUrl, '_blank');
         }
     }
 
     // معاينة الوثيقة من جدول كافة الوثائق
     function previewDocFromTable(previewUrl, title, downloadUrl, docId) {
-        // فتح العارض المزدوج إذا كان مخفياً
-        const viewerPanel = document.getElementById('col-viewer-panel');
-        if (viewerPanel && viewerPanel.classList.contains('hidden')) {
-            setViewMode('split');
-        }
-        const matchingTab = document.querySelector(`.viewer-tab-btn[data-doc-id="${docId}"]`);
-        loadDesktopPdfViewer(previewUrl, title, downloadUrl, matchingTab, docId);
+        window.open(previewUrl, '_blank');
     }
 
     function openModal(id) {
@@ -782,6 +882,18 @@
                 closeModal(this.id);
             }
         });
+    });
+    // تفعيل التبويب الممرر عبر الرابط (مثل tab=docs بعد الرفع)
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab === 'docs') {
+            switchProfileTab('tab-docs');
+        } else if (tab === 'quals') {
+            switchProfileTab('tab-quals');
+        } else if (tab === 'history') {
+            switchProfileTab('tab-history');
+        }
     });
 </script>
 @endsection

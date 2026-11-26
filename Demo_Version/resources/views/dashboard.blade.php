@@ -94,7 +94,7 @@
                     {{ count($excelMatrices['academicStatus']['labels'] ?? []) }} حالة
                 </span>
             </div>
-            <div class="h-96 relative w-full">
+            <div class="relative w-full" style="height: {{ max(300, count($excelMatrices['academicStatus']['labels'] ?? []) * 32) }}px">
                 <canvas id="chartAcademicStatus"></canvas>
             </div>
         </div>
@@ -115,7 +115,7 @@
                     إجمالي: {{ $excelMatrices['ranks']['total'] ?? 51 }}
                 </span>
             </div>
-            <div class="h-96 relative w-full">
+            <div class="relative w-full" style="height: {{ max(300, count($excelMatrices['ranks']['labels'] ?? []) * 36) }}px">
                 <canvas id="chartRanks"></canvas>
             </div>
         </div>
@@ -166,7 +166,7 @@
                     </div>
                 </div>
             </div>
-            <div class="h-64 relative w-full">
+            <div class="relative w-full" style="height: {{ max(280, count($excelMatrices['qualifications']['labels'] ?? []) * 30) }}px">
                 <canvas id="chartQualifications"></canvas>
             </div>
         </div>
@@ -184,7 +184,7 @@
                     </div>
                 </div>
             </div>
-            <div class="h-64 relative w-full">
+            <div class="relative w-full" style="height: {{ max(280, count($excelMatrices['payroll']['labels'] ?? []) * 32) }}px">
                 <canvas id="chartPayroll"></canvas>
             </div>
         </div>

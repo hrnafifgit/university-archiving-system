@@ -31,8 +31,14 @@
                 <input type="text" name="document_number" placeholder="رقم القيد أو القرار" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono focus:bg-white focus:border-[#14532d]">
             </div>
             <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">ملف الوثيقة (PDF أو صورة حتى 50MB) <span class="text-rose-600">*</span></label>
-                <input type="file" name="document_file" required accept="application/pdf,image/*" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs file:py-1 file:px-2.5 file:bg-[#14532d] file:text-white file:border-0 file:rounded-md file:text-xs text-xs">
+                <div class="flex items-center justify-between mb-1">
+                    <label class="block text-[11px] font-bold text-slate-700">ملف الوثيقة (PDF أو صورة) <span class="text-rose-600">*</span></label>
+                    <span class="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">الحد الأقصى: 25MB</span>
+                </div>
+                <input type="file" name="document_file" required accept="application/pdf,image/*" 
+                       onchange="validateFileSize(this, 25)"
+                       class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs file:py-1 file:px-2.5 file:bg-[#14532d] file:text-white file:border-0 file:rounded-md file:text-xs text-xs">
+                <p class="text-[10px] text-slate-400 mt-1">الملفات المقبولة: PDF أو صور (JPG, PNG) بحجم لا يتجاوز 25 ميجابايت.</p>
             </div>
             <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
                 <button type="button" onclick="closeModal('modal-new-doc')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-1.5 rounded-lg text-xs font-bold border border-slate-200 cursor-pointer">إلغاء</button>

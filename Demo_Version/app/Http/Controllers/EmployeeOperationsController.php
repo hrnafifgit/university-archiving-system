@@ -85,7 +85,7 @@ class EmployeeOperationsController extends Controller
             'academic_rank_id' => 'nullable|exists:academic_ranks,academic_rank_id',
             'job_grade_id' => 'nullable|exists:job_grades,job_grade_id',
             'start_date' => 'required|date',
-            'appointment_basis' => 'nullable|string|max:100',
+            'appointment_basis' => 'required|string|max:100',
             'decision_number' => 'nullable|string|max:100',
             'first_appointment_date' => 'nullable|date',
             'academic_appointment_date' => 'nullable|date',
@@ -95,10 +95,23 @@ class EmployeeOperationsController extends Controller
             'payroll_job_title' => 'nullable|string|max:150',
             'payroll_job_grade' => 'nullable|string|max:100',
             'notes' => 'nullable|string',
+        ], [
+            'employee_category_id.required' => 'يرجى اختيار الفئة الوظيفية للحركة الجديدة.',
+            'organizational_unit_id.required' => 'يرجى اختيار الكلية والقسم للحركة الجديدة.',
+            'employment_status_id.required' => 'يرجى تحديد الموقف الوظيفي للحركة.',
+            'start_date.required' => 'يرجى إدخال تاريخ سريان التكليف.',
+            'appointment_basis.required' => 'يرجى كتابة أساس أو سبب التكليف.',
         ]);
 
         DB::beginTransaction();
         try {
+            // 0. جلب بيانات التكليف السابق لتوريث حقول كشف الراتب وتواريخ التعيين في حال لم يتم إدخالها مجدداً
+            $prevRecord = EmploymentRecord::where('employee_id', $employee->employee_id)
+                ->where('is_primary', true)
+                ->whereNull('end_date')
+                ->latest('start_date')
+                ->first();
+
             // 1. إغلاق التكليف الأساسي السابق إن وجد
             EmploymentRecord::where('employee_id', $employee->employee_id)
                 ->where('is_primary', true)
@@ -137,13 +150,13 @@ class EmployeeOperationsController extends Controller
                 'end_date' => null,
                 'is_primary' => true,
                 'appointment_basis' => $validated['appointment_basis'] ?? 'حركة وظيفية رسمية',
-                'first_appointment_date' => $validated['first_appointment_date'] ?? null,
-                'academic_appointment_date' => $validated['academic_appointment_date'] ?? null,
-                'qualification_at_appointment' => $validated['qualification_at_appointment'] ?? null,
-                'initial_rank' => $validated['initial_rank'] ?? null,
-                'payroll_status' => $validated['payroll_status'] ?? null,
-                'payroll_job_title' => $validated['payroll_job_title'] ?? null,
-                'payroll_job_grade' => $validated['payroll_job_grade'] ?? null,
+                'first_appointment_date' => $validated['first_appointment_date'] ?? $prevRecord?->first_appointment_date,
+                'academic_appointment_date' => $validated['academic_appointment_date'] ?? $prevRecord?->academic_appointment_date,
+                'qualification_at_appointment' => $validated['qualification_at_appointment'] ?? $prevRecord?->qualification_at_appointment,
+                'initial_rank' => $validated['initial_rank'] ?? $prevRecord?->initial_rank,
+                'payroll_status' => $validated['payroll_status'] ?? $prevRecord?->payroll_status,
+                'payroll_job_title' => $validated['payroll_job_title'] ?? $prevRecord?->payroll_job_title,
+                'payroll_job_grade' => $validated['payroll_job_grade'] ?? $prevRecord?->payroll_job_grade,
                 'decision_id' => $decisionId,
                 'notes' => $validated['notes'] ?? 'تم إصدار التكليف وتحديث السجل التاريخي في النظام',
                 'created_at' => now(),
@@ -151,11 +164,13 @@ class EmployeeOperationsController extends Controller
 
             DB::commit();
             Cache::forget('dashboard_core_metrics');
-            return back()->with('success', 'تم تسجيل الحركة الوظيفية الجديدة بنجاح، وتوثيق السجل التاريخي السابق.');
+            return redirect()->route('employees.show', [$employee->employee_id, 'tab' => 'history'])
+                ->with('success', 'تم تسجيل وتثبيت الحركة الوظيفية الجديدة بنجاح، وتوثيق السجل التاريخي السابق.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'حدث خطأ أثناء تسجيل الحركة الوظيفية: ' . $e->getMessage());
+            return redirect()->route('employees.show', [$employee->employee_id, 'tab' => 'history'])
+                ->with('error', 'حدث خطأ أثناء تسجيل الحركة الوظيفية: ' . $e->getMessage());
         }
     }
 
@@ -188,7 +203,8 @@ class EmployeeOperationsController extends Controller
         $record->update($validated);
         Cache::forget('dashboard_core_metrics');
 
-        return back()->with('success', 'تم تعديل السجل الوظيفي وبيانات التسكين بنجاح.');
+        return redirect()->route('employees.show', [$id, 'tab' => 'history'])
+            ->with('success', 'تم تعديل السجل الوظيفي وبيانات التسكين بنجاح.');
     }
 
     /**
@@ -235,7 +251,8 @@ class EmployeeOperationsController extends Controller
             'created_at' => now(),
         ]);
 
-        return back()->with('success', 'تمت إضافة وتوثيق المؤهل الأكاديمي الجديد بنجاح في ملف الكادر.');
+        return redirect()->route('employees.show', [$employee->employee_id, 'tab' => 'quals'])
+            ->with('success', 'تمت إضافة وتوثيق المؤهل الأكاديمي الجديد بنجاح في ملف الكادر.');
     }
 
     /**
@@ -280,18 +297,39 @@ class EmployeeOperationsController extends Controller
             'notes' => $validated['notes'] ?? null,
         ]);
 
-        return back()->with('success', 'تم تعديل وتحديث بيانات المؤهل بنجاح.');
+        return redirect()->route('employees.show', [$employeeId, 'tab' => 'quals'])
+            ->with('success', 'تم تعديل وتحديث بيانات المؤهل بنجاح.');
     }
 
     /**
-     * 4. حذف مؤهل (Delete Qualification)
+     * 4. حذف مؤهل مع حماية المؤهلات السابقة (Delete Qualification)
+     * يمنع حذف المؤهل إذا كان الكادر حاصلاً على مؤهل أعلى منه بعد ذلك
      */
     public function deleteQualification($employeeId, $qualId)
     {
-        $qual = EmployeeQualification::where('employee_id', $employeeId)->where('qualification_id', $qualId)->firstOrFail();
+        $qual = EmployeeQualification::with('level')->where('employee_id', $employeeId)->where('qualification_id', $qualId)->firstOrFail();
+
+        $currentOrder = $qual->level?->level_order ?? 0;
+
+        // التحقق من وجود مؤهل أعلى ممنوح للكادر
+        $higherQual = EmployeeQualification::where('employee_id', $employeeId)
+            ->where('qualification_id', '!=', $qualId)
+            ->whereHas('level', function ($q) use ($currentOrder) {
+                $q->where('level_order', '>', $currentOrder);
+            })
+            ->with('level')
+            ->first();
+
+        if ($higherQual) {
+            $higherName = $higherQual->level?->level_name_ar ?? $higherQual->degree_title;
+            return redirect()->route('employees.show', [$employeeId, 'tab' => 'quals'])
+                ->with('error', "لا يمكن حذف مؤهل ({$qual->degree_title}) نظراً لتوثيق مؤهل أعلى منه ممنوح للكادر ({$higherName}). يجب حذف المؤهل الأعلى أولاً.");
+        }
+
         $qual->delete();
 
-        return back()->with('success', 'تم حذف المؤهل الأكاديمي بنجاح.');
+        return redirect()->route('employees.show', [$employeeId, 'tab' => 'quals'])
+            ->with('success', 'تم حذف المؤهل الأكاديمي بنجاح.');
     }
 
     /**
@@ -304,9 +342,17 @@ class EmployeeOperationsController extends Controller
         $validated = $request->validate([
             'document_type_id' => 'required|exists:document_types,document_type_id',
             'document_title' => 'required|string|max:250',
-            'document_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:51200',
+            'document_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:25600',
             'document_number' => 'nullable|string|max:100',
             'description' => 'nullable|string',
+        ], [
+            'document_file.required' => 'يرجى تحديد واختيار ملف الوثيقة المراد أرشفتها.',
+            'document_file.file' => 'الملف المرفوع غير صالح.',
+            'document_file.uploaded' => 'تعذر رفع الملف، يرجى التأكد من أن حجم الملف لا يتجاوز 25 ميجابايت وصيغته PDF أو صورة.',
+            'document_file.mimes' => 'نوع الملف غير مدعوم. الصيغ المعتمدة: PDF أو صورة (JPG, PNG).',
+            'document_file.max' => 'حجم الملف يتجاوز الحد الأقصى المسموح به (25 ميجابايت).',
+            'document_title.required' => 'يرجى كتابة عنوان الوثيقة.',
+            'document_type_id.required' => 'يرجى اختيار نوع الوثيقة.',
         ]);
 
         DB::beginTransaction();
@@ -315,7 +361,8 @@ class EmployeeOperationsController extends Controller
 
             DB::commit();
             Cache::forget('dashboard_core_metrics');
-            return back()->with('success', 'تم رفع وأرشفة الوثيقة بنجاح وحساب البصمة الرقمية SHA-256.');
+            return redirect()->route('employees.show', [$employee->employee_id, 'tab' => 'docs'])
+                ->with('success', 'تم رفع وحفظ الوثيقة بنجاح ضمن أرشيف الكادر.');
 
         } catch (\Exception $e) {
             DB::rollBack();
