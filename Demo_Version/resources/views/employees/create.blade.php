@@ -193,56 +193,84 @@
                     <!-- الكلية / المركز -->
                     <div>
                         <label class="block text-[11px] font-bold text-slate-700 mb-1" id="label-faculty">الكلية / المركز <span class="text-rose-600">*</span></label>
-                        <select id="desktop_faculty_select" data-quick-type="faculty" data-quick-title="إضافة كلية / مركز" data-quick-label="اسم الكلية أو المركز الجديد:" onchange="handleQuickAddChange(this); filterFacultyDepartments();" class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
-                            <option value="">-- اختر الكلية أو المركز --</option>
-                            @foreach($colleges as $col)
-                                <option value="{{ $col->organizational_unit_id }}" {{ (request('faculty_id') == $col->organizational_unit_id || old('faculty_id') == $col->organizational_unit_id) ? 'selected' : '' }}>{{ $col->unit_name_ar }}</option>
-                            @endforeach
-                            <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة كلية / مركز جديد...</option>
-                        </select>
+                        <div class="flex items-center gap-1.5">
+                            <select id="desktop_faculty_select" required data-quick-type="faculty" data-quick-title="إضافة كلية / مركز" data-quick-label="اسم الكلية أو المركز الجديد:" onchange="handleQuickAddChange(this); filterFacultyDepartments();" class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
+                                <option value="">-- اختر الكلية أو المركز --</option>
+                                @foreach($colleges as $col)
+                                    <option value="{{ $col->organizational_unit_id }}" {{ (request('faculty_id') == $col->organizational_unit_id || old('faculty_id') == $col->organizational_unit_id) ? 'selected' : '' }}>{{ $col->unit_name_ar }}</option>
+                                @endforeach
+                                <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة كلية / مركز جديد...</option>
+                            </select>
+                            <button type="button" onclick="openQuickAdd('faculty', 'desktop_faculty_select', 'اسم الكلية أو المركز الجديد:', 'إضافة كلية / مركز')"
+                                    class="shrink-0 w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#14532d] border border-emerald-300 flex items-center justify-center text-xs font-bold transition shadow-2xs hover:scale-105 cursor-pointer"
+                                    title="إضافة كلية جديدة">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- القسم / الوحدة -->
                     <div>
                         <label class="block text-[11px] font-bold text-slate-700 mb-1" id="label-dept">القسم / الوحدة <span class="text-rose-600">*</span></label>
-                        <select name="organizational_unit_id" id="desktop_dept_select" data-quick-type="department" data-quick-title="إضافة قسم علمي" data-quick-label="اسم القسم العلمي الجديد:" onchange="handleQuickAddChange(this)" required class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
-                            <option value="">-- اختر القسم أولاً --</option>
-                            @foreach($colleges as $col)
-                                @foreach($col->children as $dept)
-                                    <option value="{{ $dept->organizational_unit_id }}" data-parent="{{ $col->organizational_unit_id }}" {{ (request('dept_id') == $dept->organizational_unit_id || old('organizational_unit_id') == $dept->organizational_unit_id) ? 'selected' : '' }}>
-                                        {{ $dept->unit_name_ar }} ({{ $col->unit_code }})
-                                    </option>
+                        <div class="flex items-center gap-1.5">
+                            <select name="organizational_unit_id" id="desktop_dept_select" data-quick-type="department" data-quick-title="إضافة قسم علمي" data-quick-label="اسم القسم العلمي الجديد:" onchange="handleQuickAddChange(this)" required class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
+                                <option value="">-- اختر القسم أولاً --</option>
+                                @foreach($colleges as $col)
+                                    @foreach($col->children as $dept)
+                                        <option value="{{ $dept->organizational_unit_id }}" data-parent="{{ $col->organizational_unit_id }}" {{ (request('dept_id') == $dept->organizational_unit_id || old('organizational_unit_id') == $dept->organizational_unit_id) ? 'selected' : '' }}>
+                                            {{ $dept->unit_name_ar }} ({{ $col->unit_code }})
+                                        </option>
+                                    @endforeach
                                 @endforeach
-                            @endforeach
-                            <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة قسم علمي جديد...</option>
-                        </select>
+                                <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة قسم علمي جديد...</option>
+                            </select>
+                            <button type="button" onclick="openQuickAdd('department', 'desktop_dept_select', 'اسم القسم العلمي الجديد:', 'إضافة قسم علمي')"
+                                    class="shrink-0 w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#14532d] border border-emerald-300 flex items-center justify-center text-xs font-bold transition shadow-2xs hover:scale-105 cursor-pointer"
+                                    title="إضافة قسم جديد">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- الموقف الوظيفي -->
                     <div>
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">الموقف الوظيفي <span class="text-rose-600">*</span></label>
-                        <select name="employment_status_id" id="desktop_status_select" data-quick-type="status" data-quick-title="إضافة موقف وظيفي" data-quick-label="اسم الموقف الوظيفي الجديد:" onchange="handleQuickAddChange(this)" required class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
-                            @foreach($statuses as $st)
-                                <option value="{{ $st->employment_status_id }}" {{ old('employment_status_id') == $st->employment_status_id ? 'selected' : '' }}>
-                                    {{ $st->status_name_ar }}
-                                </option>
-                            @endforeach
-                            <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة موقف وظيفي جديد...</option>
-                        </select>
+                        <div class="flex items-center gap-1.5">
+                            <select name="employment_status_id" id="desktop_status_select" data-quick-type="status" data-quick-title="إضافة موقف وظيفي" data-quick-label="اسم الموقف الوظيفي الجديد:" onchange="handleQuickAddChange(this)" required class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
+                                @foreach($statuses as $st)
+                                    <option value="{{ $st->employment_status_id }}" {{ old('employment_status_id') == $st->employment_status_id ? 'selected' : '' }}>
+                                        {{ $st->status_name_ar }}
+                                    </option>
+                                @endforeach
+                                <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة موقف وظيفي جديد...</option>
+                            </select>
+                            <button type="button" onclick="openQuickAdd('status', 'desktop_status_select', 'اسم الموقف الوظيفي الجديد:', 'إضافة موقف وظيفي')"
+                                    class="shrink-0 w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#14532d] border border-emerald-300 flex items-center justify-center text-xs font-bold transition shadow-2xs hover:scale-105 cursor-pointer"
+                                    title="إضافة موقف جديد">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- الرتبة الأكاديمية (أكاديمي ومتقاعدين) -->
                     <div class="cadre-field-academic cadre-field-hourly">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">الرتبة الأكاديمية</label>
-                        <select name="academic_rank_id" id="desktop_rank_select" data-quick-type="rank" data-quick-title="إضافة رتبة أكاديمية" data-quick-label="اسم الرتبة العلمية الجديدة:" onchange="handleQuickAddChange(this)" class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
-                            <option value="">-- بدون رتبة --</option>
-                            @foreach($ranks as $rnk)
-                                <option value="{{ $rnk->academic_rank_id }}" {{ old('academic_rank_id') == $rnk->academic_rank_id ? 'selected' : '' }}>
-                                    {{ $rnk->rank_name_ar }}
-                                </option>
-                            @endforeach
-                            <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة رتبة أكاديمية جديدة...</option>
-                        </select>
+                        <div class="flex items-center gap-1.5">
+                            <select name="academic_rank_id" id="desktop_rank_select" data-quick-type="rank" data-quick-title="إضافة رتبة أكاديمية" data-quick-label="اسم الرتبة العلمية الجديدة:" onchange="handleQuickAddChange(this)" class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
+                                <option value="">-- بدون رتبة --</option>
+                                @foreach($ranks as $rnk)
+                                    <option value="{{ $rnk->academic_rank_id }}" {{ old('academic_rank_id') == $rnk->academic_rank_id ? 'selected' : '' }}>
+                                        {{ $rnk->rank_name_ar }}
+                                    </option>
+                                @endforeach
+                                <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة رتبة أكاديمية جديدة...</option>
+                            </select>
+                            <button type="button" onclick="openQuickAdd('rank', 'desktop_rank_select', 'اسم الرتبة العلمية الجديدة:', 'إضافة رتبة أكاديمية')"
+                                    class="shrink-0 w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#14532d] border border-emerald-300 flex items-center justify-center text-xs font-bold transition shadow-2xs hover:scale-105 cursor-pointer"
+                                    title="إضافة رتبة جديدة">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- المسمى الوظيفي الإداري (كادر إداري) -->
@@ -283,15 +311,22 @@
                     <!-- الدرجة الوظيفية -->
                     <div>
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">الدرجة الوظيفية</label>
-                        <select name="job_grade_id" id="desktop_grade_select" data-quick-type="grade" data-quick-title="إضافة درجة مالية" data-quick-label="اسم الدرجة الوظيفية الجديدة:" onchange="handleQuickAddChange(this)" class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
-                            <option value="">-- اختر الدرجة --</option>
-                            @foreach($grades as $grd)
-                                <option value="{{ $grd->job_grade_id }}" {{ old('job_grade_id') == $grd->job_grade_id ? 'selected' : '' }}>
-                                    {{ $grd->grade_name_ar }}
-                                </option>
-                            @endforeach
-                            <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة درجة وظيفية جديدة...</option>
-                        </select>
+                        <div class="flex items-center gap-1.5">
+                            <select name="job_grade_id" id="desktop_grade_select" data-quick-type="grade" data-quick-title="إضافة درجة مالية" data-quick-label="اسم الدرجة الوظيفية الجديدة:" onchange="handleQuickAddChange(this)" class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                                <option value="">-- اختر الدرجة --</option>
+                                @foreach($grades as $grd)
+                                    <option value="{{ $grd->job_grade_id }}" {{ old('job_grade_id') == $grd->job_grade_id ? 'selected' : '' }}>
+                                        {{ $grd->grade_name_ar }}
+                                    </option>
+                                @endforeach
+                                <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة درجة وظيفية جديدة...</option>
+                            </select>
+                            <button type="button" onclick="openQuickAdd('grade', 'desktop_grade_select', 'اسم الدرجة الوظيفية الجديدة:', 'إضافة درجة مالية')"
+                                    class="shrink-0 w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#14532d] border border-emerald-300 flex items-center justify-center text-xs font-bold transition shadow-2xs hover:scale-105 cursor-pointer"
+                                    title="إضافة درجة جديدة">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div>
@@ -315,28 +350,129 @@
                     <span>3. بيانات كشف الراتب وتاريخ التعيين</span>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs">
+                    <!-- الحالة بكشف الراتب -->
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">الحالة بكشف الراتب</label>
-                        <input type="text" name="payroll_status" value="{{ old('payroll_status', 'على رأس العمل') }}" placeholder="على رأس العمل، إجازة..." 
-                               class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">الحالة بكشف الراتب <span class="text-rose-600">*</span></label>
+                        <div class="flex items-center gap-1.5">
+                            <select name="payroll_status" id="payroll_status_select" required data-use-name-as-value="true" data-quick-type="payroll_status" data-quick-title="إضافة حالة براتب" data-quick-label="اسم الحالة بكشف الراتب:" onchange="handleQuickAddChange(this)"
+                                    class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
+                                <option value="على رأس العمل" {{ old('payroll_status', 'على رأس العمل') == 'على رأس العمل' ? 'selected' : '' }}>على رأس العمل</option>
+                                <option value="مفرغ للدراسة (داخلية)" {{ old('payroll_status') == 'مفرغ للدراسة (داخلية)' ? 'selected' : '' }}>مفرغ للدراسة (داخلية)</option>
+                                <option value="مفرغ للدراسة (خارجية)" {{ old('payroll_status') == 'مفرغ للدراسة (خارجية)' ? 'selected' : '' }}>مفرغ للدراسة (خارجية)</option>
+                                <option value="إجازة بدون راتب" {{ old('payroll_status') == 'إجازة بدون راتب' ? 'selected' : '' }}>إجازة بدون راتب</option>
+                                <option value="إعارة" {{ old('payroll_status') == 'إعارة' ? 'selected' : '' }}>إعارة</option>
+                                <option value="منقطع عن العمل" {{ old('payroll_status') == 'منقطع عن العمل' ? 'selected' : '' }}>منقطع عن العمل</option>
+                                <option value="متقاعد" {{ old('payroll_status') == 'متقاعد' ? 'selected' : '' }}>متقاعد</option>
+                                <option value="متقاعد بالساعات" {{ old('payroll_status') == 'متقاعد بالساعات' ? 'selected' : '' }}>متقاعد بالساعات</option>
+                                <option value="متوفى" {{ old('payroll_status') == 'متوفى' ? 'selected' : '' }}>متوفى</option>
+                                @foreach($statuses as $st)
+                                    @if(!in_array($st->status_name_ar, ['على رأس العمل','مفرغ للدراسة (داخلية)','مفرغ للدراسة (خارجية)','إجازة بدون راتب','إعارة','منقطع عن العمل','متقاعد','متقاعد بالساعات','متوفى']))
+                                        <option value="{{ $st->status_name_ar }}" {{ old('payroll_status') == $st->status_name_ar ? 'selected' : '' }}>{{ $st->status_name_ar }}</option>
+                                    @endif
+                                @endforeach
+                                <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة حالة جديدة...</option>
+                            </select>
+                            <button type="button" onclick="openQuickAdd('payroll_status', 'payroll_status_select', 'اسم الحالة بكشف الراتب:', 'إضافة حالة براتب')"
+                                    class="shrink-0 w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#14532d] border border-emerald-300 flex items-center justify-center text-xs font-bold transition shadow-2xs hover:scale-105 cursor-pointer"
+                                    title="إضافة حالة جديدة">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
 
+                    <!-- الوظيفة بكشف الراتب -->
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">الوظيفة بكشف الراتب</label>
-                        <input type="text" name="payroll_job_title" value="{{ old('payroll_job_title') }}" placeholder="هيئة تدريس، مدرس، معيد..." 
-                               class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">الوظيفة بكشف الراتب <span class="text-rose-600">*</span></label>
+                        <div class="flex items-center gap-1.5">
+                            <select name="payroll_job_title" id="payroll_job_title_select" required data-use-name-as-value="true" data-quick-type="job_title" data-quick-title="إضافة وظيفة براتب" data-quick-label="اسم الوظيفة بكشف الراتب:" onchange="handleQuickAddChange(this)"
+                                    class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
+                                <option value="">-- اختر الوظيفة --</option>
+                                @php
+                                    $defaultTitles = [
+                                        'عضو هيئة تدريس', 'أستاذ', 'أستاذ مشارك', 'أستاذ مساعد', 'مدرس', 'معيد',
+                                        'متقاعد بنظام الساعات', 'مدير عام', 'أمين كلية', 'مدير إدارة', 'رئيس قسم',
+                                        'أخصائي شؤون موظفين', 'محاسب مالي', 'مهندس حاسوب وشبكات', 'فني مختبرات علمية',
+                                        'سكرتير إداري', 'خدمات معاونة'
+                                    ];
+                                    if(isset($jobTitles)) {
+                                        foreach($jobTitles as $jt) {
+                                            if(!in_array($jt->title_name_ar, $defaultTitles)) {
+                                                $defaultTitles[] = $jt->title_name_ar;
+                                            }
+                                        }
+                                    }
+                                @endphp
+                                @foreach($defaultTitles as $tName)
+                                    <option value="{{ $tName }}" {{ old('payroll_job_title') == $tName ? 'selected' : '' }}>{{ $tName }}</option>
+                                @endforeach
+                                <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة وظيفة جديدة...</option>
+                            </select>
+                            <button type="button" onclick="openQuickAdd('job_title', 'payroll_job_title_select', 'اسم الوظيفة بكشف الراتب:', 'إضافة وظيفة براتب')"
+                                    class="shrink-0 w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#14532d] border border-emerald-300 flex items-center justify-center text-xs font-bold transition shadow-2xs hover:scale-105 cursor-pointer"
+                                    title="إضافة وظيفة جديدة">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
 
+                    <!-- الدرجة بكشف الراتب -->
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">الدرجة بكشف الراتب</label>
-                        <input type="text" name="payroll_job_grade" value="{{ old('payroll_job_grade') }}" placeholder="أستاذ، أستاذ مشارك..." 
-                               class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">الدرجة بكشف الراتب <span class="text-rose-600">*</span></label>
+                        <div class="flex items-center gap-1.5">
+                            <select name="payroll_job_grade" id="payroll_job_grade_select" required data-use-name-as-value="true" data-quick-type="grade" data-quick-title="إضافة درجة مالية" data-quick-label="اسم الدرجة بكشف الراتب:" onchange="handleQuickAddChange(this)"
+                                    class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
+                                <option value="">-- اختر الدرجة --</option>
+                                @php
+                                    $defaultGrades = ['أستاذ', 'أستاذ مشارك', 'أستاذ مساعد', 'مدرس', 'معيد', 'الدرجة الأولى', 'الدرجة الثانية', 'الدرجة الثالثة', 'الدرجة الرابعة', 'الدرجة الخامسة', 'الدرجة السادسة', 'الدرجة السابعة'];
+                                    if(isset($grades)) {
+                                        foreach($grades as $grd) {
+                                            if(!in_array($grd->grade_name_ar, $defaultGrades)) {
+                                                $defaultGrades[] = $grd->grade_name_ar;
+                                            }
+                                        }
+                                    }
+                                @endphp
+                                @foreach($defaultGrades as $gName)
+                                    <option value="{{ $gName }}" {{ old('payroll_job_grade') == $gName ? 'selected' : '' }}>{{ $gName }}</option>
+                                @endforeach
+                                <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة درجة جديدة...</option>
+                            </select>
+                            <button type="button" onclick="openQuickAdd('grade', 'payroll_job_grade_select', 'اسم الدرجة بكشف الراتب:', 'إضافة درجة مالية')"
+                                    class="shrink-0 w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#14532d] border border-emerald-300 flex items-center justify-center text-xs font-bold transition shadow-2xs hover:scale-105 cursor-pointer"
+                                    title="إضافة درجة جديدة">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
 
+                    <!-- المؤهل عند التعيين بالجامعة -->
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">المؤهل عند التعيين بالجامعة</label>
-                        <input type="text" name="qualification_at_appointment" value="{{ old('qualification_at_appointment') }}" placeholder="دكتوراه، ماجستير، بكالوريوس" 
-                               class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">المؤهل عند التعيين بالجامعة <span class="text-rose-600">*</span></label>
+                        <div class="flex items-center gap-1.5">
+                            <select name="qualification_at_appointment" id="qualification_at_appointment_select" required data-use-name-as-value="true" data-quick-type="qual_level" data-quick-title="إضافة مؤهل تعيين" data-quick-label="اسم المؤهل عند التعيين:" onchange="handleQuickAddChange(this)"
+                                    class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
+                                <option value="">-- اختر المؤهل --</option>
+                                @php
+                                    $defaultQuals = ['دكتوراه', 'ماجستير', 'دبلوم عالي', 'بكالوريوس', 'دبلوم تقني/مهني', 'دبلوم متوسط', 'ثانوية عامة'];
+                                    if(isset($qualLevels)) {
+                                        foreach($qualLevels as $ql) {
+                                            if(!in_array($ql->level_name_ar, $defaultQuals)) {
+                                                $defaultQuals[] = $ql->level_name_ar;
+                                            }
+                                        }
+                                    }
+                                @endphp
+                                @foreach($defaultQuals as $qName)
+                                    <option value="{{ $qName }}" {{ old('qualification_at_appointment') == $qName ? 'selected' : '' }}>{{ $qName }}</option>
+                                @endforeach
+                                <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة مؤهل جديد...</option>
+                            </select>
+                            <button type="button" onclick="openQuickAdd('qual_level', 'qualification_at_appointment_select', 'اسم المؤهل عند التعيين:', 'إضافة مؤهل تعيين')"
+                                    class="shrink-0 w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#14532d] border border-emerald-300 flex items-center justify-center text-xs font-bold transition shadow-2xs hover:scale-105 cursor-pointer"
+                                    title="إضافة مؤهل تعيين جديد">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div>
@@ -351,10 +487,34 @@
                                class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs font-mono text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
                     </div>
 
+                    <!-- الدرجة المعين فيها أول مرة -->
                     <div class="cadre-field-academic">
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">الدرجة المعين فيها أول مرة</label>
-                        <input type="text" name="initial_rank" value="{{ old('initial_rank') }}" placeholder="معيد، أستاذ مساعد..." 
-                               class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                        <div class="flex items-center gap-1.5">
+                            <select name="initial_rank" id="initial_rank_select" data-use-name-as-value="true" data-quick-type="rank" data-quick-title="إضافة رتبة/درجة تعيين" data-quick-label="اسم الرتبة أو الدرجة عند أول تعيين:" onchange="handleQuickAddChange(this)"
+                                    class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
+                                <option value="">-- اختر الرتبة / الدرجة --</option>
+                                @php
+                                    $defaultInitRanks = ['معيد', 'مدرس', 'أستاذ مساعد', 'أستاذ مشارك', 'أستاذ', 'الدرجة الرابعة', 'الدرجة الخامسة', 'الدرجة السادسة'];
+                                    if(isset($ranks)) {
+                                        foreach($ranks as $rnk) {
+                                            if(!in_array($rnk->rank_name_ar, $defaultInitRanks)) {
+                                                $defaultInitRanks[] = $rnk->rank_name_ar;
+                                            }
+                                        }
+                                    }
+                                @endphp
+                                @foreach($defaultInitRanks as $irName)
+                                    <option value="{{ $irName }}" {{ old('initial_rank') == $irName ? 'selected' : '' }}>{{ $irName }}</option>
+                                @endforeach
+                                <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة رتبة/درجة تعيين جديدة...</option>
+                            </select>
+                            <button type="button" onclick="openQuickAdd('rank', 'initial_rank_select', 'اسم الرتبة أو الدرجة عند أول تعيين:', 'إضافة رتبة/درجة تعيين')"
+                                    class="shrink-0 w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#14532d] border border-emerald-300 flex items-center justify-center text-xs font-bold transition shadow-2xs hover:scale-105 cursor-pointer"
+                                    title="إضافة رتبة أو درجة جديدة">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -367,8 +527,8 @@
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs">
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">نوع القرار</label>
-                        <select name="decision_type_id" class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">نوع القرار <span class="text-rose-600">*</span></label>
+                        <select name="decision_type_id" required class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
                             @foreach($decisionTypes as $dt)
                                 <option value="{{ $dt->decision_type_id }}">{{ $dt->type_name_ar }}</option>
                             @endforeach
@@ -377,23 +537,30 @@
 
                     <div>
                         <div class="flex items-center justify-between mb-1">
-                            <label class="block text-[11px] font-bold text-slate-700">رقم القرار</label>
+                            <label class="block text-[11px] font-bold text-slate-700">رقم القرار <span class="text-rose-600">*</span></label>
                             <span class="text-[9px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">ترقيم تلقائي</span>
                         </div>
-                        <input type="text" name="decision_number" value="{{ old('decision_number', $nextDecisionNumber) }}" placeholder="رقم القرار الإداري (تلقائي)" 
+                        <input type="text" name="decision_number" required value="{{ old('decision_number', $nextDecisionNumber) }}" placeholder="رقم القرار الإداري (تلقائي)" 
                                class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
                     </div>
 
                     <!-- مستوى المؤهل -->
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">مستوى المؤهل</label>
-                        <select name="qualification_level_id" id="desktop_qual_level_select" data-quick-type="qual_level" data-quick-title="إضافة مستوى مؤهل" data-quick-label="اسم المستوى العلمي الجديد:" onchange="handleQuickAddChange(this)" class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
-                            <option value="">-- اختر المستوى --</option>
-                            @foreach($qualLevels as $ql)
-                                <option value="{{ $ql->qualification_level_id }}">{{ $ql->level_name_ar }}</option>
-                            @endforeach
-                            <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة مستوى مؤهل جديد...</option>
-                        </select>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">مستوى المؤهل <span class="text-rose-600">*</span></label>
+                        <div class="flex items-center gap-1.5">
+                            <select name="qualification_level_id" id="desktop_qual_level_select" required data-quick-type="qual_level" data-quick-title="إضافة مستوى مؤهل" data-quick-label="اسم المستوى العلمي الجديد:" onchange="handleQuickAddChange(this)" class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
+                                <option value="">-- اختر المستوى --</option>
+                                @foreach($qualLevels as $ql)
+                                    <option value="{{ $ql->qualification_level_id }}" {{ old('qualification_level_id') == $ql->qualification_level_id ? 'selected' : '' }}>{{ $ql->level_name_ar }}</option>
+                                @endforeach
+                                <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة مستوى مؤهل جديد...</option>
+                            </select>
+                            <button type="button" onclick="openQuickAdd('qual_level', 'desktop_qual_level_select', 'اسم المستوى العلمي الجديد:', 'إضافة مستوى مؤهل')"
+                                    class="shrink-0 w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#14532d] border border-emerald-300 flex items-center justify-center text-xs font-bold transition shadow-2xs hover:scale-105 cursor-pointer"
+                                    title="إضافة مستوى مؤهل جديد">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div>
@@ -402,10 +569,40 @@
                                class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
                     </div>
 
+                    <!-- الجامعة المانحة للمؤهل -->
                     <div class="lg:col-span-2">
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">الجامعة المانحة للمؤهل</label>
-                        <input type="text" name="university_name" value="{{ old('university_name') }}" placeholder="جامعة إب، جامعة القاهرة، جامعة دمشق..." 
-                               class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">الجامعة المانحة للمؤهل <span class="text-rose-600">*</span></label>
+                        <div class="flex items-center gap-1.5">
+                            <select name="university_name" id="university_name_select" required data-use-name-as-value="true" data-quick-type="university" data-quick-title="إضافة جامعة مانحة" data-quick-label="اسم الجامعة المانحة للمؤهل:" onchange="handleQuickAddChange(this)"
+                                    class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
+                                <option value="">-- اختر الجامعة المانحة للمؤهل --</option>
+                                @php
+                                    $defaultUnivs = [
+                                        'جامعة إب', 'جامعة صنعاء', 'جامعة تعز', 'جامعة ذمار', 'جامعة عدن', 'جامعة الحديدة',
+                                        'جامعة البيضاء', 'جامعة حجة', 'جامعة جبلة للعلوم الطبية', 'جامعة العلوم والتكنولوجيا',
+                                        'جامعة القاهرة', 'جامعة عين شمس', 'جامعة أسيوط', 'جامعة المنصورة', 'جامعة دمشق',
+                                        'جامعة الأردن', 'جامعة اليرموك', 'جامعة بغداد', 'جامعة الملك سعود', 'جامعة مالايا',
+                                        'جامعة الخرطوم', 'جامعة الملك عبد العزيز'
+                                    ];
+                                    if(isset($universities)) {
+                                        foreach($universities as $unv) {
+                                            if(!in_array($unv->university_name_ar, $defaultUnivs)) {
+                                                $defaultUnivs[] = $unv->university_name_ar;
+                                            }
+                                        }
+                                    }
+                                @endphp
+                                @foreach($defaultUnivs as $uName)
+                                    <option value="{{ $uName }}" {{ old('university_name', 'جامعة إب') == $uName ? 'selected' : '' }}>{{ $uName }}</option>
+                                @endforeach
+                                <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة جامعة جديدة...</option>
+                            </select>
+                            <button type="button" onclick="openQuickAdd('university', 'university_name_select', 'اسم الجامعة المانحة للمؤهل:', 'إضافة جامعة مانحة')"
+                                    class="shrink-0 w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#14532d] border border-emerald-300 flex items-center justify-center text-xs font-bold transition shadow-2xs hover:scale-105 cursor-pointer"
+                                    title="إضافة جامعة جديدة">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -420,12 +617,19 @@
                     <!-- نوع الوثيقة -->
                     <div>
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">نوع الوثيقة</label>
-                        <select name="document_type_id" id="desktop_doc_type_select" data-quick-type="doc_type" data-quick-title="إضافة نوع وثيقة" data-quick-label="اسم تصنيف الوثيقة الجديد:" onchange="handleQuickAddChange(this)" class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
-                            @foreach($docTypes as $docT)
-                                <option value="{{ $docT->document_type_id }}">{{ $docT->type_name_ar }}</option>
-                            @endforeach
-                            <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة نوع وثيقة جديد...</option>
-                        </select>
+                        <div class="flex items-center gap-1.5">
+                            <select name="document_type_id" id="desktop_doc_type_select" data-quick-type="doc_type" data-quick-title="إضافة نوع وثيقة" data-quick-label="اسم تصنيف الوثيقة الجديد:" onchange="handleQuickAddChange(this)" class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
+                                @foreach($docTypes as $docT)
+                                    <option value="{{ $docT->document_type_id }}">{{ $docT->type_name_ar }}</option>
+                                @endforeach
+                                <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة نوع وثيقة جديد...</option>
+                            </select>
+                            <button type="button" onclick="openQuickAdd('doc_type', 'desktop_doc_type_select', 'اسم تصنيف الوثيقة الجديد:', 'إضافة نوع وثيقة')"
+                                    class="shrink-0 w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#14532d] border border-emerald-300 flex items-center justify-center text-xs font-bold transition shadow-2xs hover:scale-105 cursor-pointer"
+                                    title="إضافة نوع وثيقة جديد">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div>
@@ -788,15 +992,143 @@
     let currentWizardStep = 1;
     const totalWizardSteps = 5;
 
+    function showWizardAlert(msg, fieldToFocus = null) {
+        let alertBox = document.getElementById('wizard-validation-toast');
+        if (!alertBox) {
+            alertBox = document.createElement('div');
+            alertBox.id = 'wizard-validation-toast';
+            alertBox.className = 'fixed top-6 left-1/2 -translate-x-1/2 z-[999999] max-w-lg w-[92%] bg-rose-700 text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 transform -translate-y-4 opacity-0 pointer-events-auto border border-rose-500';
+            document.body.appendChild(alertBox);
+        }
+        alertBox.innerHTML = `
+            <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-circle-exclamation text-amber-200 text-base"></i>
+            </div>
+            <div class="flex-1 leading-relaxed">${msg}</div>
+            <button type="button" onclick="this.parentElement.classList.add('opacity-0', '-translate-y-4');" class="text-white/80 hover:text-white text-lg font-bold p-1 cursor-pointer">&times;</button>
+        `;
+        alertBox.classList.remove('opacity-0', '-translate-y-4', 'hidden');
+        alertBox.classList.add('opacity-100', 'translate-y-0');
+
+        if (fieldToFocus) {
+            fieldToFocus.classList.add('ring-2', 'ring-rose-500', 'border-rose-500', 'bg-rose-50/40');
+            try {
+                fieldToFocus.focus();
+                fieldToFocus.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } catch(e) {}
+            
+            const clearHighlight = () => {
+                fieldToFocus.classList.remove('ring-2', 'ring-rose-500', 'border-rose-500', 'bg-rose-50/40');
+                fieldToFocus.removeEventListener('input', clearHighlight);
+                fieldToFocus.removeEventListener('change', clearHighlight);
+            };
+            fieldToFocus.addEventListener('input', clearHighlight);
+            fieldToFocus.addEventListener('change', clearHighlight);
+        }
+
+        clearTimeout(window.wizardAlertTimeout);
+        window.wizardAlertTimeout = setTimeout(() => {
+            alertBox.classList.remove('opacity-100', 'translate-y-0');
+            alertBox.classList.add('opacity-0', '-translate-y-4');
+        }, 5000);
+    }
+
     function validateWizardStep(stepNum) {
         const panel = document.getElementById('wizard-step-' + stepNum);
         if (!panel) return true;
+
+        if (stepNum === 1) {
+            const nameInput = panel.querySelector('input[name="full_name_ar"]');
+            if (!nameInput || !nameInput.value.trim()) {
+                showWizardAlert('يرجى تعبئة الاسم الرباعي الكامل للكادر للانتقال للخطوة التالية.', nameInput);
+                return false;
+            }
+            const genderSelect = panel.querySelector('select[name="gender"]');
+            if (!genderSelect || !genderSelect.value) {
+                showWizardAlert('يرجى تحديد الجنس للكادر.', genderSelect);
+                return false;
+            }
+        } else if (stepNum === 2) {
+            const facSelect = document.getElementById('desktop_faculty_select');
+            if (facSelect && (!facSelect.value || facSelect.value === '__add_new__')) {
+                showWizardAlert('يرجى اختيار الكلية أو المركز أولاً للمتابعة.', facSelect);
+                return false;
+            }
+            const deptSelect = document.getElementById('desktop_dept_select');
+            if (deptSelect && (!deptSelect.value || deptSelect.value === '__add_new__')) {
+                showWizardAlert('يرجى اختيار القسم العلمي أو الوحدة التابع لها الكادر.', deptSelect);
+                return false;
+            }
+            const statusSelect = document.getElementById('desktop_status_select');
+            if (statusSelect && (!statusSelect.value || statusSelect.value === '__add_new__')) {
+                showWizardAlert('يرجى تحديد الموقف الوظيفي للكادر.', statusSelect);
+                return false;
+            }
+            const cadreType = document.getElementById('hidden_cadre_type')?.value || 'academic';
+            if (cadreType === 'admin') {
+                const adminTitle = document.getElementById('admin_job_title');
+                if (adminTitle && !adminTitle.value.trim()) {
+                    showWizardAlert('يرجى كتابة المسمى الوظيفي الإداري للكادر.', adminTitle);
+                    return false;
+                }
+            } else if (cadreType === 'hourly') {
+                const hourlyHours = panel.querySelector('input[name="hourly_hours"]');
+                if (hourlyHours && !hourlyHours.value.trim()) {
+                    showWizardAlert('يرجى إدخال نصاب الساعات المعتمدة للمتعاقد بالساعات.', hourlyHours);
+                    return false;
+                }
+            }
+            const startDate = panel.querySelector('input[name="start_date"]');
+            if (startDate && !startDate.value) {
+                showWizardAlert('يرجى إدخال تاريخ مباشرة العمل.', startDate);
+                return false;
+            }
+        } else if (stepNum === 3) {
+            const pStatus = document.getElementById('payroll_status_select');
+            if (pStatus && (!pStatus.value || pStatus.value === '__add_new__')) {
+                showWizardAlert('يرجى تحديد الحالة بكشف الراتب (مثال: على رأس العمل).', pStatus);
+                return false;
+            }
+            const pTitle = document.getElementById('payroll_job_title_select');
+            if (pTitle && (!pTitle.value || pTitle.value === '__add_new__')) {
+                showWizardAlert('يرجى اختيار أو إدخال الوظيفة بكشف الراتب.', pTitle);
+                return false;
+            }
+            const pGrade = document.getElementById('payroll_job_grade_select');
+            if (pGrade && (!pGrade.value || pGrade.value === '__add_new__')) {
+                showWizardAlert('يرجى اختيار أو إدخال الدرجة بكشف الراتب.', pGrade);
+                return false;
+            }
+            const qualApp = document.getElementById('qualification_at_appointment_select');
+            if (qualApp && (!qualApp.value || qualApp.value === '__add_new__')) {
+                showWizardAlert('يرجى تحديد المؤهل عند التعيين بالجامعة.', qualApp);
+                return false;
+            }
+        } else if (stepNum === 4) {
+            const decNum = panel.querySelector('input[name="decision_number"]');
+            if (decNum && !decNum.value.trim()) {
+                showWizardAlert('يرجى إدخال رقم القرار الإداري التأسيسي.', decNum);
+                return false;
+            }
+            const qualLevel = document.getElementById('desktop_qual_level_select');
+            if (qualLevel && (!qualLevel.value || qualLevel.value === '__add_new__')) {
+                showWizardAlert('يرجى تحديد مستوى المؤهل العلمي.', qualLevel);
+                return false;
+            }
+            const univSelect = document.getElementById('university_name_select');
+            if (univSelect && (!univSelect.value || univSelect.value === '__add_new__')) {
+                showWizardAlert('يرجى اختيار الجامعة المانحة للمؤهل أو إضافتها.', univSelect);
+                return false;
+            }
+        }
+
+        // تحقق عام من أي حقل required آخر داخل اللوحة غير مخفي
         const requiredFields = panel.querySelectorAll('input[required], select[required], textarea[required]');
         for (const field of requiredFields) {
-            // تجاهل الحقول المخفية تبعاً لنوع الكادر
             if (field.closest('.hidden')) continue;
             if (!field.checkValidity()) {
                 field.reportValidity();
+                showWizardAlert('يرجى استكمال الحقل المطلوب للمتابعة.', field);
                 return false;
             }
         }
@@ -808,7 +1140,6 @@
         if (!skipValidation && stepNum > currentWizardStep) {
             for (let s = currentWizardStep; s < stepNum; s++) {
                 if (!validateWizardStep(s)) {
-                    if (s !== currentWizardStep) goToWizardStep(s, true);
                     return;
                 }
             }

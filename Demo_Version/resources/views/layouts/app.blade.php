@@ -353,6 +353,12 @@
                 url = '{{ route("quick.add.doctype") }}';
             } else if (type === 'qual_level') {
                 url = '{{ route("quick.add.quallevel") }}';
+            } else if (type === 'job_title') {
+                url = '{{ route("quick.add.jobtitle") }}';
+            } else if (type === 'university') {
+                url = '{{ route("quick.add.university") }}';
+            } else if (type === 'payroll_status') {
+                url = '{{ route("quick.add.status") }}';
             }
 
             fetch(url, {
@@ -371,8 +377,9 @@
                 if (data.success) {
                     const select = document.getElementById(targetSelectId);
                     if (select) {
+                        const valToUse = select.dataset.useNameAsValue === 'true' ? data.name : (data.id || data.name);
                         const opt = document.createElement('option');
-                        opt.value = data.id;
+                        opt.value = valToUse;
                         opt.text = data.name;
                         opt.selected = true;
                         if (type === 'department' && parentId) {
@@ -384,7 +391,7 @@
                         } else {
                             select.appendChild(opt);
                         }
-                        select.dataset.previousValue = data.id;
+                        select.dataset.previousValue = valToUse;
                         select.dispatchEvent(new Event('change'));
                     }
                     closeQuickAdd();

@@ -119,6 +119,8 @@ Route::middleware([EnsureDesktopAuthenticated::class])->group(function () {
         Route::post('/quick-add/status', [\App\Http\Controllers\QuickAddController::class, 'storeStatus'])->name('quick.add.status');
         Route::post('/quick-add/doc-type', [\App\Http\Controllers\QuickAddController::class, 'storeDocType'])->name('quick.add.doctype');
         Route::post('/quick-add/qual-level', [\App\Http\Controllers\QuickAddController::class, 'storeQualLevel'])->name('quick.add.quallevel');
+        Route::post('/quick-add/job-title', [\App\Http\Controllers\QuickAddController::class, 'storeJobTitle'])->name('quick.add.jobtitle');
+        Route::post('/quick-add/university', [\App\Http\Controllers\QuickAddController::class, 'storeUniversity'])->name('quick.add.university');
     });
 
     // ==========================================================

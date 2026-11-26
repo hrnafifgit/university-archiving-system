@@ -14,8 +14,10 @@ use App\Models\EmployeeQualification;
 use App\Models\EmploymentRecord;
 use App\Models\EmploymentStatus;
 use App\Models\JobGrade;
+use App\Models\JobTitle;
 use App\Models\OrganizationalUnit;
 use App\Models\QualificationLevel;
+use App\Models\University;
 use App\Services\AuditLogService;
 use App\Services\DocumentStorageService;
 use Illuminate\Http\Request;
@@ -194,6 +196,8 @@ class EmployeeController extends Controller
         $decisionTypes = DecisionType::all();
         $qualLevels = QualificationLevel::orderBy('level_order')->get();
         $docTypes = DocumentType::where('is_active', true)->get();
+        $jobTitles = JobTitle::where('is_active', true)->orderBy('title_name_ar')->get();
+        $universities = University::orderBy('university_name_ar')->get();
 
         // توليد رقم القرار الإداري التلقائي
         $maxDecisionNum = EmployeeDecision::selectRaw("COALESCE(MAX(CAST(REGEXP_REPLACE(decision_number, '[^0-9]', '', 'g') AS INTEGER)), 202) as max_num")->value('max_num') ?? 202;
@@ -208,6 +212,8 @@ class EmployeeController extends Controller
             'decisionTypes',
             'qualLevels',
             'docTypes',
+            'jobTitles',
+            'universities',
             'nextDecisionNumber'
         ));
     }

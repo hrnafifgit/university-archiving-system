@@ -8,8 +8,10 @@ use App\Models\DocumentType;
 use App\Models\EmployeeCategory;
 use App\Models\EmploymentStatus;
 use App\Models\JobGrade;
+use App\Models\JobTitle;
 use App\Models\OrganizationalUnit;
 use App\Models\QualificationLevel;
+use App\Models\University;
 use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -290,6 +292,77 @@ class QuickAddController extends Controller
             'success' => true,
             'id' => $qualLevel->qualification_level_id,
             'name' => $qualLevel->level_name_ar,
+        ]);
+    }
+
+    /**
+     * إضافة سريعة لمسمى وظيفي
+     */
+    public function storeJobTitle(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:150',
+        ]);
+
+        $name = trim($request->name);
+
+        $existing = JobTitle::where('title_name_ar', $name)->first();
+        if ($existing) {
+            return response()->json([
+                'success' => true,
+                'id' => $existing->title_name_ar,
+                'name' => $existing->title_name_ar,
+            ]);
+        }
+
+        $jobTitle = JobTitle::create([
+            'title_name_ar' => $name,
+            'is_active' => true,
+        ]);
+
+        AuditLogService::log('JOB_TITLE_QUICK_CREATE', 'job_titles', $jobTitle->job_title_id, null, [
+            'title_name_ar' => $jobTitle->title_name_ar,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'id' => $jobTitle->title_name_ar,
+            'name' => $jobTitle->title_name_ar,
+        ]);
+    }
+
+    /**
+     * إضافة سريعة لجامعة
+     */
+    public function storeUniversity(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:200',
+        ]);
+
+        $name = trim($request->name);
+
+        $existing = University::where('university_name_ar', $name)->first();
+        if ($existing) {
+            return response()->json([
+                'success' => true,
+                'id' => $existing->university_name_ar,
+                'name' => $existing->university_name_ar,
+            ]);
+        }
+
+        $university = University::create([
+            'university_name_ar' => $name,
+        ]);
+
+        AuditLogService::log('UNIVERSITY_QUICK_CREATE', 'universities', $university->university_id, null, [
+            'university_name_ar' => $university->university_name_ar,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'id' => $university->university_name_ar,
+            'name' => $university->university_name_ar,
         ]);
     }
 }
