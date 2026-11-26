@@ -203,6 +203,13 @@ class EmployeeController extends Controller
         $maxDecisionNum = EmployeeDecision::selectRaw("COALESCE(MAX(CAST(REGEXP_REPLACE(decision_number, '[^0-9]', '', 'g') AS INTEGER)), 202) as max_num")->value('max_num') ?? 202;
         $nextDecisionNumber = $maxDecisionNum + 1;
 
+        // توليد الرقم الوظيفي التلقائي التسلسلي
+        $maxEmpNum = Employee::whereRaw("employee_number ~ '^[0-9]+$'")
+            ->whereRaw("CAST(employee_number AS BIGINT) BETWEEN 1000 AND 8999999")
+            ->selectRaw("MAX(CAST(employee_number AS BIGINT)) as max_num")
+            ->value('max_num');
+        $nextEmployeeNumber = $maxEmpNum ? ($maxEmpNum + 1) : 1000051;
+
         return view('employees.create', compact(
             'colleges',
             'categories',
@@ -214,8 +221,34 @@ class EmployeeController extends Controller
             'docTypes',
             'jobTitles',
             'universities',
-            'nextDecisionNumber'
+            'nextDecisionNumber',
+            'nextEmployeeNumber'
         ));
+    }
+
+    /**
+     * فحص عدم تكرار الرقم الوظيفي والبطاقة الوطنية لحظياً (Live AJAX Duplicate Check)
+     */
+    public function checkDuplicate(Request $request)
+    {
+        $field = $request->input('field');
+        $val = trim($request->input('value', ''));
+        $excludeId = $request->input('exclude_id');
+
+        if (empty($val) || !in_array($field, ['employee_number', 'national_id', 'phone_number'])) {
+            return response()->json(['exists' => false]);
+        }
+
+        $query = Employee::where($field, $val);
+        if ($excludeId) {
+            $query->where('employee_id', '!=', $excludeId);
+        }
+
+        $exists = $query->exists();
+        return response()->json([
+            'exists' => $exists,
+            'message' => $exists ? ($field === 'employee_number' ? 'الرقم الوظيفي مسجل مسبقاً لموظف آخر في النظام!' : ($field === 'national_id' ? 'الرقم الوطني / البطاقة مسجل مسبقاً لموظف آخر!' : 'رقم الهاتف مسجل مسبقاً!')) : ''
+        ]);
     }
 
     /**
@@ -223,9 +256,18 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
+        // ضمان وجود رقم وظيفي تلقائي تسلسلي إن كان الحقل فارغاً
+        if (!$request->filled('employee_number')) {
+            $maxEmpNum = Employee::whereRaw("employee_number ~ '^[0-9]+$'")
+                ->whereRaw("CAST(employee_number AS BIGINT) BETWEEN 1000 AND 8999999")
+                ->selectRaw("MAX(CAST(employee_number AS BIGINT)) as max_num")
+                ->value('max_num');
+            $request->merge(['employee_number' => (string)($maxEmpNum ? ($maxEmpNum + 1) : 1000051)]);
+        }
+
         $validated = $request->validate([
             'full_name_ar' => 'required|string|max:250',
-            'employee_number' => 'nullable|string|max:50|unique:employees,employee_number',
+            'employee_number' => 'required|string|max:50|unique:employees,employee_number',
             'national_id' => 'nullable|string|max:50|unique:employees,national_id',
             'gender' => 'required|in:male,female',
             'phone_number' => 'nullable|string|max:40',
@@ -260,6 +302,9 @@ class EmployeeController extends Controller
             'document_title' => 'nullable|string|max:250',
         ], [
             'full_name_ar.required' => 'يرجى إدخال اسم الكادر الرباعي كاملاً.',
+            'employee_number.required' => 'يرجى إدخال الرقم الوظيفي للكادر أو اعتماد الرقم التلقائي.',
+            'employee_number.unique' => 'الرقم الوظيفي مسجل مسبقاً لموظف آخر في النظام، يرجى كتابة رقم مختلف.',
+            'national_id.unique' => 'الرقم الوطني / البطاقة مسجل مسبقاً لموظف آخر في النظام.',
             'organizational_unit_id.required' => 'يرجى اختيار الكلية والقسم التابع لهما الكادر.',
             'employee_category_id.required' => 'يرجى تحديد الفئة الوظيفية للكادر.',
             'employment_status_id.required' => 'يرجى تحديد الحالة الوظيفية.',

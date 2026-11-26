@@ -25,6 +25,7 @@ Route::middleware([EnsureDesktopAuthenticated::class])->group(function () {
     Route::get('/employees/import/template', [EmployeeController::class, 'downloadImportTemplate'])->name('employees.import.template');
     Route::post('/employees/import/excel', [EmployeeController::class, 'importExcel'])->middleware(EnsureHasPermission::class . ':manage_employees')->name('employees.import.excel');
     Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
+    Route::get('/employees/check-duplicate', [EmployeeController::class, 'checkDuplicate'])->name('employees.check_duplicate');
     Route::post('/employees', [EmployeeController::class, 'store'])->middleware(EnsureHasPermission::class . ':manage_employees')->name('employees.store');
     Route::get('/employees/{id}', [EmployeeController::class, 'show'])->name('employees.show');
     Route::delete('/employees/{id}', [EmployeeController::class, 'destroy'])->middleware(EnsureHasPermission::class . ':delete_employees')->name('employees.destroy');

@@ -20,7 +20,7 @@
             <a href="{{ route('employees.index') }}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3.5 py-1.5 rounded-xl text-xs transition border border-slate-200">
                 إلغاء
             </a>
-            <button type="submit" form="main-staff-form" id="btn-save-staff" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow-xs cursor-pointer">
+            <button type="button" onclick="submitStaffForm()" id="btn-save-staff" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold px-4 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow-xs cursor-pointer">
                 <i class="fa-solid fa-check text-white"></i> حفظ السجل
             </button>
         </div>
@@ -29,7 +29,7 @@
     <!-- 2. حاوية النموذج المستقلة مع إخفاء شريط التمرير (Ghost Scroll) -->
     <div class="flex-1 bg-white border border-slate-200 shadow-xs flex flex-col min-h-0 rounded-2xl overflow-hidden relative">
         
-        <form id="main-staff-form" method="POST" action="{{ route('employees.store') }}" enctype="multipart/form-data" 
+        <form id="main-staff-form" method="POST" action="{{ route('employees.store') }}" enctype="multipart/form-data" novalidate onsubmit="return handleMainStaffFormSubmit(event)"
               class="flex-1 overflow-y-auto no-scrollbar p-3.5 space-y-3">
             @csrf
 
@@ -125,21 +125,46 @@
                     </div>
 
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">الرقم الوظيفي</label>
-                        <input type="text" name="employee_number" value="{{ old('employee_number') }}" placeholder="مثال: 10045" 
-                               class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs font-mono font-bold text-primary focus:border-primary focus:outline-none transition shadow-2xs">
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-[11px] font-bold text-slate-700">الرقم الوظيفي <span class="text-rose-600">*</span></label>
+                            <span class="text-[9px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">ترقيم تلقائي</span>
+                        </div>
+                        <div class="relative">
+                            <input type="text" name="employee_number" id="employee_number_input" required 
+                                   value="{{ old('employee_number', $nextEmployeeNumber ?? '') }}" 
+                                   inputmode="numeric"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, ''); checkDuplicateLive('employee_number', this.value, 'emp_num_feedback');"
+                                   placeholder="الرقم الوظيفي (تلقائي)" 
+                                   class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs font-mono font-bold text-primary focus:border-primary focus:outline-none transition shadow-2xs">
+                            <div id="emp_num_feedback" class="hidden text-[10px] font-bold mt-1 text-rose-600 flex items-center gap-1"></div>
+                        </div>
                     </div>
 
                     <div>
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">الرقم الوطني / البطاقة</label>
-                        <input type="text" name="national_id" value="{{ old('national_id') }}" placeholder="رقم البطاقة الشخصية" 
-                               class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                        <div class="relative">
+                            <input type="text" name="national_id" id="national_id_input"
+                                   value="{{ old('national_id') }}" 
+                                   inputmode="numeric"
+                                   maxlength="20"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, ''); checkDuplicateLive('national_id', this.value, 'nat_id_feedback');"
+                                   placeholder="أرقام فقط (مثال: 0101002345)" 
+                                   class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                            <div id="nat_id_feedback" class="hidden text-[10px] font-bold mt-1 text-rose-600 flex items-center gap-1"></div>
+                        </div>
                     </div>
 
                     <div>
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">رقم الهاتف</label>
-                        <input type="text" name="phone_number" value="{{ old('phone_number') }}" placeholder="77xxxxxxx" 
-                               class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs font-mono text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                        <div class="relative">
+                            <input type="tel" name="phone_number" id="phone_number_input"
+                                   value="{{ old('phone_number') }}" 
+                                   inputmode="tel"
+                                   maxlength="16"
+                                   oninput="this.value = this.value.replace(/[^0-9+]/g, '');"
+                                   placeholder="أرقام فقط (مثال: 771234567)" 
+                                   class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs font-mono text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                        </div>
                     </div>
 
                     <div>
@@ -283,14 +308,20 @@
                     <!-- نصاب الساعات (متقاعدين بالساعات) -->
                     <div class="cadre-field-hourly hidden">
                         <label class="block text-[11px] font-bold text-amber-900 mb-1">نصاب الساعات المعتمدة <span class="text-rose-600">*</span></label>
-                        <input type="number" step="0.5" min="1" max="50" name="hourly_hours" value="{{ old('hourly_hours') }}" placeholder="مثال: 12 ساعة أسبوعياً" 
+                        <input type="number" step="0.5" min="1" max="50" name="hourly_hours" value="{{ old('hourly_hours') }}" 
+                               inputmode="decimal"
+                               oninput="this.value = this.value.replace(/[^0-9.]/g, '');"
+                               placeholder="أرقام فقط (مثال: 12)" 
                                class="w-full bg-white border border-amber-300 rounded-md px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
                     </div>
 
                     <!-- أجر الساعة (متقاعدين بالساعات) -->
                     <div class="cadre-field-hourly hidden">
                         <label class="block text-[11px] font-bold text-amber-900 mb-1">أجر الساعة المعتمد (ريال)</label>
-                        <input type="number" step="100" min="0" name="hourly_rate" value="{{ old('hourly_rate') }}" placeholder="مثال: 5000" 
+                        <input type="text" name="hourly_rate" value="{{ old('hourly_rate') }}" 
+                               inputmode="numeric"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                               placeholder="أرقام فقط (مثال: 5000)" 
                                class="w-full bg-white border border-amber-300 rounded-md px-2.5 py-1.5 text-xs font-mono font-bold text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
                     </div>
 
@@ -678,7 +709,7 @@
                     <span>التالي</span>
                     <i class="fa-solid fa-arrow-left text-[11px]"></i>
                 </button>
-                <button type="submit" form="main-staff-form" id="btnWizardSubmit"
+                <button type="button" id="btnWizardSubmit" onclick="submitStaffForm()"
                         class="hidden px-5 py-2 rounded-xl bg-[#14532d] hover:bg-[#166534] text-white font-bold text-xs transition flex items-center gap-2 cursor-pointer shadow-xs">
                     <i class="fa-solid fa-check text-[11px]"></i>
                     <span>حفظ السجل</span>
@@ -991,6 +1022,45 @@
     // منطق المعالج الأفقي ذي الخطوات الخمس (5-Step Horizontal Wizard)
     let currentWizardStep = 1;
     const totalWizardSteps = 5;
+    window.isEmployeeNumberDuplicate = false;
+    window.isNationalIdDuplicate = false;
+    let checkDuplicateTimeout = null;
+
+    function checkDuplicateLive(field, value, feedbackId) {
+        clearTimeout(checkDuplicateTimeout);
+        const fbEl = document.getElementById(feedbackId);
+        if (!fbEl) return;
+
+        const val = (value || '').trim();
+        if (!val) {
+            fbEl.classList.add('hidden');
+            fbEl.innerHTML = '';
+            if (field === 'employee_number') window.isEmployeeNumberDuplicate = false;
+            if (field === 'national_id') window.isNationalIdDuplicate = false;
+            return;
+        }
+
+        checkDuplicateTimeout = setTimeout(() => {
+            fetch(`{{ route('employees.check_duplicate') }}?field=${encodeURIComponent(field)}&value=${encodeURIComponent(val)}`, {
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.exists) {
+                    if (field === 'employee_number') window.isEmployeeNumberDuplicate = true;
+                    if (field === 'national_id') window.isNationalIdDuplicate = true;
+                    fbEl.innerHTML = `<i class="fa-solid fa-circle-exclamation text-rose-500"></i> <span>${data.message}</span>`;
+                    fbEl.classList.remove('hidden');
+                } else {
+                    if (field === 'employee_number') window.isEmployeeNumberDuplicate = false;
+                    if (field === 'national_id') window.isNationalIdDuplicate = false;
+                    fbEl.classList.add('hidden');
+                    fbEl.innerHTML = '';
+                }
+            })
+            .catch(() => {});
+        }, 300);
+    }
 
     function showWizardAlert(msg, fieldToFocus = null) {
         let alertBox = document.getElementById('wizard-validation-toast');
@@ -1046,6 +1116,20 @@
             const genderSelect = panel.querySelector('select[name="gender"]');
             if (!genderSelect || !genderSelect.value) {
                 showWizardAlert('يرجى تحديد الجنس للكادر.', genderSelect);
+                return false;
+            }
+            const empNumInput = document.getElementById('employee_number_input');
+            if (!empNumInput || !empNumInput.value.trim()) {
+                showWizardAlert('يرجى تعبئة الرقم الوظيفي للكادر (أو اعتماد الرقم التلقائي) للمتابعة.', empNumInput);
+                return false;
+            }
+            if (window.isEmployeeNumberDuplicate) {
+                showWizardAlert('الرقم الوظيفي مسجل مسبقاً لموظف آخر، يرجى كتابة رقم مختلف.', empNumInput);
+                return false;
+            }
+            if (window.isNationalIdDuplicate) {
+                const natIdInput = document.getElementById('national_id_input');
+                showWizardAlert('الرقم الوطني / البطاقة مسجل مسبقاً لموظف آخر في النظام!', natIdInput);
                 return false;
             }
         } else if (stepNum === 2) {
@@ -1228,6 +1312,51 @@
 
     function prevWizardStep() {
         goToWizardStep(currentWizardStep - 1, true);
+    }
+
+    // إرسال وحفظ النموذج مع التحقق الشامل من كافة المراحل
+    function submitStaffForm(e) {
+        if (e && e.preventDefault) e.preventDefault();
+
+        // فحص كافة خطوات النموذج من 1 إلى 4 للتأكد من خلوها من النواقص
+        for (let s = 1; s <= 4; s++) {
+            if (!validateWizardStep(s)) {
+                goToWizardStep(s, true);
+                return false;
+            }
+        }
+
+        if (window.isEmployeeNumberDuplicate) {
+            goToWizardStep(1, true);
+            const empNumInput = document.getElementById('employee_number_input');
+            showWizardAlert('الرقم الوظيفي مسجل مسبقاً لموظف آخر، يرجى كتابة رقم مختلف.', empNumInput);
+            return false;
+        }
+
+        if (window.isNationalIdDuplicate) {
+            goToWizardStep(1, true);
+            const natIdInput = document.getElementById('national_id_input');
+            showWizardAlert('الرقم الوطني / البطاقة مسجل مسبقاً لموظف آخر في النظام!', natIdInput);
+            return false;
+        }
+
+        const btnTop = document.getElementById('btn-save-staff');
+        const btnBottom = document.getElementById('btnWizardSubmit');
+        if (btnTop) {
+            btnTop.disabled = true;
+            btnTop.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري حفظ السجل...';
+        }
+        if (btnBottom) {
+            btnBottom.disabled = true;
+            btnBottom.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري حفظ السجل...';
+        }
+
+        document.getElementById('main-staff-form').submit();
+        return true;
+    }
+
+    function handleMainStaffFormSubmit(e) {
+        return submitStaffForm(e);
     }
 
     // في حال وجود حقل مطلوب غير مكتمل عند محاولة الحفظ المباشر من الأعلى، الانتقال تلقائياً لخطوته
