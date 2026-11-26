@@ -96,6 +96,7 @@
         </div>
 
         <!-- زر الإضافة والتسجيل المكتبي -->
+        @if(\App\Services\PermissionService::hasPerm('decisions.create'))
         <div class="flex items-center gap-2.5 shrink-0">
             @if($tab === 'decisions')
                 <button onclick="document.getElementById('newDecisionModal').classList.remove('hidden')" 
@@ -109,6 +110,7 @@
                 </button>
             @endif
         </div>
+        @endif
 
     </div>
 
@@ -173,9 +175,12 @@
                                                 <i class="fa-solid fa-file-pdf text-[#14532d]"></i>
                                             </a>
                                         @endif
+                                        @if(\App\Services\PermissionService::hasPerm('decisions.edit'))
                                         <button type="button" onclick="editDecision({{ json_encode($dec) }})" class="p-1.5 px-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg border border-slate-200 transition text-xs cursor-pointer shadow-2xs font-bold" title="تعديل القرار">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
+                                        @endif
+                                        @if(\App\Services\PermissionService::hasPerm('decisions.delete'))
                                         <form method="POST" action="{{ route('decisions.destroy', $dec->decision_id) }}" class="inline" onsubmit="return confirm('تأكيد حذف هذا القرار؟');">
                                             @csrf
                                             @method('DELETE')
@@ -183,6 +188,7 @@
                                                 <i class="fa-solid fa-trash-can"></i>
                                             </button>
                                         </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

@@ -187,6 +187,7 @@
                 <span class="hidden md:inline">تصدير Excel</span>
             </a>
 
+            @if(\App\Services\PermissionService::hasPerm('archive.create'))
             <!-- زر أرشفة جماعية (Bulk Upload) -->
             <button type="button" onclick="document.getElementById('bulkUploadModal').classList.remove('hidden')" 
                     class="bg-brand-50 hover:bg-brand-100 text-brand-900 border border-brand-200 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-2xs cursor-pointer" 
@@ -201,6 +202,7 @@
                 <i class="fa-solid fa-cloud-arrow-up text-xs"></i>
                 <span>أرشفة وثيقة</span>
             </button>
+            @endif
         </div>
 
     </div>

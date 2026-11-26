@@ -82,19 +82,23 @@
 
             <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
 
+            @if(\App\Services\PermissionService::hasPerm('archive.create'))
             <!-- أرشفة وثيقة جديدة -->
             <button type="button" onclick="focusUploadCard()" 
                     class="w-9 h-9 rounded-xl bg-[#14532d] hover:bg-[#166534] text-white flex items-center justify-center transition shadow-xs cursor-pointer" 
                     title="بطاقة رفع وأرشفة ملف">
                 <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
             </button>
+            @endif
 
+            @if(\App\Services\PermissionService::hasPerm('employees.edit'))
             <!-- تعديل البيانات الأساسية -->
             <button type="button" onclick="openModal('modal-edit-basic')" 
                     class="w-9 h-9 rounded-xl bg-white hover:bg-slate-100 text-slate-600 hover:text-brand-900 border border-slate-200 flex items-center justify-center transition shadow-2xs cursor-pointer" 
                     title="تعديل البيانات الأساسية">
                 <i class="fa-solid fa-pen-to-square text-sm"></i>
             </button>
+            @endif
 
             <!-- طباعة بيان حالة رسمي -->
             <a href="{{ route('reports.index', ['employee_id' => $employee->employee_id]) }}" 
