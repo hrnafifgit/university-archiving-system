@@ -365,4 +365,43 @@ class QuickAddController extends Controller
             'name' => $university->university_name_ar,
         ]);
     }
+
+    /**
+     * إضافة سريعة لنوع قرار إداري/أكاديمي
+     */
+    public function storeDecisionType(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:150',
+        ]);
+
+        $name = trim($request->name);
+
+        $existing = DecisionType::where('type_name_ar', $name)->first();
+        if ($existing) {
+            return response()->json([
+                'success' => true,
+                'id' => $existing->decision_type_id,
+                'name' => $existing->type_name_ar,
+            ]);
+        }
+
+        $code = 'DEC_' . strtoupper(Str::slug($name, '_'));
+        if (strlen($code) < 5) $code = 'DEC_' . Str::random(5);
+        if (DecisionType::where('type_code', $code)->exists()) {
+            $code .= '_' . rand(10, 99);
+        }
+
+        $decisionType = DecisionType::create([
+            'type_code' => $code,
+            'type_name_ar' => $name,
+            'requires_end_date' => false,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'id' => $decisionType->decision_type_id,
+            'name' => $decisionType->type_name_ar,
+        ]);
+    }
 }

@@ -391,8 +391,81 @@ class ReportController extends Controller
         // 5. لوحة الإحصائيات البيانية التفاعلية (Analytics Dashboard)
         $analyticsCadre = $request->query('cadre', 'all');
         $analyticsData = null;
+        $countryUniStats = collect();
+        $facultyDeptBreakdown = collect();
+        $analyticsCountries = collect();
+        $analyticsUniversities = collect();
+        $analyticsQualLevels = collect();
+        $selectedAnalyticsFacultyId = $request->query('analytics_faculty_id');
         if ($reportType === 'analytics') {
             $analyticsData = $this->analyticsService->getAnalyticsData($analyticsCadre);
+            $analyticsCountries = \App\Models\Country::orderBy('country_name_ar')->get();
+            $analyticsUniversities = \App\Models\University::orderBy('university_name_ar')->get();
+            $analyticsQualLevels = \App\Models\QualificationLevel::orderBy('level_order')->get();
+
+            $cuQuery = DB::table('employee_qualifications as eq')
+                ->leftJoin('countries as c', 'c.country_id', '=', 'eq.country_id')
+                ->leftJoin('universities as u', 'u.university_id', '=', 'eq.university_id')
+                ->join('qualification_levels as ql', 'ql.qualification_level_id', '=', 'eq.qualification_level_id')
+                ->selectRaw("COALESCE(c.country_name_ar, 'غير محدد') as country_name, COALESCE(u.university_name_ar, 'غير محدد') as university_name, ql.level_name_ar as level_name, COUNT(DISTINCT eq.employee_id) as emp_count")
+                ->groupBy('c.country_name_ar', 'u.university_name_ar', 'ql.level_name_ar')
+                ->orderByDesc('emp_count');
+            if ($request->filled('stat_country_id')) {
+                $cuQuery->where('eq.country_id', $request->stat_country_id);
+            }
+            if ($request->filled('stat_university_id')) {
+                $cuQuery->where('eq.university_id', $request->stat_university_id);
+            }
+            if ($request->filled('stat_qual_level_id')) {
+                $cuQuery->where('eq.qualification_level_id', $request->stat_qual_level_id);
+            }
+            $countryUniStats = $cuQuery->limit(50)->get();
+
+            // إحصائية الكلية والأقسام (أكاديمي / إداري / أستاذ دكتور / دكتوراه / موفد / معيد)
+            $fdQuery = DB::table('employment_records as er')
+                ->join('organizational_units as ou', 'ou.organizational_unit_id', '=', 'er.organizational_unit_id')
+                ->join('employee_categories as ec', 'ec.employee_category_id', '=', 'er.employee_category_id')
+                ->leftJoin('academic_ranks as ar', 'ar.academic_rank_id', '=', 'er.academic_rank_id')
+                ->leftJoin('employment_statuses as es', 'es.employment_status_id', '=', 'er.employment_status_id')
+                ->where('er.is_primary', true)
+                ->whereNull('er.end_date');
+            if ($selectedAnalyticsFacultyId) {
+                $fdQuery->where(function ($q) use ($selectedAnalyticsFacultyId) {
+                    $q->where('ou.organizational_unit_id', $selectedAnalyticsFacultyId)
+                      ->orWhere('ou.parent_unit_id', $selectedAnalyticsFacultyId);
+                });
+            }
+            $facultyDeptBreakdown = $fdQuery->selectRaw("
+                ou.unit_name_ar as unit_name,
+                COUNT(DISTINCT CASE WHEN ec.category_code ILIKE '%academic%' OR ec.category_name_ar LIKE '%أكاديمي%' THEN er.employee_id END) as academic_count,
+                COUNT(DISTINCT CASE WHEN ec.category_code ILIKE '%admin%' OR ec.category_name_ar LIKE '%إداري%' THEN er.employee_id END) as admin_count,
+                COUNT(DISTINCT CASE WHEN ar.rank_name_ar LIKE '%أستاذ دكتور%' OR ar.rank_code = 'PROF' THEN er.employee_id END) as prof_count,
+                COUNT(DISTINCT CASE WHEN ar.rank_name_ar LIKE '%معيد%' THEN er.employee_id END) as ta_count,
+                COUNT(DISTINCT CASE WHEN es.status_name_ar LIKE '%موفد%' OR es.status_name_ar LIKE '%إيفاد%' THEN er.employee_id END) as dispatched_count
+            ")
+            ->groupBy('ou.unit_name_ar')
+            ->orderBy('ou.unit_name_ar')
+            ->get();
+
+            $contractFilter = $request->query('contract_filter', 'all');
+            $contractsQuery = DB::table('contractor_contracts as cc')
+                ->join('employees as e', 'e.employee_id', '=', 'cc.employee_id')
+                ->leftJoin('contractors as c', 'c.employee_id', '=', 'cc.employee_id')
+                ->select(
+                    'cc.*',
+                    'e.full_name_ar',
+                    'e.employee_number',
+                    'c.job_classification'
+                )
+                ->orderBy('cc.contract_end_date');
+            if ($contractFilter === 'expired') {
+                $contractsQuery->whereNotNull('cc.contract_end_date')->where('cc.contract_end_date', '<', date('Y-m-d'));
+            } elseif ($contractFilter === 'active') {
+                $contractsQuery->where(function ($q) {
+                    $q->whereNull('cc.contract_end_date')->orWhere('cc.contract_end_date', '>=', date('Y-m-d'));
+                });
+            }
+            $contractorContractsList = $contractsQuery->limit(50)->get();
         }
 
         // قوائم الحالات المرجعية للفلاتر
@@ -405,6 +478,13 @@ class ReportController extends Controller
             'matrixCode',
             'analyticsCadre',
             'analyticsData',
+            'countryUniStats',
+            'facultyDeptBreakdown',
+            'analyticsCountries',
+            'analyticsUniversities',
+            'analyticsQualLevels',
+            'selectedAnalyticsFacultyId',
+            'contractorContractsList',
             'employee',
             'employeeList',
             'qualificationsByLevel',

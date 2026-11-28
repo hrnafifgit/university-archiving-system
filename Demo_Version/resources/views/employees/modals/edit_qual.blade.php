@@ -28,6 +28,45 @@
             </div>
             <div class="grid grid-cols-2 gap-2">
                 <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">الدولة</label>
+                    <select name="country_id" id="edit_qual_country_id" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:bg-white focus:border-[#14532d]">
+                        <option value="">-- اختر الدولة --</option>
+                        @foreach($countries ?? [] as $c)
+                            <option value="{{ $c->country_id }}">{{ $c->country_name_ar }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">التخصص</label>
+                    <select name="specialization_id" id="edit_qual_specialization_id" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:bg-white focus:border-[#14532d]">
+                        <option value="">-- اختر التخصص --</option>
+                        @foreach($specializations ?? [] as $sp)
+                            <option value="{{ $sp->specialization_id }}">{{ $sp->specialization_name_ar }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">نمط الدراسة (ماجستير/دكتوراه)</label>
+                    <select name="study_mode" id="edit_qual_study_mode" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:bg-white focus:border-[#14532d]">
+                        <option value="">-- غير محدد --</option>
+                        <option value="داخلي">داخلي</option>
+                        <option value="خارجي">خارجي</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">قرار الإيفاد (للموفدين)</label>
+                    <select name="dispatch_decision_id" id="edit_qual_dispatch_decision_id" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:bg-white focus:border-[#14532d]">
+                        <option value="">-- بدون قرار إيفاد --</option>
+                        @foreach($dispatchDecisions ?? [] as $dd)
+                            <option value="{{ $dd->decision_id }}">{{ $dd->decision_number }} — {{ \Illuminate\Support\Str::limit($dd->summary, 28) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
                     <label class="block text-[11px] font-bold text-slate-700 mb-1">تاريخ التخرج</label>
                     <input type="date" name="graduation_date" id="edit_qual_graduation_date" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono focus:bg-white focus:border-[#14532d]">
                 </div>

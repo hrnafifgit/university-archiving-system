@@ -209,6 +209,7 @@ class RolePermissionController extends Controller
             'username' => ['required', 'string', 'min:3', 'max:80', 'regex:/^[a-z0-9_.\-]+$/', 'unique:app_users,username'],
             'password' => 'required|string|min:4',
             'role_id' => 'required|exists:app_roles,role_id',
+            'data_scope' => 'nullable|string|max:60',
         ], [
             'employee_id.required' => 'يرجى اختيار الكادر.',
             'employee_id.unique' => 'هذا الكادر لديه حساب مستخدم مسجل مسبقاً في النظام.',
@@ -229,6 +230,7 @@ class RolePermissionController extends Controller
                 'employee_id' => $emp->employee_id,
                 'username' => $validated['username'],
                 'display_name_ar' => $emp->full_name_ar,
+                'data_scope' => $validated['data_scope'] ?? 'all',
                 'password_hash' => Hash::make(trim($validated['password'])),
                 'is_active' => true,
                 'allow_direct_password_change' => true,

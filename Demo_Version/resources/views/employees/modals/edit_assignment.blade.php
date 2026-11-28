@@ -107,6 +107,22 @@
                             <label class="block text-[10px] font-bold text-slate-600 mb-0.5">تاريخ التعيين بالجامعة أكاديمي</label>
                             <input type="date" name="academic_appointment_date" id="edit_assign_academic_date" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2 py-1 font-mono text-xs focus:bg-white">
                         </div>
+                        <div class="col-span-2">
+                            <label class="block text-[10px] font-bold text-slate-600 mb-0.5">الوضع الحالي / الملاحظات</label>
+                            <select name="notes" id="edit_assign_notes_select" data-use-name-as-value="true" data-quick-type="payroll_status" data-quick-title="إضافة حالة وضع حالي" data-quick-label="اسم الوضع الحالي الجديد:" onchange="handleQuickAddChange(this)" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold focus:bg-white">
+                                <option value="متواجد">متواجد</option>
+                                <option value="منقطع">منقطع</option>
+                                <option value="غير محدد">غير محدد</option>
+                                <option value="موفد للدراسة">موفد للدراسة</option>
+                                <option value="إجازة">إجازة</option>
+                                @foreach($statuses as $st)
+                                    @if(!in_array($st->status_name_ar, ['متواجد','منقطع','غير محدد','موفد للدراسة','إجازة']))
+                                        <option value="{{ $st->status_name_ar }}">{{ $st->status_name_ar }}</option>
+                                    @endif
+                                @endforeach
+                                <option value="__add_new__" class="font-bold text-[#14532d] bg-amber-50">+ إضافة حالة جديدة...</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>

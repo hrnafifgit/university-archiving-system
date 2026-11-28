@@ -339,9 +339,34 @@
                                class="w-full bg-white border border-amber-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
                     </div>
 
-                    <!-- الدرجة الوظيفية -->
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1">الدرجة الوظيفية</label>
+                    <!-- بيانات المتعاقدين والعقد -->
+                    <div class="cadre-field-hourly hidden">
+                        <label class="block text-[11px] font-bold text-amber-900 mb-1">تصنيف الوظيفة</label>
+                        <select name="job_classification" class="w-full bg-white border border-amber-300 rounded-md px-2.5 py-1.5 text-xs font-bold text-slate-800">
+                            <option value="أكاديمية">أكاديمية</option>
+                            <option value="إدارية">إدارية</option>
+                            <option value="فنية">فنية</option>
+                        </select>
+                    </div>
+                    <div class="cadre-field-hourly hidden">
+                        <label class="block text-[11px] font-bold text-amber-900 mb-1">نظام الأجر</label>
+                        <select name="wage_system" class="w-full bg-white border border-amber-300 rounded-md px-2.5 py-1.5 text-xs font-bold text-slate-800">
+                            <option value="بالساعة">بالساعة</option>
+                            <option value="شهري">شهري</option>
+                        </select>
+                    </div>
+                    <div class="cadre-field-hourly hidden">
+                        <label class="block text-[11px] font-bold text-amber-900 mb-1">تاريخ التعاقد الأول</label>
+                        <input type="date" name="first_contract_date" value="{{ old('first_contract_date', date('Y-m-d')) }}" class="w-full bg-white border border-amber-300 rounded-md px-2.5 py-1.5 text-xs font-mono text-slate-800">
+                    </div>
+                    <div class="cadre-field-hourly hidden">
+                        <label class="block text-[11px] font-bold text-amber-900 mb-1">تاريخ انتهاء العقد</label>
+                        <input type="date" name="contract_end_date" value="{{ old('contract_end_date') }}" class="w-full bg-white border border-amber-300 rounded-md px-2.5 py-1.5 text-xs font-mono text-slate-800">
+                    </div>
+
+                    <!-- الدرجة الوظيفية (للإداريين فقط 1-15) -->
+                    <div class="cadre-field-admin hidden">
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">الدرجة الوظيفية (1–15)</label>
                         <div class="flex items-center gap-1.5">
                             <select name="job_grade_id" id="desktop_grade_select" data-quick-type="grade" data-quick-title="إضافة درجة مالية" data-quick-label="اسم الدرجة الوظيفية الجديدة:" onchange="handleQuickAddChange(this)" class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
                                 <option value="">-- اختر الدرجة --</option>
@@ -370,6 +395,20 @@
                         <label class="block text-[11px] font-bold text-slate-700 mb-1">أساس التعيين</label>
                         <input type="text" name="appointment_basis" id="appointment_basis_input" value="{{ old('appointment_basis', 'تثبيت رسمي') }}" 
                                class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:border-primary focus:outline-none transition shadow-2xs">
+                    </div>
+
+                    <div class="cadre-field-admin hidden sm:col-span-2 lg:col-span-4 bg-amber-50/70 border border-amber-200 rounded-lg px-3 py-2 flex flex-wrap items-center gap-2.5">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" name="has_academic_conflict" id="has_academic_conflict" value="1" {{ old('has_academic_conflict') ? 'checked' : '' }}
+                                   onchange="document.getElementById('conflict_note_input').classList.toggle('hidden', !this.checked)"
+                                   class="rounded border-amber-400 text-amber-700 focus:ring-amber-600">
+                            <label for="has_academic_conflict" class="text-[11px] font-bold text-amber-900 cursor-pointer">
+                                ازدواجية إداري/أكاديمي (قيد الفرز): موظف إداري يحمل دكتوراه ومُكلّف عضو هيئة تدريس ولم ينتقل مالياً بعد
+                            </label>
+                        </div>
+                        <input type="text" name="conflict_note" id="conflict_note_input" value="{{ old('conflict_note') }}"
+                               placeholder="أدخل ملاحظة حول حالة التضارب أو التكليف..."
+                               class="{{ old('has_academic_conflict') ? '' : 'hidden' }} flex-1 min-w-[240px] bg-white border border-amber-300 rounded-md px-2.5 py-1 text-xs text-slate-800 focus:outline-none focus:border-amber-600">
                     </div>
                 </div>
             </div>
@@ -406,6 +445,32 @@
                             <button type="button" onclick="openQuickAdd('payroll_status', 'payroll_status_select', 'اسم الحالة بكشف الراتب:', 'إضافة حالة براتب')"
                                     class="shrink-0 w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#14532d] border border-emerald-300 flex items-center justify-center text-xs font-bold transition shadow-2xs hover:scale-105 cursor-pointer"
                                     title="إضافة حالة جديدة">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- الوضع الحالي / الملاحظات (كومبو بوكس مع إضافة حالة جديدة) -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">الوضع الحالي / الملاحظات</label>
+                        <div class="flex items-center gap-1.5">
+                            <select name="notes" id="current_reality_status_select" data-use-name-as-value="true" data-quick-type="payroll_status" data-quick-title="إضافة حالة وضع حالي" data-quick-label="اسم الوضع الحالي الجديد:" onchange="handleQuickAddChange(this)"
+                                    class="w-full bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs text-slate-800 font-bold focus:border-primary focus:outline-none transition shadow-2xs">
+                                <option value="متواجد" {{ old('notes', 'متواجد') == 'متواجد' ? 'selected' : '' }}>متواجد</option>
+                                <option value="منقطع" {{ old('notes') == 'منقطع' ? 'selected' : '' }}>منقطع</option>
+                                <option value="غير محدد" {{ old('notes') == 'غير محدد' ? 'selected' : '' }}>غير محدد</option>
+                                <option value="موفد للدراسة" {{ old('notes') == 'موفد للدراسة' ? 'selected' : '' }}>موفد للدراسة</option>
+                                <option value="إجازة" {{ old('notes') == 'إجازة' ? 'selected' : '' }}>إجازة</option>
+                                @foreach($statuses as $st)
+                                    @if(!in_array($st->status_name_ar, ['متواجد','منقطع','غير محدد','موفد للدراسة','إجازة']))
+                                        <option value="{{ $st->status_name_ar }}" {{ old('notes') == $st->status_name_ar ? 'selected' : '' }}>{{ $st->status_name_ar }}</option>
+                                    @endif
+                                @endforeach
+                                <option value="__add_new__" class="font-bold text-primary bg-amber-50">+ إضافة حالة جديدة...</option>
+                            </select>
+                            <button type="button" onclick="openQuickAdd('payroll_status', 'current_reality_status_select', 'اسم الوضع الحالي الجديد:', 'إضافة حالة وضع حالي')"
+                                    class="shrink-0 w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#14532d] border border-emerald-300 flex items-center justify-center text-xs font-bold transition shadow-2xs hover:scale-105 cursor-pointer"
+                                    title="إضافة حالة وضع حالي جديدة">
                                 <i class="fa-solid fa-plus"></i>
                             </button>
                         </div>

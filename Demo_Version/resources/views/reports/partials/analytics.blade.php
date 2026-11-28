@@ -235,6 +235,172 @@
 
     </div>
 
+    <!-- 6. إحصائيات المؤهلات حسب الدولة والجامعة + تفصيل الكلية والأقسام -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <!-- إحصائية الدولة والجامعة والمستوى العلمي -->
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-xs p-4 flex flex-col gap-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 flex-wrap gap-2">
+                <h3 class="text-sm font-black text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-earth-americas text-sky-600"></i>
+                    <span>المؤهلات حسب الدولة والجامعة والمستوى</span>
+                </h3>
+            </div>
+            <form method="GET" action="{{ route('reports.index') }}" class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs print:hidden">
+                <input type="hidden" name="type" value="analytics">
+                <input type="hidden" name="cadre" value="{{ $analyticsCadre }}">
+                <select name="stat_country_id" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 font-bold">
+                    <option value="">كل الدول</option>
+                    @foreach($analyticsCountries ?? [] as $ac)
+                        <option value="{{ $ac->country_id }}" {{ request('stat_country_id') == $ac->country_id ? 'selected' : '' }}>{{ $ac->country_name_ar }}</option>
+                    @endforeach
+                </select>
+                <select name="stat_university_id" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 font-bold">
+                    <option value="">كل الجامعات</option>
+                    @foreach($analyticsUniversities ?? [] as $au)
+                        <option value="{{ $au->university_id }}" {{ request('stat_university_id') == $au->university_id ? 'selected' : '' }}>{{ $au->university_name_ar }}</option>
+                    @endforeach
+                </select>
+                <select name="stat_qual_level_id" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 font-bold">
+                    <option value="">كل المستويات</option>
+                    @foreach($analyticsQualLevels ?? [] as $aql)
+                        <option value="{{ $aql->qualification_level_id }}" {{ request('stat_qual_level_id') == $aql->qualification_level_id ? 'selected' : '' }}>{{ $aql->level_name_ar }}</option>
+                    @endforeach
+                </select>
+                <button type="submit" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold rounded-lg px-3 py-1.5 cursor-pointer">تصفية</button>
+            </form>
+            <div class="overflow-x-auto max-h-64 overflow-y-auto">
+                <table class="w-full text-right text-xs border-collapse">
+                    <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                        <tr>
+                            <th class="py-2 px-2">الدولة</th>
+                            <th class="py-2 px-2">الجامعة</th>
+                            <th class="py-2 px-2">المستوى العلمي</th>
+                            <th class="py-2 px-2 text-center">العدد</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse($countryUniStats ?? [] as $row)
+                            <tr>
+                                <td class="py-1.5 px-2 font-bold text-slate-800">{{ $row->country_name }}</td>
+                                <td class="py-1.5 px-2 text-slate-700">{{ $row->university_name }}</td>
+                                <td class="py-1.5 px-2 text-slate-700">{{ $row->level_name }}</td>
+                                <td class="py-1.5 px-2 text-center font-mono font-bold text-[#14532d]">{{ $row->emp_count }}</td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="4" class="py-4 text-center text-slate-400">لا توجد بيانات مطابقة</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- تفصيل الكلية والأقسام والفئة -->
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-xs p-4 flex flex-col gap-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 flex-wrap gap-2">
+                <h3 class="text-sm font-black text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-building-columns text-emerald-700"></i>
+                    <span>إحصائية الكلية والأقسام (أكاديمي / إداري / رتب)</span>
+                </h3>
+            </div>
+            <form method="GET" action="{{ route('reports.index') }}" class="flex items-center gap-2 text-xs print:hidden">
+                <input type="hidden" name="type" value="analytics">
+                <input type="hidden" name="cadre" value="{{ $analyticsCadre }}">
+                <select name="analytics_faculty_id" onchange="this.form.submit()" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold">
+                    <option value="">-- كل الكليات والوحدات --</option>
+                    @foreach($faculties ?? [] as $fac)
+                        <option value="{{ $fac->organizational_unit_id }}" {{ ($selectedAnalyticsFacultyId ?? '') == $fac->organizational_unit_id ? 'selected' : '' }}>{{ $fac->unit_name_ar }}</option>
+                    @endforeach
+                </select>
+            </form>
+            <div class="overflow-x-auto max-h-64 overflow-y-auto">
+                <table class="w-full text-right text-xs border-collapse">
+                    <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                        <tr>
+                            <th class="py-2 px-2">الكلية / القسم</th>
+                            <th class="py-2 px-2 text-center">أكاديمي</th>
+                            <th class="py-2 px-2 text-center">إداري</th>
+                            <th class="py-2 px-2 text-center">أستاذ دكتور</th>
+                            <th class="py-2 px-2 text-center">معيد</th>
+                            <th class="py-2 px-2 text-center">موفد</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse($facultyDeptBreakdown ?? [] as $fd)
+                            <tr>
+                                <td class="py-1.5 px-2 font-bold text-slate-800">{{ $fd->unit_name }}</td>
+                                <td class="py-1.5 px-2 text-center font-mono font-bold text-emerald-700">{{ $fd->academic_count }}</td>
+                                <td class="py-1.5 px-2 text-center font-mono font-bold text-blue-700">{{ $fd->admin_count }}</td>
+                                <td class="py-1.5 px-2 text-center font-mono">{{ $fd->prof_count }}</td>
+                                <td class="py-1.5 px-2 text-center font-mono">{{ $fd->ta_count }}</td>
+                                <td class="py-1.5 px-2 text-center font-mono">{{ $fd->dispatched_count }}</td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="6" class="py-4 text-center text-slate-400">لا توجد بيانات مطابقة</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. متابعة عقود المتعاقدين (السارية والمنتهية) -->
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-xs p-4 flex flex-col gap-3">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 flex-wrap gap-2">
+            <h3 class="text-sm font-black text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-file-signature text-amber-600"></i>
+                <span>متابعة عقود المتعاقدين والمستحقات</span>
+            </h3>
+            <form method="GET" action="{{ route('reports.index') }}" class="flex items-center gap-2 text-xs print:hidden">
+                <input type="hidden" name="type" value="analytics">
+                <input type="hidden" name="cadre" value="{{ $analyticsCadre }}">
+                <select name="contract_filter" onchange="this.form.submit()" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold">
+                    <option value="all" {{ request('contract_filter', 'all') === 'all' ? 'selected' : '' }}>كل العقود</option>
+                    <option value="active" {{ request('contract_filter') === 'active' ? 'selected' : '' }}>العقود السارية فقط</option>
+                    <option value="expired" {{ request('contract_filter') === 'expired' ? 'selected' : '' }}>العقود المنتهية فقط</option>
+                </select>
+            </form>
+        </div>
+        <div class="overflow-x-auto max-h-64 overflow-y-auto">
+            <table class="w-full text-right text-xs border-collapse">
+                <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                    <tr>
+                        <th class="py-2 px-2">المتعاقد</th>
+                        <th class="py-2 px-2">رقم العقد</th>
+                        <th class="py-2 px-2">التصنيف</th>
+                        <th class="py-2 px-2">نظام الأجر</th>
+                        <th class="py-2 px-2">الأجر</th>
+                        <th class="py-2 px-2 text-center">تاريخ الانتهاء</th>
+                        <th class="py-2 px-2 text-center">الحالة</th>
+                        <th class="py-2 px-2 text-center">نموذج PDF</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse($contractorContractsList ?? [] as $cc)
+                        @php $isExp = !empty($cc->contract_end_date) && $cc->contract_end_date < date('Y-m-d'); @endphp
+                        <tr>
+                            <td class="py-1.5 px-2 font-bold text-slate-800">{{ $cc->full_name_ar }}</td>
+                            <td class="py-1.5 px-2 font-mono">{{ $cc->contract_number ?? '—' }}</td>
+                            <td class="py-1.5 px-2">{{ $cc->job_classification ?? '—' }}</td>
+                            <td class="py-1.5 px-2 font-bold">{{ $cc->wage_system ?? 'شهري' }}</td>
+                            <td class="py-1.5 px-2 font-mono font-bold text-[#14532d]">{{ number_format((float)$cc->approved_wage, 0) }}</td>
+                            <td class="py-1.5 px-2 text-center font-mono">{{ $cc->contract_end_date ?? 'مفتوح' }}</td>
+                            <td class="py-1.5 px-2 text-center">
+                                <span class="px-2 py-0.5 rounded font-bold {{ $isExp ? 'bg-rose-50 text-rose-800' : 'bg-emerald-50 text-emerald-800' }}">
+                                    {{ $isExp ? 'منتهٍ' : 'ساري المفعول' }}
+                                </span>
+                            </td>
+                            <td class="py-1.5 px-2 text-center">
+                                <a href="{{ route('employees.contracts.pdf', [$cc->employee_id, $cc->contract_id]) }}" target="_blank" class="text-[#14532d] hover:underline font-bold">PDF</a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="8" class="py-4 text-center text-slate-400">لا توجد عقود متعاقدين مسجلة</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 
 <script src="{{ asset('js/chart.min.js') }}"></script>

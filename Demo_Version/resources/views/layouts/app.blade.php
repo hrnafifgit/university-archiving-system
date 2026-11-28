@@ -161,9 +161,9 @@
                     @if(\App\Services\PermissionService::hasPerm('decisions.view'))
                     <a href="{{ route('decisions.index') }}" 
                        class="flex items-center px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap {{ request()->routeIs('decisions.*') ? 'bg-brand-900 text-white shadow-xs' : 'text-slate-600 hover:text-brand-900 hover:bg-slate-100' }}" 
-                       title="القرارات الإدارية والإجازات">
+                       title="الشؤون القانونية">
                         <i class="fa-solid fa-stamp ml-3 text-base {{ request()->routeIs('decisions.*') ? 'text-white' : 'text-slate-400' }}"></i>
-                        <span>القرارات</span>
+                        <span>الشؤون القانونية</span>
                     </a>
                     @endif
 

@@ -34,6 +34,7 @@ class Employee extends Model
         'address',
         'photo_document_id',
         'notes',
+        'has_academic_conflict',
         'is_active_record',
         'created_from_source_id',
     ];
@@ -210,6 +211,16 @@ class Employee extends Model
     public function qualifications(): HasMany
     {
         return $this->hasMany(EmployeeQualification::class, 'employee_id', 'employee_id');
+    }
+
+    public function contractor(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Contractor::class, 'employee_id', 'employee_id');
+    }
+
+    public function contracts(): HasMany
+    {
+        return $this->hasMany(ContractorContract::class, 'employee_id', 'employee_id')->orderByDesc('contract_start_date');
     }
 
     /**

@@ -307,6 +307,18 @@
                     @endforeach
                 </select>
             </div>
+            <div>
+                <label class="block font-bold text-slate-800 mb-1">مجال البيانات (القطاع المسموح)</label>
+                <select name="data_scope" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-bold">
+                    <option value="all">الكل (إدارة النظام / رئيس الجامعة / الأمين العام)</option>
+                    <option value="self">ذاتي فقط (بيانات الموظف الشخصية)</option>
+                    <option value="academic">أكاديمي فقط (الشؤون الأكاديمية)</option>
+                    <option value="admin">إداري فقط (الموارد البشرية / الشؤون الإدارية)</option>
+                    <option value="academic_admin">أكاديمي وإداري معاً (الأرشيف / مشترك)</option>
+                    <option value="dispatch">الموفدون للدراسات العليا (البعثات)</option>
+                    <option value="legal">الشؤون القانونية</option>
+                </select>
+            </div>
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block font-bold text-slate-800 mb-1">اسم المستخدم *</label>

@@ -221,6 +221,10 @@ class EmployeeOperationsController extends Controller
             'award_date' => 'nullable|date',
             'grade_or_gpa' => 'nullable|string|max:100',
             'university_name' => 'nullable|string|max:200',
+            'country_id' => 'nullable|exists:countries,country_id',
+            'specialization_id' => 'nullable|exists:specializations,specialization_id',
+            'study_mode' => 'nullable|in:داخلي,خارجي',
+            'dispatch_decision_id' => 'nullable|exists:employee_decisions,decision_id',
             'notes' => 'nullable|string',
         ]);
 
@@ -242,6 +246,10 @@ class EmployeeOperationsController extends Controller
             'qualification_level_id' => $validated['qualification_level_id'],
             'degree_title' => $validated['degree_title'],
             'university_id' => $univId,
+            'country_id' => $validated['country_id'] ?? null,
+            'specialization_id' => $validated['specialization_id'] ?? null,
+            'study_mode' => $validated['study_mode'] ?? null,
+            'dispatch_decision_id' => $validated['dispatch_decision_id'] ?? null,
             'graduation_date' => $validated['graduation_date'] ?? null,
             'award_date' => $validated['award_date'] ?? null,
             'grade_or_gpa' => $validated['grade_or_gpa'] ?? null,
@@ -269,6 +277,10 @@ class EmployeeOperationsController extends Controller
             'award_date' => 'nullable|date',
             'grade_or_gpa' => 'nullable|string|max:100',
             'university_name' => 'nullable|string|max:200',
+            'country_id' => 'nullable|exists:countries,country_id',
+            'specialization_id' => 'nullable|exists:specializations,specialization_id',
+            'study_mode' => 'nullable|in:داخلي,خارجي',
+            'dispatch_decision_id' => 'nullable|exists:employee_decisions,decision_id',
             'notes' => 'nullable|string',
         ]);
 
@@ -290,6 +302,10 @@ class EmployeeOperationsController extends Controller
             'qualification_level_id' => $validated['qualification_level_id'],
             'degree_title' => $validated['degree_title'],
             'university_id' => $univId,
+            'country_id' => $validated['country_id'] ?? null,
+            'specialization_id' => $validated['specialization_id'] ?? null,
+            'study_mode' => $validated['study_mode'] ?? null,
+            'dispatch_decision_id' => $validated['dispatch_decision_id'] ?? null,
             'graduation_date' => $validated['graduation_date'] ?? null,
             'award_date' => $validated['award_date'] ?? null,
             'grade_or_gpa' => $validated['grade_or_gpa'] ?? null,

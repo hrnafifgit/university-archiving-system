@@ -44,6 +44,13 @@
                     <span class="text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-xl font-bold">
                         {{ $curr?->employmentStatus?->status_name_ar ?? 'على رأس العمل' }}
                     </span>
+
+                    @if($employee->has_academic_conflict)
+                        <span class="text-xs text-amber-900 bg-amber-50 border border-amber-300 px-3 py-1 rounded-xl font-bold flex items-center gap-1.5" title="موظف إداري حاصل على دكتوراه ومُكلّف عضو هيئة تدريس ولم ينتقل مالياً بعد">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+                            <span>تضارب إداري/أكاديمي (قيد الفرز — عضو هيئة تدريس)</span>
+                        </span>
+                    @endif
                 </div>
 
                 <div class="flex items-center gap-3 text-sm text-slate-600 flex-wrap mt-1">
@@ -144,6 +151,11 @@
                         <i class="fa-solid fa-clock-rotate-left text-slate-400"></i>
                         <span>السجل الوظيفي</span>
                         <span class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded-lg text-xs font-mono font-bold">{{ $employee->employmentRecords->count() }}</span>
+                    </button>
+                    <button type="button" onclick="switchProfileTab('tab-contracts')" id="nav-tab-contracts" class="profile-tab-btn px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-2 bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 cursor-pointer">
+                        <i class="fa-solid fa-file-signature text-slate-400"></i>
+                        <span>العقود والمستحقات</span>
+                        <span class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded-lg text-xs font-mono font-bold">{{ $employee->contracts->count() }}</span>
                     </button>
                 </div>
             </div>
@@ -391,6 +403,125 @@
                     </div>
                 </div>
 
+                <!-- التبويب 5: العقود والمستحقات (المتعاقدون) -->
+                <div id="content-tab-contracts" class="profile-tab-content hidden space-y-4">
+                    <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-xs">
+                        <div class="bg-slate-50/70 px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+                            <span class="text-sm font-bold text-slate-900">سجل عقود المتعاقد والمستحقات</span>
+                            <button type="button" onclick="openModal('modal-new-contract')" class="text-xs font-bold bg-[#14532d] hover:bg-[#166534] text-white px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 transition cursor-pointer shadow-xs">
+                                <i class="fa-solid fa-plus text-xs"></i> إبرام عقد جديد
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-right text-sm">
+                                <thead class="bg-slate-50 text-slate-600 text-xs font-semibold border-b border-slate-200">
+                                    <tr>
+                                        <th class="py-3 px-4">رقم العقد</th>
+                                        <th class="py-3 px-4">تصنيف الوظيفة</th>
+                                        <th class="py-3 px-4">نظام الأجر</th>
+                                        <th class="py-3 px-4">الأجر المعتمد</th>
+                                        <th class="py-3 px-4 text-center">البداية — النهاية</th>
+                                        <th class="py-3 px-4 text-center">الحالة</th>
+                                        <th class="py-3 px-4 text-center">نموذج PDF</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    @forelse($employee->contracts as $ctr)
+                                        <tr class="hover:bg-slate-50/70">
+                                            <td class="py-3 px-4 font-mono font-bold text-slate-800">{{ $ctr->contract_number ?? '—' }}</td>
+                                            <td class="py-3 px-4 text-slate-700">{{ $employee->contractor?->job_classification ?? '—' }}</td>
+                                            <td class="py-3 px-4 font-bold text-slate-800">{{ $ctr->wage_system ?? 'شهري' }}</td>
+                                            <td class="py-3 px-4 font-mono font-bold text-[#14532d]">{{ number_format((float)$ctr->approved_wage, 0) }} ريال</td>
+                                            <td class="py-3 px-4 text-center font-mono text-xs text-slate-600">
+                                                {{ $ctr->contract_start_date?->format('Y/m/d') ?? '—' }} ← {{ $ctr->contract_end_date?->format('Y/m/d') ?? 'مفتوح' }}
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                @if($ctr->isExpired())
+                                                    <span class="text-xs font-bold text-rose-800 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-lg">منتهٍ</span>
+                                                @else
+                                                    <span class="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">ساري المفعول</span>
+                                                @endif
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                <a href="{{ route('employees.contracts.pdf', [$employee->employee_id, $ctr->contract_id]) }}" target="_blank"
+                                                   class="inline-flex items-center gap-1 text-xs font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-[#14532d] border border-slate-200 px-2.5 py-1 rounded-lg transition">
+                                                    <i class="fa-solid fa-file-pdf text-rose-600"></i> طباعة PDF
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="7" class="p-8 text-center text-slate-400 text-sm">لا توجد عقود مسجلة لهذا الكادر.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- نافذة إبرام عقد جديد -->
+                <div id="modal-new-contract" class="fixed inset-0 bg-slate-900/40 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs select-none">
+                    <div class="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+                        <div class="bg-slate-50 border-b border-slate-200 px-4 py-3 flex justify-between items-center">
+                            <span class="font-bold text-sm text-slate-800 flex items-center gap-2"><i class="fa-solid fa-file-signature text-[#14532d]"></i> إبرام عقد متعاقد جديد</span>
+                            <button onclick="closeModal('modal-new-contract')" class="w-6 h-6 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 font-bold cursor-pointer">✕</button>
+                        </div>
+                        <form method="POST" action="{{ route('employees.contracts.store', $employee->employee_id) }}" class="p-4 space-y-3 text-xs">
+                            @csrf
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">تصنيف الوظيفة *</label>
+                                    <select name="job_classification" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold">
+                                        <option value="إدارية">إدارية</option>
+                                        <option value="فنية">فنية</option>
+                                        <option value="أكاديمية">أكاديمية</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">نظام الأجر *</label>
+                                    <select name="wage_system" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold">
+                                        <option value="شهري">شهري</option>
+                                        <option value="بالساعة">بالساعة</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">رقم العقد</label>
+                                    <input type="text" name="contract_number" placeholder="CTR-{{ date('Y') }}-01" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">الأجر المعتمد (ريال) *</label>
+                                    <input type="number" name="approved_wage" required min="0" placeholder="50000" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono font-bold">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">تاريخ بداية العقد *</label>
+                                    <input type="date" name="contract_start_date" required value="{{ date('Y-m-d') }}" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">تاريخ انتهاء العقد</label>
+                                    <input type="date" name="contract_end_date" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">تاريخ التعاقد الأول</label>
+                                    <input type="date" name="first_contract_date" value="{{ $employee->contractor?->first_contract_date?->format('Y-m-d') }}" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">ساعات أسبوعية</label>
+                                    <input type="number" name="weekly_hours" min="1" max="80" placeholder="12" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono">
+                                </div>
+                            </div>
+                            <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                                <button type="button" onclick="closeModal('modal-new-contract')" class="bg-slate-100 text-slate-700 px-4 py-1.5 rounded-lg font-bold cursor-pointer">إلغاء</button>
+                                <button type="submit" class="bg-[#14532d] hover:bg-[#166534] text-white px-5 py-1.5 rounded-lg font-bold cursor-pointer">حفظ العقد</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
                 <!-- التبويب 3: المؤهلات -->
                 <div id="content-tab-quals" class="profile-tab-content hidden space-y-4">
                     <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-xs">
@@ -471,6 +602,125 @@
                     </div>
                 </div>
 
+                <!-- التبويب 5: العقود والمستحقات (المتعاقدون) -->
+                <div id="content-tab-contracts" class="profile-tab-content hidden space-y-4">
+                    <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-xs">
+                        <div class="bg-slate-50/70 px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+                            <span class="text-sm font-bold text-slate-900">سجل عقود المتعاقد والمستحقات</span>
+                            <button type="button" onclick="openModal('modal-new-contract')" class="text-xs font-bold bg-[#14532d] hover:bg-[#166534] text-white px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 transition cursor-pointer shadow-xs">
+                                <i class="fa-solid fa-plus text-xs"></i> إبرام عقد جديد
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-right text-sm">
+                                <thead class="bg-slate-50 text-slate-600 text-xs font-semibold border-b border-slate-200">
+                                    <tr>
+                                        <th class="py-3 px-4">رقم العقد</th>
+                                        <th class="py-3 px-4">تصنيف الوظيفة</th>
+                                        <th class="py-3 px-4">نظام الأجر</th>
+                                        <th class="py-3 px-4">الأجر المعتمد</th>
+                                        <th class="py-3 px-4 text-center">البداية — النهاية</th>
+                                        <th class="py-3 px-4 text-center">الحالة</th>
+                                        <th class="py-3 px-4 text-center">نموذج PDF</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    @forelse($employee->contracts as $ctr)
+                                        <tr class="hover:bg-slate-50/70">
+                                            <td class="py-3 px-4 font-mono font-bold text-slate-800">{{ $ctr->contract_number ?? '—' }}</td>
+                                            <td class="py-3 px-4 text-slate-700">{{ $employee->contractor?->job_classification ?? '—' }}</td>
+                                            <td class="py-3 px-4 font-bold text-slate-800">{{ $ctr->wage_system ?? 'شهري' }}</td>
+                                            <td class="py-3 px-4 font-mono font-bold text-[#14532d]">{{ number_format((float)$ctr->approved_wage, 0) }} ريال</td>
+                                            <td class="py-3 px-4 text-center font-mono text-xs text-slate-600">
+                                                {{ $ctr->contract_start_date?->format('Y/m/d') ?? '—' }} ← {{ $ctr->contract_end_date?->format('Y/m/d') ?? 'مفتوح' }}
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                @if($ctr->isExpired())
+                                                    <span class="text-xs font-bold text-rose-800 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-lg">منتهٍ</span>
+                                                @else
+                                                    <span class="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">ساري المفعول</span>
+                                                @endif
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                <a href="{{ route('employees.contracts.pdf', [$employee->employee_id, $ctr->contract_id]) }}" target="_blank"
+                                                   class="inline-flex items-center gap-1 text-xs font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-[#14532d] border border-slate-200 px-2.5 py-1 rounded-lg transition">
+                                                    <i class="fa-solid fa-file-pdf text-rose-600"></i> طباعة PDF
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="7" class="p-8 text-center text-slate-400 text-sm">لا توجد عقود مسجلة لهذا الكادر.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- نافذة إبرام عقد جديد -->
+                <div id="modal-new-contract" class="fixed inset-0 bg-slate-900/40 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs select-none">
+                    <div class="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+                        <div class="bg-slate-50 border-b border-slate-200 px-4 py-3 flex justify-between items-center">
+                            <span class="font-bold text-sm text-slate-800 flex items-center gap-2"><i class="fa-solid fa-file-signature text-[#14532d]"></i> إبرام عقد متعاقد جديد</span>
+                            <button onclick="closeModal('modal-new-contract')" class="w-6 h-6 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 font-bold cursor-pointer">✕</button>
+                        </div>
+                        <form method="POST" action="{{ route('employees.contracts.store', $employee->employee_id) }}" class="p-4 space-y-3 text-xs">
+                            @csrf
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">تصنيف الوظيفة *</label>
+                                    <select name="job_classification" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold">
+                                        <option value="إدارية">إدارية</option>
+                                        <option value="فنية">فنية</option>
+                                        <option value="أكاديمية">أكاديمية</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">نظام الأجر *</label>
+                                    <select name="wage_system" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold">
+                                        <option value="شهري">شهري</option>
+                                        <option value="بالساعة">بالساعة</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">رقم العقد</label>
+                                    <input type="text" name="contract_number" placeholder="CTR-{{ date('Y') }}-01" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">الأجر المعتمد (ريال) *</label>
+                                    <input type="number" name="approved_wage" required min="0" placeholder="50000" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono font-bold">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">تاريخ بداية العقد *</label>
+                                    <input type="date" name="contract_start_date" required value="{{ date('Y-m-d') }}" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">تاريخ انتهاء العقد</label>
+                                    <input type="date" name="contract_end_date" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">تاريخ التعاقد الأول</label>
+                                    <input type="date" name="first_contract_date" value="{{ $employee->contractor?->first_contract_date?->format('Y-m-d') }}" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">ساعات أسبوعية</label>
+                                    <input type="number" name="weekly_hours" min="1" max="80" placeholder="12" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono">
+                                </div>
+                            </div>
+                            <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                                <button type="button" onclick="closeModal('modal-new-contract')" class="bg-slate-100 text-slate-700 px-4 py-1.5 rounded-lg font-bold cursor-pointer">إلغاء</button>
+                                <button type="submit" class="bg-[#14532d] hover:bg-[#166534] text-white px-5 py-1.5 rounded-lg font-bold cursor-pointer">حفظ العقد</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
                 <!-- التبويب 4: السجل الوظيفي -->
                 <div id="content-tab-history" class="profile-tab-content hidden space-y-4">
                     <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-xs">
@@ -533,6 +783,125 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+
+                <!-- التبويب 5: العقود والمستحقات (المتعاقدون) -->
+                <div id="content-tab-contracts" class="profile-tab-content hidden space-y-4">
+                    <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-xs">
+                        <div class="bg-slate-50/70 px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+                            <span class="text-sm font-bold text-slate-900">سجل عقود المتعاقد والمستحقات</span>
+                            <button type="button" onclick="openModal('modal-new-contract')" class="text-xs font-bold bg-[#14532d] hover:bg-[#166534] text-white px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 transition cursor-pointer shadow-xs">
+                                <i class="fa-solid fa-plus text-xs"></i> إبرام عقد جديد
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-right text-sm">
+                                <thead class="bg-slate-50 text-slate-600 text-xs font-semibold border-b border-slate-200">
+                                    <tr>
+                                        <th class="py-3 px-4">رقم العقد</th>
+                                        <th class="py-3 px-4">تصنيف الوظيفة</th>
+                                        <th class="py-3 px-4">نظام الأجر</th>
+                                        <th class="py-3 px-4">الأجر المعتمد</th>
+                                        <th class="py-3 px-4 text-center">البداية — النهاية</th>
+                                        <th class="py-3 px-4 text-center">الحالة</th>
+                                        <th class="py-3 px-4 text-center">نموذج PDF</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    @forelse($employee->contracts as $ctr)
+                                        <tr class="hover:bg-slate-50/70">
+                                            <td class="py-3 px-4 font-mono font-bold text-slate-800">{{ $ctr->contract_number ?? '—' }}</td>
+                                            <td class="py-3 px-4 text-slate-700">{{ $employee->contractor?->job_classification ?? '—' }}</td>
+                                            <td class="py-3 px-4 font-bold text-slate-800">{{ $ctr->wage_system ?? 'شهري' }}</td>
+                                            <td class="py-3 px-4 font-mono font-bold text-[#14532d]">{{ number_format((float)$ctr->approved_wage, 0) }} ريال</td>
+                                            <td class="py-3 px-4 text-center font-mono text-xs text-slate-600">
+                                                {{ $ctr->contract_start_date?->format('Y/m/d') ?? '—' }} ← {{ $ctr->contract_end_date?->format('Y/m/d') ?? 'مفتوح' }}
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                @if($ctr->isExpired())
+                                                    <span class="text-xs font-bold text-rose-800 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-lg">منتهٍ</span>
+                                                @else
+                                                    <span class="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">ساري المفعول</span>
+                                                @endif
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                <a href="{{ route('employees.contracts.pdf', [$employee->employee_id, $ctr->contract_id]) }}" target="_blank"
+                                                   class="inline-flex items-center gap-1 text-xs font-bold bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-[#14532d] border border-slate-200 px-2.5 py-1 rounded-lg transition">
+                                                    <i class="fa-solid fa-file-pdf text-rose-600"></i> طباعة PDF
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="7" class="p-8 text-center text-slate-400 text-sm">لا توجد عقود مسجلة لهذا الكادر.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- نافذة إبرام عقد جديد -->
+                <div id="modal-new-contract" class="fixed inset-0 bg-slate-900/40 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs select-none">
+                    <div class="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+                        <div class="bg-slate-50 border-b border-slate-200 px-4 py-3 flex justify-between items-center">
+                            <span class="font-bold text-sm text-slate-800 flex items-center gap-2"><i class="fa-solid fa-file-signature text-[#14532d]"></i> إبرام عقد متعاقد جديد</span>
+                            <button onclick="closeModal('modal-new-contract')" class="w-6 h-6 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 font-bold cursor-pointer">✕</button>
+                        </div>
+                        <form method="POST" action="{{ route('employees.contracts.store', $employee->employee_id) }}" class="p-4 space-y-3 text-xs">
+                            @csrf
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">تصنيف الوظيفة *</label>
+                                    <select name="job_classification" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold">
+                                        <option value="إدارية">إدارية</option>
+                                        <option value="فنية">فنية</option>
+                                        <option value="أكاديمية">أكاديمية</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">نظام الأجر *</label>
+                                    <select name="wage_system" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold">
+                                        <option value="شهري">شهري</option>
+                                        <option value="بالساعة">بالساعة</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">رقم العقد</label>
+                                    <input type="text" name="contract_number" placeholder="CTR-{{ date('Y') }}-01" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">الأجر المعتمد (ريال) *</label>
+                                    <input type="number" name="approved_wage" required min="0" placeholder="50000" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono font-bold">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">تاريخ بداية العقد *</label>
+                                    <input type="date" name="contract_start_date" required value="{{ date('Y-m-d') }}" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">تاريخ انتهاء العقد</label>
+                                    <input type="date" name="contract_end_date" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">تاريخ التعاقد الأول</label>
+                                    <input type="date" name="first_contract_date" value="{{ $employee->contractor?->first_contract_date?->format('Y-m-d') }}" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">ساعات أسبوعية</label>
+                                    <input type="number" name="weekly_hours" min="1" max="80" placeholder="12" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono">
+                                </div>
+                            </div>
+                            <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                                <button type="button" onclick="closeModal('modal-new-contract')" class="bg-slate-100 text-slate-700 px-4 py-1.5 rounded-lg font-bold cursor-pointer">إلغاء</button>
+                                <button type="submit" class="bg-[#14532d] hover:bg-[#166534] text-white px-5 py-1.5 rounded-lg font-bold cursor-pointer">حفظ العقد</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
 
@@ -936,6 +1305,8 @@
             switchProfileTab('tab-quals');
         } else if (tab === 'history') {
             switchProfileTab('tab-history');
+        } else if (tab === 'contracts') {
+            switchProfileTab('tab-contracts');
         }
     });
 </script>

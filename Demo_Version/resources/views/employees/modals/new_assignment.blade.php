@@ -12,10 +12,10 @@
             <div class="grid grid-cols-2 gap-2.5">
                 <div>
                     <label class="block text-[11px] font-bold text-slate-700 mb-1">الفئة الوظيفية <span class="text-rose-600">*</span></label>
-                    <select name="employee_category_id" required class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold focus:bg-white focus:border-[#14532d]">
+                    <select name="employee_category_id" id="new_assign_category_id" required onchange="toggleAssignGradeRank(this)" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold focus:bg-white focus:border-[#14532d]">
                         <option value="" disabled selected>-- اختر الفئة الوظيفية --</option>
                         @foreach($categories as $cat)
-                            <option value="{{ $cat->employee_category_id }}">{{ $cat->category_name_ar }}</option>
+                            <option value="{{ $cat->employee_category_id }}" data-name="{{ $cat->category_name_ar }}">{{ $cat->category_name_ar }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -54,9 +54,9 @@
                     </select>
                 </div>
 
-                <div>
+                <div id="new_assign_rank_wrap">
                     <div class="flex items-center justify-between mb-1">
-                        <label class="text-[11px] font-bold text-slate-700">الرتبة العلمية</label>
+                        <label class="text-[11px] font-bold text-slate-700">الرتبة العلمية (للأكاديمي)</label>
                         <button type="button" onclick="openQuickAdd('rank', 'assignment_rank_select', 'اسم الرتبة العلمية الجديدة:', 'إضافة رتبة')" class="text-[#14532d] hover:underline px-1.5 py-0.2 bg-emerald-50 rounded text-[10px] font-bold flex items-center gap-0.5 transition cursor-pointer" title="إضافة رتبة غير موجودة">
                             <i class="fa-solid fa-plus text-[9px]"></i> إضافة
                         </button>
@@ -69,9 +69,9 @@
                     </select>
                 </div>
 
-                <div>
+                <div id="new_assign_grade_wrap">
                     <div class="flex items-center justify-between mb-1">
-                        <label class="text-[11px] font-bold text-slate-700">الدرجة المالية</label>
+                        <label class="text-[11px] font-bold text-slate-700">الدرجة الوظيفية (للإداري 1–15)</label>
                         <button type="button" onclick="openQuickAdd('grade', 'assignment_grade_select', 'اسم الدرجة المالية الجديدة:', 'إضافة درجة')" class="text-[#14532d] hover:underline px-1.5 py-0.2 bg-emerald-50 rounded text-[10px] font-bold flex items-center gap-0.5 transition cursor-pointer" title="إضافة درجة غير موجودة">
                             <i class="fa-solid fa-plus text-[9px]"></i> إضافة
                         </button>
@@ -135,6 +135,24 @@
                             <label class="block text-[10px] font-bold text-slate-600 mb-0.5">تاريخ التعيين بالجامعة أكاديمي</label>
                             <input type="date" name="academic_appointment_date" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2 py-1 font-mono text-xs focus:bg-white">
                         </div>
+                        <div class="col-span-2">
+                            <label class="block text-[10px] font-bold text-slate-600 mb-0.5">الوضع الحالي / الملاحظات</label>
+                            <div class="flex items-center gap-1.5">
+                                <select name="notes" id="new_assign_notes_select" data-use-name-as-value="true" data-quick-type="payroll_status" data-quick-title="إضافة حالة وضع حالي" data-quick-label="اسم الوضع الحالي الجديد:" onchange="handleQuickAddChange(this)" class="w-full bg-slate-50/70 border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold focus:bg-white">
+                                    <option value="متواجد">متواجد</option>
+                                    <option value="منقطع">منقطع</option>
+                                    <option value="غير محدد">غير محدد</option>
+                                    <option value="موفد للدراسة">موفد للدراسة</option>
+                                    <option value="إجازة">إجازة</option>
+                                    @foreach($statuses as $st)
+                                        @if(!in_array($st->status_name_ar, ['متواجد','منقطع','غير محدد','موفد للدراسة','إجازة']))
+                                            <option value="{{ $st->status_name_ar }}">{{ $st->status_name_ar }}</option>
+                                        @endif
+                                    @endforeach
+                                    <option value="__add_new__" class="font-bold text-[#14532d] bg-amber-50">+ إضافة حالة جديدة...</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -145,3 +163,22 @@
         </form>
     </div>
 </div>
+<script>
+function toggleAssignGradeRank(sel) {
+    const opt = sel.options[sel.selectedIndex];
+    const name = (opt ? (opt.dataset.name || opt.text) : '').trim();
+    const rankWrap = document.getElementById('new_assign_rank_wrap');
+    const gradeWrap = document.getElementById('new_assign_grade_wrap');
+    if (!rankWrap || !gradeWrap) return;
+    if (name.includes('إداري')) {
+        gradeWrap.classList.remove('hidden');
+        rankWrap.classList.add('hidden');
+    } else if (name.includes('أكاديمي')) {
+        rankWrap.classList.remove('hidden');
+        gradeWrap.classList.add('hidden');
+    } else {
+        rankWrap.classList.remove('hidden');
+        gradeWrap.classList.remove('hidden');
+    }
+}
+</script>

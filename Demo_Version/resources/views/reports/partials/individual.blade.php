@@ -486,6 +486,48 @@
 
                         </table>
 
+                        {{-- 5. سجل التعيينات والترقيات والتدرج الوظيفي التاريخي الكامل --}}
+                        @php
+                            $historyRecords = $employee->employmentRecords->sortBy('start_date');
+                        @endphp
+                        <div class="mt-3">
+                            <table class="w-full text-center border-collapse" style="border: 1.5px solid black; font-size: 11px;">
+                                <thead>
+                                    <tr>
+                                        <th colspan="6" style="background-color: #14532d; color: #ffffff; border: 1px solid black; padding: 4px; font-weight: bold;">
+                                            سجل التعيينات والترقيات والتدرج الوظيفي التاريخي (بيان حال متكامل)
+                                        </th>
+                                    </tr>
+                                    <tr style="background-color: #eae5d9; font-weight: bold;">
+                                        <th style="border: 1px solid black; padding: 3px;">الفئة</th>
+                                        <th style="border: 1px solid black; padding: 3px;">الجهة / القسم</th>
+                                        <th style="border: 1px solid black; padding: 3px;">الرتبة / الدرجة / المسمى</th>
+                                        <th style="border: 1px solid black; padding: 3px;">تاريخ البدء</th>
+                                        <th style="border: 1px solid black; padding: 3px;">تاريخ الانتهاء</th>
+                                        <th style="border: 1px solid black; padding: 3px;">الأساس / رقم القرار</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($historyRecords as $hRec)
+                                        <tr>
+                                            <td style="border: 1px solid black; padding: 2.5px;">{{ $hRec->category?->category_name_ar ?? '—' }}</td>
+                                            <td style="border: 1px solid black; padding: 2.5px;">{{ $hRec->organizationalUnit?->unit_name_ar ?? '—' }}</td>
+                                            <td style="border: 1px solid black; padding: 2.5px; font-weight: bold;">
+                                                {{ $hRec->academicRank?->rank_name_ar ?? $hRec->jobGrade?->grade_name_ar ?? $hRec->jobTitle?->title_name_ar ?? $hRec->payroll_job_title ?? '—' }}
+                                            </td>
+                                            <td style="border: 1px solid black; padding: 2.5px; font-family: monospace;">{{ $hRec->start_date ? $hRec->start_date->format('Y/m/d') : '—' }}</td>
+                                            <td style="border: 1px solid black; padding: 2.5px; font-family: monospace;">{{ $hRec->end_date ? $hRec->end_date->format('Y/m/d') : 'حتى الآن' }}</td>
+                                            <td style="border: 1px solid black; padding: 2.5px;">{{ $hRec->appointment_basis ?? '—' }} {{ $hRec->decision?->decision_number ? '(' . $hRec->decision->decision_number . ')' : '' }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="6" style="border: 1px solid black; padding: 4px; color: #64748b;">لا توجد حركات وظيفية تاريخية مسجلة</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+
                     </div>
                 @endif
             </div>

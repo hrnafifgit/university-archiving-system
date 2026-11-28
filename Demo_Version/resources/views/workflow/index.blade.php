@@ -284,6 +284,9 @@
             <div>
                 <label class="block font-bold text-slate-800 mb-1">نوع المعاملة</label>
                 <select name="transaction_type" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-bold">
+                    <option value="missing_document">وثيقة ناقصة / أرشيف (تأكيد الموارد البشرية ثم إدارة النظام)</option>
+                    <option value="academic_decision">قرار أكاديمي (تأكيد مدير عام الشؤون الأكاديمية)</option>
+                    <option value="legal_decision">قرار شؤون قانونية (تأكيد الشؤون الإدارية / الأكاديمية)</option>
                     <option value="hourly_contract">عقد ساعات</option>
                     <option value="budget">بند موازنة</option>
                     <option value="decision">قرار إداري</option>

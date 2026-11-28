@@ -23,11 +23,14 @@ class EmployeeDecision extends Model
         'employee_id',
         'decision_type_id',
         'decision_number',
+        'annual_number',
+        'decision_year',
         'issuing_authority',
         'issue_date',
         'effective_start_date',
         'effective_end_date',
         'decision_status_id',
+        'is_active',
         'summary',
         'notes',
         'data_source_id',
@@ -38,7 +41,13 @@ class EmployeeDecision extends Model
         'issue_date' => 'date',
         'effective_start_date' => 'date',
         'effective_end_date' => 'date',
+        'is_active' => 'boolean',
     ];
+
+    public function employees(): BelongsToMany
+    {
+        return $this->belongsToMany(Employee::class, 'decision_employees', 'decision_id', 'employee_id');
+    }
 
     public function employee(): BelongsTo
     {

@@ -48,7 +48,7 @@ class ApprovalWorkflowController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'transaction_type' => 'required|in:hourly_contract,budget,decision,employee_update',
+            'transaction_type' => 'required|in:missing_document,academic_decision,legal_decision,hourly_contract,budget,decision,employee_update',
             'title' => 'required|string|max:250',
             'description' => 'nullable|string',
             'amount' => 'nullable|numeric|min:0',

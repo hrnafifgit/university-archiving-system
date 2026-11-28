@@ -26,7 +26,7 @@ class PermissionService
             'actions' => ['view', 'create', 'edit', 'delete'],
         ],
         'decisions' => [
-            'label'   => 'شاشة القرارات',
+            'label'   => 'شاشة الشؤون القانونية',
             'icon'    => 'fa-stamp',
             'actions' => ['view', 'create', 'edit', 'delete'],
         ],
@@ -67,12 +67,13 @@ class PermissionService
     ];
 
     public const ROLES_ORDER = [
-        'مدير نظام',
         'أمين عام',
-        'مدير إدارة',
-        'رئيس قسم',
-        'إداري',
-        'أكاديمي',
+        'مدير عام الشؤون الأكاديمية',
+        'مدير عام الموارد البشرية',
+        'مدير عام البعثات',
+        'الشؤون القانونية',
+        'الأرشيف',
+        'موظف / كادر (حساب ذاتي)',
     ];
 
     /**
@@ -221,7 +222,6 @@ class PermissionService
 
         // 2. بذر الأدوار الستة
         $defaultMatrix = [
-            'مدير نظام' => array_keys($permMap),
             'أمين عام' => [
                 'dashboard.view',
                 'employees.view',
@@ -231,39 +231,52 @@ class PermissionService
                 'reports.view', 'reports.export',
                 'workflow.view', 'workflow.confirm',
             ],
-            'مدير إدارة' => [
+            'مدير عام الشؤون الأكاديمية' => [
                 'dashboard.view',
-                'employees.view', 'employees.create', 'employees.edit',
-                'decisions.view', 'decisions.create', 'decisions.edit',
-                'archive.view', 'archive.create', 'archive.edit',
-                'org_units.view', 'org_units.edit',
-                'reports.view', 'reports.export',
-                'workflow.view', 'workflow.create', 'workflow.confirm',
-            ],
-            'رئيس قسم' => [
-                'dashboard.view',
-                'employees.view', 'employees.edit',
+                'employees.view',
                 'decisions.view',
                 'archive.view',
                 'org_units.view',
-                'reports.view',
+                'reports.view', 'reports.export',
                 'workflow.view', 'workflow.confirm',
             ],
-            'إداري' => [
+            'مدير عام الموارد البشرية' => [
                 'dashboard.view',
-                'employees.view', 'employees.create', 'employees.edit',
-                'decisions.view', 'decisions.create', 'decisions.edit',
-                'archive.view', 'archive.create', 'archive.edit',
+                'employees.view',
+                'decisions.view',
+                'archive.view',
                 'org_units.view',
+                'reports.view', 'reports.export',
+                'workflow.view', 'workflow.confirm',
+            ],
+            'مدير عام البعثات' => [
+                'dashboard.view',
+                'employees.view',
+                'decisions.view',
+                'archive.view',
+                'reports.view', 'reports.export',
+                'workflow.view',
+            ],
+            'الشؤون القانونية' => [
+                'dashboard.view',
+                'employees.view',
+                'decisions.view',
+                'archive.view',
                 'reports.view',
                 'workflow.view', 'workflow.create',
             ],
-            'أكاديمي' => [
+            'الأرشيف' => [
                 'dashboard.view',
                 'employees.view',
-                'org_units.view',
+                'decisions.view',
+                'archive.view', 'archive.create', 'archive.edit',
                 'reports.view',
-                'workflow.view',
+                'workflow.view', 'workflow.create',
+            ],
+            'موظف / كادر (حساب ذاتي)' => [
+                'dashboard.view',
+                'employees.view',
+                'reports.view',
             ],
         ];
 

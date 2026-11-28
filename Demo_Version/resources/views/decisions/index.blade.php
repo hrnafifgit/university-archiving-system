@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'جامعة إب - القرارات والحركات الإدارية')
+@section('title', 'جامعة إب - الشؤون القانونية والحركات الإدارية')
 
 @section('content')
 <div class="flex-1 flex flex-col min-h-0 gap-1 pb-0">
@@ -15,7 +15,7 @@
             <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 shrink-0">
                 <a href="{{ route('decisions.index', ['tab' => 'decisions']) }}" 
                    class="px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 {{ $tab === 'decisions' ? 'bg-[#14532d] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-white' }}">
-                    <span>القرارات</span>
+                    <span>الشؤون القانونية</span>
                     <span class="text-xs px-2 py-0.5 rounded font-mono font-bold {{ $tab === 'decisions' ? 'bg-[#052e16] text-white' : 'bg-slate-200 text-slate-700' }}">
                         {{ $decisions->total() }}
                     </span>
@@ -45,7 +45,7 @@
                     </div>
 
                     <!-- نوع القرار الأساسي -->
-                    <div class="w-56 md:w-64 shrink-0">
+                    <div class="w-48 md:w-52 shrink-0">
                         <select name="type_id" class="w-full bg-slate-50/70 border border-slate-200 px-3.5 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-[#14532d] focus:bg-white font-medium rounded-xl shadow-2xs transition">
                             <option value="">-- كافة أنواع القرارات --</option>
                             @foreach($decisionTypes as $dt)
@@ -56,12 +56,22 @@
                         </select>
                     </div>
 
+                    <!-- تصفية السنة -->
+                    <div class="w-28 shrink-0">
+                        <select name="year" class="w-full bg-slate-50/70 border border-slate-200 px-3 py-2.5 text-sm font-mono text-slate-700 focus:outline-none focus:border-[#14532d] focus:bg-white font-bold rounded-xl shadow-2xs transition">
+                            <option value="">كل السنوات</option>
+                            @foreach($availableYears ?? [date('Y')] as $yr)
+                                <option value="{{ $yr }}" {{ request('year') == $yr ? 'selected' : '' }}>{{ $yr }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <!-- أزرار التصفية -->
                     <div class="flex items-center gap-2 shrink-0">
                         <button type="submit" class="bg-[#14532d] hover:bg-[#166534] text-white font-bold py-2.5 px-4 rounded-xl text-sm transition flex items-center gap-2 cursor-pointer shadow-xs whitespace-nowrap">
                             <i class="fa-solid fa-filter text-xs"></i> بحث
                         </button>
-                        @if(request()->anyFilled(['search', 'type_id']))
+                        @if(request()->anyFilled(['search', 'type_id', 'year']))
                             <a href="{{ route('decisions.index', ['tab' => 'decisions']) }}" class="bg-white hover:bg-slate-100 text-slate-600 font-bold py-2.5 px-3 rounded-xl text-sm transition border border-slate-200 text-center shrink-0 shadow-2xs" title="إلغاء التصفية">
                                 <i class="fa-solid fa-rotate-left text-xs"></i>
                             </a>
@@ -124,6 +134,7 @@
                     <thead class="bg-slate-50 text-slate-800 font-bold sticky top-0 z-20 select-none text-sm border-b border-slate-200 shadow-2xs">
                         <tr>
                             <th class="py-3.5 px-4 w-14 text-center text-slate-500 font-bold">#</th>
+                            <th class="py-3.5 px-4 w-28 text-center font-mono text-slate-700">المسلسل</th>
                             <th class="py-3.5 px-4 w-36 text-center font-mono text-slate-700">رقم القرار</th>
                             <th class="py-3.5 px-4 w-40 text-slate-700">نوع القرار</th>
                             <th class="py-3.5 px-4 w-60 text-slate-900">الكادر المعني</th>
@@ -138,6 +149,9 @@
                         @forelse($decisions as $index => $dec)
                             <tr class="hover:bg-slate-50 transition {{ $index % 2 == 0 ? 'bg-white' : 'bg-slate-50/40' }}">
                                 <td class="py-3.5 px-4 text-center text-slate-400 font-mono text-sm">{{ $decisions->firstItem() + $index }}</td>
+                                <td class="py-3.5 px-4 text-center font-mono text-xs text-slate-600 whitespace-nowrap">
+                                    {{ $dec->annual_number ? $dec->annual_number . ($dec->decision_year ? '/' . $dec->decision_year : '') : '—' }}
+                                </td>
                                 <td class="py-3.5 px-4 font-mono font-bold text-brand-900 text-center text-sm whitespace-nowrap">
                                     {{ $dec->decision_number }}
                                 </td>
@@ -145,7 +159,10 @@
                                     {{ $dec->type?->type_name_ar ?? 'عام' }}
                                 </td>
                                 <td class="py-3.5 px-4">
-                                    @if($dec->employee)
+                                    @if($dec->employees && $dec->employees->count() > 1)
+                                        <span class="font-bold text-brand-900 text-xs">{{ $dec->employees->first()->full_name_ar }}</span>
+                                        <span class="text-[11px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-1.5 py-0.5 rounded font-bold mr-1">+{{ $dec->employees->count() - 1 }} آخرين</span>
+                                    @elseif($dec->employee)
                                         <a href="{{ route('employees.show', $dec->employee->employee_id) }}" class="font-bold text-brand-900 hover:underline flex items-center gap-2">
                                             <span>{{ $dec->employee->full_name_ar }}</span>
                                             <span class="text-xs text-slate-400 font-mono font-normal">({{ $dec->employee->employee_number }})</span>
@@ -316,20 +333,37 @@
         <form method="POST" action="{{ route('decisions.store') }}" enctype="multipart/form-data" class="p-4 text-xs space-y-3">
             @csrf
 
-            <div>
-                <label class="block font-bold mb-1 text-slate-700">الكادر المعني بالقرار:</label>
-                <select name="employee_id" required class="w-full bg-slate-50/70 border border-slate-200 p-2 text-xs focus:outline-none focus:border-[#14532d] focus:bg-white font-medium rounded-lg">
-                    <option value="">-- حدد الكادر المعني --</option>
-                    @foreach($employees as $e)
-                        <option value="{{ $e->employee_id }}">{{ $e->full_name_ar }} ({{ $e->employee_number }})</option>
-                    @endforeach
-                </select>
+            <div class="relative" id="empMultiDropdownWrap">
+                <label class="block font-bold mb-1 text-slate-700">الكادر المعني بالقرار (يمكن تحديد أكثر من كادر للّجان):</label>
+                <button type="button" id="empMultiBtn" onclick="toggleEmpMultiDropdown()"
+                        class="w-full bg-slate-50/70 border border-slate-200 p-2 text-xs text-right flex items-center justify-between rounded-lg hover:bg-white focus:outline-none focus:border-[#14532d] transition">
+                    <span id="empMultiLabel" class="text-slate-600 font-medium truncate">-- اختر كادراً أو أكثر --</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                </button>
+                <div id="empMultiPanel" class="hidden absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-xl p-2 space-y-1.5">
+                    <input type="text" id="empMultiSearch" oninput="filterEmpMulti(this.value)" placeholder="ابحث بالاسم أو الرقم الوظيفي..."
+                           class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-[#14532d]">
+                    <div id="empMultiList" class="max-h-40 overflow-y-auto divide-y divide-slate-100">
+                        @foreach($employees as $e)
+                            <label class="emp-multi-item flex items-center gap-2 px-2 py-1.5 hover:bg-emerald-50/60 rounded cursor-pointer text-xs">
+                                <input type="checkbox" name="employee_ids[]" value="{{ $e->employee_id }}" data-name="{{ $e->full_name_ar }}"
+                                       onchange="updateEmpMultiLabel()"
+                                       class="rounded border-slate-300 text-[#14532d] focus:ring-[#14532d]">
+                                <span class="font-medium text-slate-800">{{ $e->full_name_ar }}</span>
+                                <span class="text-[10px] text-slate-400 font-mono">({{ $e->employee_number }})</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
             </div>
 
             <div class="grid grid-cols-2 gap-2">
                 <div>
-                    <label class="block font-bold mb-1 text-slate-700">نوع القرار:</label>
-                    <select name="decision_type_id" required class="w-full bg-slate-50/70 border border-slate-200 p-2 text-xs focus:outline-none focus:border-[#14532d] focus:bg-white font-medium rounded-lg">
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="font-bold text-slate-700">نوع القرار:</label>
+                        <button type="button" onclick="quickAddDecisionType()" class="text-[#14532d] hover:underline px-1.5 py-0.5 bg-emerald-50 rounded text-[10px] font-bold cursor-pointer">+ نوع جديد</button>
+                    </div>
+                    <select name="decision_type_id" id="add_dec_type_id" required onchange="if(this.options[this.selectedIndex].text.trim()==='أخرى'){ quickAddDecisionType(); }" class="w-full bg-slate-50/70 border border-slate-200 p-2 text-xs focus:outline-none focus:border-[#14532d] focus:bg-white font-medium rounded-lg">
                         @foreach($decisionTypes as $dt)
                             <option value="{{ $dt->decision_type_id }}">{{ $dt->type_name_ar }}</option>
                         @endforeach
@@ -337,7 +371,18 @@
                 </div>
                 <div>
                     <label class="block font-bold mb-1 text-slate-700">رقم القرار الرسمي:</label>
-                    <input type="text" name="decision_number" required placeholder="مثال: ق/ر/2026/104" class="w-full bg-slate-50/70 border border-slate-200 p-2 text-xs focus:outline-none focus:border-[#14532d] focus:bg-white font-mono font-medium rounded-lg">
+                    <input type="text" name="decision_number" id="add_dec_number" required value="{{ ($nextAnnualByYear[(int)date('Y')] ?? 1) . '/' . substr(date('Y'), -2) }}" placeholder="مثال: 1/26" class="w-full bg-slate-50/70 border border-slate-200 p-2 text-xs focus:outline-none focus:border-[#14532d] focus:bg-white font-mono font-medium rounded-lg">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block font-bold mb-1 text-slate-700">المسلسل (الرقم السنوي التلقائي):</label>
+                    <input type="text" name="annual_number" id="add_dec_annual_number" value="{{ $nextAnnualByYear[(int)date('Y')] ?? 1 }}" placeholder="مثال: 1" class="w-full bg-slate-50/70 border border-slate-200 p-2 text-xs focus:outline-none focus:border-[#14532d] focus:bg-white font-mono rounded-lg">
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-slate-700">السنة:</label>
+                    <input type="number" name="decision_year" id="add_dec_year" value="{{ date('Y') }}" oninput="updateDecisionAutoNumber(this.value)" class="w-full bg-slate-50/70 border border-slate-200 p-2 text-xs focus:outline-none focus:border-[#14532d] focus:bg-white font-mono rounded-lg">
                 </div>
             </div>
 
@@ -361,13 +406,13 @@
             </div>
 
             <div>
-                <label class="block font-bold mb-1 text-slate-700">موضوع وموجز القرار:</label>
-                <textarea name="summary" rows="2" required placeholder="موجز ما نص عليه القرار الإداري..." class="w-full bg-slate-50/70 border border-slate-200 p-2 text-xs focus:outline-none focus:border-[#14532d] focus:bg-white rounded-lg"></textarea>
+                <label class="block font-bold mb-1 text-slate-700">البيان (صيغة القرار):</label>
+                <textarea name="summary" rows="2" required placeholder="اكتب نص وبيان القرار الرسمي هنا..." class="w-full bg-slate-50/70 border border-slate-200 p-2 text-xs focus:outline-none focus:border-[#14532d] focus:bg-white rounded-lg"></textarea>
             </div>
 
             <div>
-                <label class="block font-bold mb-1 text-slate-700">وثيقة القرار الممسوحة ضوئياً (PDF حتى 20MB):</label>
-                <input type="file" name="decision_file" accept="application/pdf" class="w-full bg-slate-50/70 border border-slate-200 p-1.5 text-xs file:py-1 file:px-2.5 file:bg-[#14532d] file:text-white file:border-0 file:rounded-md file:text-xs text-xs rounded-lg">
+                <label class="block font-bold mb-1 text-slate-700">مرفق القرار (ملف PDF أو صورة):</label>
+                <input type="file" name="decision_file" accept="application/pdf,image/*" class="w-full bg-slate-50/70 border border-slate-200 p-1.5 text-xs file:py-1 file:px-2.5 file:bg-[#14532d] file:text-white file:border-0 file:rounded-md file:text-xs text-xs rounded-lg">
             </div>
 
             <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
@@ -480,6 +525,16 @@
                 <div>
                     <label class="block font-bold mb-1 text-slate-700">رقم القرار الرسمي:</label>
                     <input type="text" name="decision_number" id="edit_dec_number" required class="w-full bg-slate-50/70 border border-slate-200 p-2 text-xs focus:outline-none focus:border-[#14532d] focus:bg-white font-mono font-medium rounded-lg">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block font-bold mb-1 text-slate-700">المسلسل (الرقم السنوي):</label>
+                    <input type="text" name="annual_number" id="edit_dec_annual_number" class="w-full bg-slate-50/70 border border-slate-200 p-2 text-xs focus:outline-none focus:border-[#14532d] focus:bg-white font-mono rounded-lg">
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-slate-700">السنة:</label>
+                    <input type="number" name="decision_year" id="edit_dec_year" class="w-full bg-slate-50/70 border border-slate-200 p-2 text-xs focus:outline-none focus:border-[#14532d] focus:bg-white font-mono rounded-lg">
                 </div>
             </div>
             <div class="grid grid-cols-3 gap-2">
@@ -622,12 +677,93 @@
         document.getElementById('form-edit-decision').action = '/decisions/' + dec.decision_id;
         document.getElementById('edit_dec_type_id').value = dec.decision_type_id || '';
         document.getElementById('edit_dec_number').value = dec.decision_number || '';
+        document.getElementById('edit_dec_annual_number').value = dec.annual_number || '';
+        document.getElementById('edit_dec_year').value = dec.decision_year || '';
         document.getElementById('edit_dec_issue_date').value = dec.issue_date ? dec.issue_date.substring(0, 10) : '';
         document.getElementById('edit_dec_effective_start_date').value = dec.effective_start_date ? dec.effective_start_date.substring(0, 10) : '';
         document.getElementById('edit_dec_status_id').value = dec.decision_status_id || '';
         document.getElementById('edit_dec_summary').value = dec.summary || '';
         document.getElementById('editDecisionModal').classList.remove('hidden');
     }
+
+    async function quickAddDecisionType() {
+        const name = prompt('أدخل اسم نوع القرار الجديد:');
+        if (!name || !name.trim()) return;
+        try {
+            const res = await fetch('{{ route('quick.add.decisiontype') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ name: name.trim() })
+            });
+            const data = await res.json();
+            if (data.success) {
+                ['add_dec_type_id', 'edit_dec_type_id'].forEach(selId => {
+                    const sel = document.getElementById(selId);
+                    if (!sel) return;
+                    let opt = Array.from(sel.options).find(o => o.value == data.id);
+                    if (!opt) {
+                        opt = new Option(data.name, data.id, true, true);
+                        sel.add(opt);
+                    }
+                    sel.value = data.id;
+                });
+            }
+        } catch (e) {
+            alert('تعذر إضافة نوع القرار الجديد.');
+        }
+    }
+
+    const nextAnnualByYear = @json($nextAnnualByYear ?? []);
+    function updateDecisionAutoNumber(yearVal) {
+        const y = parseInt(yearVal, 10);
+        if (!y) return;
+        const seq = nextAnnualByYear[y] || 1;
+        const annInput = document.getElementById('add_dec_annual_number');
+        const numInput = document.getElementById('add_dec_number');
+        if (annInput) annInput.value = seq;
+        if (numInput) numInput.value = seq + '/' + String(y).slice(-2);
+    }
+
+    function toggleEmpMultiDropdown() {
+        const panel = document.getElementById('empMultiPanel');
+        if (panel) panel.classList.toggle('hidden');
+    }
+
+    function filterEmpMulti(query) {
+        const q = (query || '').trim().toLowerCase();
+        document.querySelectorAll('#empMultiList .emp-multi-item').forEach(item => {
+            const txt = item.textContent.toLowerCase();
+            item.classList.toggle('hidden', q !== '' && !txt.includes(q));
+        });
+    }
+
+    function updateEmpMultiLabel() {
+        const checked = Array.from(document.querySelectorAll('#empMultiList input[type="checkbox"]:checked'));
+        const lbl = document.getElementById('empMultiLabel');
+        if (!lbl) return;
+        if (checked.length === 0) {
+            lbl.textContent = '-- اختر كادراً أو أكثر --';
+            lbl.className = 'text-slate-600 font-medium truncate';
+        } else if (checked.length === 1) {
+            lbl.textContent = checked[0].dataset.name;
+            lbl.className = 'text-[#14532d] font-bold truncate';
+        } else {
+            lbl.textContent = `تم تحديد (${checked.length}) كوادر: ${checked[0].dataset.name} وآخرون`;
+            lbl.className = 'text-[#14532d] font-bold truncate';
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        const wrap = document.getElementById('empMultiDropdownWrap');
+        const panel = document.getElementById('empMultiPanel');
+        if (wrap && panel && !wrap.contains(e.target)) {
+            panel.classList.add('hidden');
+        }
+    });
 
     function editAbsence(abs) {
         document.getElementById('form-edit-absence').action = '/decisions/absences/' + abs.absence_id;

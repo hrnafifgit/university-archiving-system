@@ -38,6 +38,8 @@ Route::middleware([EnsureDesktopAuthenticated::class])->group(function () {
     Route::post('/employees/{id}/qualifications', [\App\Http\Controllers\EmployeeOperationsController::class, 'storeQualification'])->middleware(EnsureHasPermission::class . ':manage_employees')->name('employees.qualifications.store');
     Route::put('/employees/{employeeId}/qualifications/{qualId}', [\App\Http\Controllers\EmployeeOperationsController::class, 'updateQualification'])->middleware(EnsureHasPermission::class . ':manage_employees')->name('employees.qualifications.update');
     Route::delete('/employees/{employeeId}/qualifications/{qualId}', [\App\Http\Controllers\EmployeeOperationsController::class, 'deleteQualification'])->middleware(EnsureHasPermission::class . ':manage_employees')->name('employees.qualifications.destroy');
+Route::post('/employees/{id}/contracts', [\App\Http\Controllers\ContractController::class, 'store'])->middleware(EnsureHasPermission::class . ':manage_employees')->name('employees.contracts.store');
+Route::get('/employees/{id}/contracts/{contractId}/pdf', [\App\Http\Controllers\ContractController::class, 'printPdf'])->middleware(EnsureHasPermission::class . ':employees.view')->name('employees.contracts.pdf');
     Route::post('/employees/{id}/documents', [\App\Http\Controllers\EmployeeOperationsController::class, 'storeDocument'])->middleware(EnsureHasPermission::class . ':manage_archive')->name('employees.documents.store');
     Route::delete('/employees/{employeeId}/documents/{docId}', [\App\Http\Controllers\EmployeeOperationsController::class, 'deleteDocument'])->middleware(EnsureHasPermission::class . ':delete_archive')->name('employees.documents.destroy');
 
@@ -115,6 +117,7 @@ Route::middleware([EnsureDesktopAuthenticated::class])->group(function () {
         Route::post('/quick-add/qual-level', [\App\Http\Controllers\QuickAddController::class, 'storeQualLevel'])->name('quick.add.quallevel');
         Route::post('/quick-add/job-title', [\App\Http\Controllers\QuickAddController::class, 'storeJobTitle'])->name('quick.add.jobtitle');
         Route::post('/quick-add/university', [\App\Http\Controllers\QuickAddController::class, 'storeUniversity'])->name('quick.add.university');
+Route::post('/quick-add/decision-type', [\App\Http\Controllers\QuickAddController::class, 'storeDecisionType'])->name('quick.add.decisiontype');
     });
 
     // ==========================================================

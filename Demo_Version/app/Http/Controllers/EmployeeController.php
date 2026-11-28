@@ -333,6 +333,7 @@ class EmployeeController extends Controller
                 'email' => $validated['email'] ?? null,
                 'address' => $request->input('address', null),
                 'notes' => $request->input('notes', null),
+                'has_academic_conflict' => $request->boolean('has_academic_conflict'),
                 'is_active_record' => true,
             ]);
 
@@ -364,6 +365,9 @@ class EmployeeController extends Controller
             }
             if ($request->filled('notes')) {
                 $customNotes[] = $request->notes;
+            }
+            if ($request->boolean('has_academic_conflict') && $request->filled('conflict_note')) {
+                $customNotes[] = 'ملاحظة التضارب: ' . trim($request->conflict_note);
             }
             $finalNotes = !empty($customNotes) ? implode(' | ', $customNotes) : 'سجل التكليف الأولي عند إنشاء الملف في النظام';
 
@@ -441,6 +445,29 @@ class EmployeeController extends Controller
                 'notes' => $finalNotes,
                 'created_at' => now(),
             ]);
+
+            if ($cadreType === 'hourly') {
+                \App\Models\Contractor::updateOrCreate(
+                    ['employee_id' => $employee->employee_id],
+                    [
+                        'first_contract_date' => $request->input('first_contract_date', $validated['start_date']),
+                        'job_classification' => $request->input('job_classification', 'أكاديمية'),
+                    ]
+                );
+                $endDate = $request->input('contract_end_date');
+                $isExpired = !empty($endDate) && strtotime($endDate) < strtotime(date('Y-m-d'));
+                \App\Models\ContractorContract::create([
+                    'employee_id' => $employee->employee_id,
+                    'contract_number' => 'CTR-' . date('Y') . '-' . rand(100, 999),
+                    'wage_system' => $request->input('wage_system', 'بالساعة'),
+                    'approved_wage' => (float) ($request->input('hourly_rate') ?: 0),
+                    'weekly_hours' => $request->filled('hourly_hours') ? (int) $request->input('hourly_hours') : null,
+                    'contract_start_date' => $validated['start_date'],
+                    'contract_end_date' => $endDate ?: null,
+                    'contract_status' => $isExpired ? 'منتهٍ' : 'ساري المفعول',
+                    'created_at' => now(),
+                ]);
+            }
 
             // 4. تسجيل المؤهل الأكاديمي (إن وجد)
             if ($request->filled('qualification_level_id')) {
@@ -526,7 +553,9 @@ class EmployeeController extends Controller
             'decisions.documents.currentVersion',
             'documents.currentVersion',
             'documents.documentType',
-            'absences.decision'
+            'absences.decision',
+            'contractor',
+            'contracts'
         ])->findOrFail($id);
 
         // جلب القوائم المرجعية لتغذية النوافذ المنبثقة للعمليات المباشرة
@@ -545,6 +574,8 @@ class EmployeeController extends Controller
         $docTypes = DocumentType::where('is_active', true)->get();
         $universities = \App\Models\University::orderBy('university_name_ar')->get();
         $countries = \App\Models\Country::orderBy('country_name_ar')->get();
+        $specializations = \App\Models\Specialization::orderBy('specialization_name_ar')->get();
+        $dispatchDecisions = EmployeeDecision::where('employee_id', $id)->orderByDesc('issue_date')->get();
 
         return view('employees.show', compact(
             'employee',
@@ -558,7 +589,9 @@ class EmployeeController extends Controller
             'qualLevels',
             'docTypes',
             'universities',
-            'countries'
+            'countries',
+            'specializations',
+            'dispatchDecisions'
         ));
     }
 

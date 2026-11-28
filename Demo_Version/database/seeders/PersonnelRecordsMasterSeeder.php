@@ -95,13 +95,23 @@ class PersonnelRecordsMasterSeeder extends Seeder
             DB::table('academic_ranks')->insertOrIgnore($rnk);
         }
 
-        // 6. Job Grades (الخدمة المدنية)
+        // 6. Job Grades (الخدمة المدنية - الدرجات 1 إلى 15 للإداريين فقط)
         $grades = [
-            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G1', 'grade_name_ar' => 'الدرجة الأولى', 'grade_name_en' => 'Grade 1', 'description' => 'مدير عام وما فوق'],
-            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G2', 'grade_name_ar' => 'الدرجة الثانية', 'grade_name_en' => 'Grade 2', 'description' => 'مدير إدارة'],
-            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G3', 'grade_name_ar' => 'الدرجة الثالثة', 'grade_name_en' => 'Grade 3', 'description' => 'رئيس قسم إداري'],
-            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G4', 'grade_name_ar' => 'الدرجة الرابعة', 'grade_name_en' => 'Grade 4', 'description' => 'أخصائي أول'],
-            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G5', 'grade_name_ar' => 'الدرجة الخامسة', 'grade_name_en' => 'Grade 5', 'description' => 'أخصائي'],
+            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G1', 'grade_name_ar' => 'الدرجة الأولى', 'grade_name_en' => 'Grade 1', 'description' => 'الأمين العام والأمين العام المساعد (بالتعيين)'],
+            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G2', 'grade_name_ar' => 'الدرجة الثانية', 'grade_name_en' => 'Grade 2', 'description' => 'الدرجة الثانية العليا'],
+            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G3', 'grade_name_ar' => 'الدرجة الثالثة', 'grade_name_en' => 'Grade 3', 'description' => 'المدراء العموم (بقرارات مجلس الوزراء)'],
+            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G4', 'grade_name_ar' => 'الدرجة الرابعة', 'grade_name_en' => 'Grade 4', 'description' => 'مدراء الإدارات'],
+            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G5', 'grade_name_ar' => 'الدرجة الخامسة', 'grade_name_en' => 'Grade 5', 'description' => 'رؤساء الأقسام والأخصائيون'],
+            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G6', 'grade_name_ar' => 'الدرجة السادسة', 'grade_name_en' => 'Grade 6', 'description' => 'الدرجة السادسة الإدارية'],
+            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G7', 'grade_name_ar' => 'الدرجة السابعة', 'grade_name_en' => 'Grade 7', 'description' => 'الدرجة السابعة الإدارية'],
+            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G8', 'grade_name_ar' => 'الدرجة الثامنة', 'grade_name_en' => 'Grade 8', 'description' => 'الدرجة الثامنة الإدارية'],
+            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G9', 'grade_name_ar' => 'الدرجة التاسعة', 'grade_name_en' => 'Grade 9', 'description' => 'الدرجة التاسعة الإدارية'],
+            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G10', 'grade_name_ar' => 'الدرجة العاشرة', 'grade_name_en' => 'Grade 10', 'description' => 'الدرجة العاشرة الإدارية'],
+            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G11', 'grade_name_ar' => 'الدرجة الحادية عشرة', 'grade_name_en' => 'Grade 11', 'description' => 'الدرجة الحادية عشرة الإدارية'],
+            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G12', 'grade_name_ar' => 'الدرجة الثانية عشرة', 'grade_name_en' => 'Grade 12', 'description' => 'الدرجة الثانية عشرة الإدارية'],
+            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G13', 'grade_name_ar' => 'الدرجة الثالثة عشرة', 'grade_name_en' => 'Grade 13', 'description' => 'الدرجة الثالثة عشرة الإدارية'],
+            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G14', 'grade_name_ar' => 'الدرجة الرابعة عشرة', 'grade_name_en' => 'Grade 14', 'description' => 'الدرجة الرابعة عشرة الإدارية'],
+            ['job_grade_id' => Str::uuid()->toString(), 'grade_code' => 'G15', 'grade_name_ar' => 'الدرجة الخامسة عشرة', 'grade_name_en' => 'Grade 15', 'description' => 'الدرجة الخامسة عشرة الإدارية'],
         ];
         foreach ($grades as $grd) {
             DB::table('job_grades')->insertOrIgnore($grd);
@@ -109,16 +119,23 @@ class PersonnelRecordsMasterSeeder extends Seeder
 
         // 7. Decision Types
         $decisionTypes = [
+            ['type_code' => 'ACADEMIC_DECISION', 'type_name_ar' => 'قرار أكاديمي', 'type_name_en' => 'Academic Decision', 'requires_end_date' => false],
+            ['type_code' => 'ADMIN_DECISION', 'type_name_ar' => 'قرار إداري', 'type_name_en' => 'Administrative Decision', 'requires_end_date' => false],
             ['type_code' => 'APPOINTMENT', 'type_name_ar' => 'قرار تعيين رسمي', 'type_name_en' => 'Official Appointment', 'requires_end_date' => false],
-            ['type_code' => 'PROMOTION', 'type_name_ar' => 'قرار ترقية علمية', 'type_name_en' => 'Academic Promotion', 'requires_end_date' => false],
+            ['type_code' => 'COMMITTEE', 'type_name_ar' => 'قرار تشكيل لجان', 'type_name_en' => 'Committee Formation', 'requires_end_date' => true],
+            ['type_code' => 'PROMOTION', 'type_name_ar' => 'قرار ترقية', 'type_name_en' => 'Promotion Decision', 'requires_end_date' => false],
             ['type_code' => 'CONFIRMATION', 'type_name_ar' => 'قرار تثبيت وظيفي', 'type_name_en' => 'Job Confirmation', 'requires_end_date' => false],
             ['type_code' => 'SCHOLARSHIP', 'type_name_ar' => 'قرار إيفاد للدراسة', 'type_name_en' => 'Scholarship Assignment', 'requires_end_date' => true],
+            ['type_code' => 'END_SCHOLARSHIP', 'type_name_ar' => 'قرار إنهاء إيفاد', 'type_name_en' => 'End Scholarship', 'requires_end_date' => false],
+            ['type_code' => 'SETTLEMENT', 'type_name_ar' => 'قرار تسوية', 'type_name_en' => 'Settlement Decision', 'requires_end_date' => false],
+            ['type_code' => 'DISMISSAL', 'type_name_ar' => 'قرار فصل', 'type_name_en' => 'Dismissal Decision', 'requires_end_date' => false],
             ['type_code' => 'SABBATICAL', 'type_name_ar' => 'قرار تفرغ علمي', 'type_name_en' => 'Sabbatical Leave', 'requires_end_date' => true],
             ['type_code' => 'ASSIGNMENT', 'type_name_ar' => 'قرار تكليف إداري', 'type_name_en' => 'Administrative Assignment', 'requires_end_date' => true],
             ['type_code' => 'SECONDMENT', 'type_name_ar' => 'قرار ندب أو إعارة', 'type_name_en' => 'Secondment Decision', 'requires_end_date' => true],
             ['type_code' => 'TRANSFER', 'type_name_ar' => 'قرار نقل وظيفي', 'type_name_en' => 'Transfer Decision', 'requires_end_date' => false],
             ['type_code' => 'CONTRACT', 'type_name_ar' => 'عقد عمل بالساعات', 'type_name_en' => 'Hourly Contract', 'requires_end_date' => true],
             ['type_code' => 'LEAVE', 'type_name_ar' => 'قرار إجازة بدون راتب', 'type_name_en' => 'Unpaid Leave Decision', 'requires_end_date' => true],
+            ['type_code' => 'OTHER', 'type_name_ar' => 'أخرى', 'type_name_en' => 'Other', 'requires_end_date' => false],
         ];
         foreach ($decisionTypes as $dt) {
             DB::table('decision_types')->insertOrIgnore($dt);
@@ -138,12 +155,17 @@ class PersonnelRecordsMasterSeeder extends Seeder
 
         // 9. Qualification Levels
         $qualLevels = [
-            ['level_code' => 'BACHELOR', 'level_name_ar' => 'بكالوريوس / ليسانس', 'level_name_en' => 'Bachelor', 'level_order' => 1],
-            ['level_code' => 'HIGHER_DIPLOMA', 'level_name_ar' => 'دبلوم عالي', 'level_name_en' => 'Higher Diploma', 'level_order' => 2],
-            ['level_code' => 'MASTER', 'level_name_ar' => 'ماجستير', 'level_name_en' => 'Master', 'level_order' => 3],
-            ['level_code' => 'DOCTORATE', 'level_name_ar' => 'دكتوراه (PhD)', 'level_name_en' => 'Doctorate', 'level_order' => 4],
-            ['level_code' => 'PROF_DOCTORATE', 'level_name_ar' => 'دكتوراه مهنية / بورد', 'level_name_en' => 'Professional Doctorate / Board', 'level_order' => 5],
-            ['level_code' => 'POST_DOC', 'level_name_ar' => 'ما بعد الدكتوراه', 'level_name_en' => 'Postdoctoral', 'level_order' => 6],
+            ['level_code' => 'NONE', 'level_name_ar' => 'بدون', 'level_name_en' => 'None', 'level_order' => 0],
+            ['level_code' => 'LITERATE', 'level_name_ar' => 'يقرأ ويكتب', 'level_name_en' => 'Reads and Writes', 'level_order' => 1],
+            ['level_code' => 'PRE_SEC_DIPLOMA', 'level_name_ar' => 'دبلوم قبل الثانوية / بعد الإعدادية', 'level_name_en' => 'Pre-Secondary Diploma', 'level_order' => 2],
+            ['level_code' => 'SECONDARY', 'level_name_ar' => 'ثانوية عامة', 'level_name_en' => 'High School', 'level_order' => 3],
+            ['level_code' => 'POST_SEC_DIPLOMA', 'level_name_ar' => 'دبلوم بعد الثانوية', 'level_name_en' => 'Post-Secondary Diploma', 'level_order' => 4],
+            ['level_code' => 'BACHELOR', 'level_name_ar' => 'بكالوريوس / ليسانس', 'level_name_en' => 'Bachelor', 'level_order' => 5],
+            ['level_code' => 'HIGHER_DIPLOMA', 'level_name_ar' => 'دبلوم عالي', 'level_name_en' => 'Higher Diploma', 'level_order' => 6],
+            ['level_code' => 'MASTER', 'level_name_ar' => 'ماجستير', 'level_name_en' => 'Master', 'level_order' => 7],
+            ['level_code' => 'DOCTORATE', 'level_name_ar' => 'دكتوراه (PhD)', 'level_name_en' => 'Doctorate', 'level_order' => 8],
+            ['level_code' => 'PROF_DOCTORATE', 'level_name_ar' => 'دكتوراه مهنية / بورد', 'level_name_en' => 'Professional Doctorate / Board', 'level_order' => 9],
+            ['level_code' => 'POST_DOC', 'level_name_ar' => 'ما بعد الدكتوراه', 'level_name_en' => 'Postdoctoral', 'level_order' => 10],
         ];
         foreach ($qualLevels as $ql) {
             DB::table('qualification_levels')->insertOrIgnore($ql);
@@ -154,6 +176,11 @@ class PersonnelRecordsMasterSeeder extends Seeder
             ['document_type_id' => Str::uuid()->toString(), 'type_code' => 'PERSONAL_ID', 'type_name_ar' => 'البطاقة الشخصية / جواز السفر', 'type_name_en' => 'Personal ID / Passport', 'applies_to' => 'employee'],
             ['document_type_id' => Str::uuid()->toString(), 'type_code' => 'PHOTO', 'type_name_ar' => 'الصورة الشخصية الرسمية', 'type_name_en' => 'Official Photo', 'applies_to' => 'employee'],
             ['document_type_id' => Str::uuid()->toString(), 'type_code' => 'CV', 'type_name_ar' => 'السيرة الذاتية (C.V)', 'type_name_en' => 'Curriculum Vitae', 'applies_to' => 'employee'],
+            ['document_type_id' => Str::uuid()->toString(), 'type_code' => 'FIRST_APPOINTMENT', 'type_name_ar' => 'قرار التعيين لأول مرة', 'type_name_en' => 'First Appointment Decision', 'applies_to' => 'employee'],
+            ['document_type_id' => Str::uuid()->toString(), 'type_code' => 'CIVIL_SERVICE_FATWA', 'type_name_ar' => 'فتوى الخدمة المدنية', 'type_name_en' => 'Civil Service Fatwa', 'applies_to' => 'employee'],
+            ['document_type_id' => Str::uuid()->toString(), 'type_code' => 'FINANCIAL_ENDORSEMENT', 'type_name_ar' => 'التعزيز المالي من وزارة المالية', 'type_name_en' => 'Financial Endorsement', 'applies_to' => 'employee'],
+            ['document_type_id' => Str::uuid()->toString(), 'type_code' => 'HEALTH_INSURANCE', 'type_name_ar' => 'وثائق الصحة والتأمين', 'type_name_en' => 'Health & Insurance Docs', 'applies_to' => 'employee'],
+            ['document_type_id' => Str::uuid()->toString(), 'type_code' => 'INTERNAL_ASSIGNMENT_DEC', 'type_name_ar' => 'قرار تعيين/تكليف داخلي (مدير عام / مدير إدارة / رئيس قسم)', 'type_name_en' => 'Internal Assignment Decision', 'applies_to' => 'decision'],
             ['document_type_id' => Str::uuid()->toString(), 'type_code' => 'BACHELOR_CERT', 'type_name_ar' => 'وثيقة شهادة البكالوريوس مع السجل', 'type_name_en' => 'Bachelor Certificate', 'applies_to' => 'qualification'],
             ['document_type_id' => Str::uuid()->toString(), 'type_code' => 'MASTER_CERT', 'type_name_ar' => 'وثيقة شهادة الماجستير مع المعادلة', 'type_name_en' => 'Master Certificate', 'applies_to' => 'qualification'],
             ['document_type_id' => Str::uuid()->toString(), 'type_code' => 'DOCTORATE_CERT', 'type_name_ar' => 'وثيقة شهادة الدكتوراه مع المعادلة', 'type_name_en' => 'Doctorate Certificate', 'applies_to' => 'qualification'],
